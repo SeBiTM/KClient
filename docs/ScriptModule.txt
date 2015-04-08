@@ -1,0 +1,87 @@
+- Example
+    var App = (new function() {
+        this.onAppStart = function () {
+
+        };
+        this.onAppStop = function () {
+
+        };
+
+        this.onPacketReceived = function (packet) {
+            return packet;
+        };
+        this.onPacketSent = function (packet) {
+            return packet;
+        };
+
+        this.onNodeReceived = function (connection, node) {
+            return node;
+        };
+        this.onNodeSent = function (connection, node) {
+            return node;
+        };
+
+        this.chatCommands = {
+            COMMAND: function (cmd, arg, channel) {
+                return true;
+            }
+        };
+    })();
+- Hooks
+    - onAppStart ()
+        - Wird beim starten der App ausgeführt
+    - onAppStop ()
+        - Wird beim beenden der App, des Client ausgeführt
+    - onPacketReceived (packet)
+        - Wird ausgeführt wenn ein Packet vom Server zum Client gesendet wird
+    - onPacketSent (packet) 
+        - Wird ausgeführt wenn ein Packet vom Client an dem Server gesendet wird
+    - onNodeReceived (gameConnection, node)
+        - Wird ausgeführt wenn ein Packet vom GameServer an der Client gesendet wird
+    - onNodeSent (gameConnection, node)
+        - Wird ausgeführt wenn ein Packet vom Client an dem GameServer gesendet wird
+- Commands
+    COMMAND: function (cmd, arg, channel) { return true/false; }
+- User
+    - getNickname (String)
+    - getAge (int)
+    - getColor (String)
+    - isCM (boolean)
+    - isAdmin (boolean)
+- Node
+    - Static
+        - printNode (node) (String)
+    - Methods
+        - getName() (String)
+        - getIndex() (int)
+        - getSize() (int)
+        - getNodes() (Map<String, Object>)
+        - getNode() (Node)
+        - get(key) (return Generic T)
+        - copyRef() (Node)
+        - copyRef(nodeName) (Node)
+        - copyRed(nodeIndex) (Node)
+        - getValue(node, key) (int)
+        - containsKey(key) (boolean)
+        - add(key, value)
+
+        - setByteData(data)
+        - equalsName(name) (boolean)
+    - Read
+        - read(packet, index) (Node)
+        - read(buffer) (Node)
+    - Write
+        - toString(node) (String)
+        - toByteArray(node) (byte[])
+- GroupChat
+    - Methods
+        - getComponent() (Component)
+        - getModule() (Collection<Module>)
+        - getBaseModule() (Node)
+        - getBingoFrames() (Enumeration)
+        - getChannels() (Enumeration)
+        - receive(packet)
+        - send(packet)
+        - print(channel, message)
+        - printBotMessage(channel, message)
+        - stop()
