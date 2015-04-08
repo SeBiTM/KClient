@@ -21,19 +21,22 @@ public class CommandParser {
         }
         
         if (cmd.equals("mdl")) {
+            String arg2 = "";
+            if (arg.split(" ").length > 1) {
+                arg2 = arg.substring(arg.indexOf(' ') + 1);
+                arg = arg.split(" ")[0].toLowerCase();
+            } else {
+                groupChat.printBotMessage(channel, "_Verwendung:_ /mdl MODULE__NAME COMMAND PARAMS");
+                return true;
+            }
+            
             for (Module mdl : groupChat.getModule()) {
-                String arg2 = "";
-                if (arg.split(" ").length > 1)
-                    arg2 = arg.substring(arg.indexOf(' ') + 1);
-                else {
-                    groupChat.printBotMessage(channel, "_Verwendung:_ /mdl MODULE_NAME COMMAND PARAMS#PARAMS = optional");
-                    return true;
-                }
-                if (arg.equals(mdl.getName().toLowerCase())) {
+                if (arg.toLowerCase().equals(mdl.getName().toLowerCase())) {
                     if (mdl.handleCommand(arg, arg2, channel))
                         return true;
                 }
             }
+            return true;
         }
         return false;
     }

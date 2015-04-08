@@ -14,6 +14,7 @@ import kclient.knuddels.network.generic.GenericProtocol;
 import kclient.knuddels.tools.toolbar.Button;
 import kclient.module.Module;
 import kclient.module.ModuleBase;
+import kclient.tools.Logger;
 import kclient.tools.Parameter;
 import kclient.tools.Util;
 
@@ -97,10 +98,46 @@ public class ScriptModule extends ModuleBase implements Module {
 
     @Override
     public boolean handleCommand(String cmd, String arg, String channel) {
+        String[] args = arg.split(" ");
+        arg = args[0];
         if (arg.equals("reload")) {
             this.load();
-            return true;
+        } else if (arg.charAt(0) == '+') {
+            String appName = arg.substring(1);
+            ScriptApp app = getApp(appName);
+            if (app == null) {
+                groupChat.printBotMessage(channel, "App _" + app.getName() + "_ existiert nicht.");
+            } else {  
+                if (!app.getState()) {
+                    app.setState(true);
+                    groupChat.printBotMessage(channel, "App _" + app.getName() + "_ aktiviert.");
+                } else {
+                    groupChat.printBotMessage(channel, "App _" + app.getName() + "_ ist bereits aktiv.");
+                }
+            }
+        } else if (arg.charAt(0) == '-') {
+            String appName = arg.substring(1);
+            ScriptApp app = getApp(appName);
+            if (app == null) {
+                groupChat.printBotMessage(channel, "App _" + app.getName() + "_ existiert nicht.");
+            } else {  
+                if (app.getState()) {
+                    app.setState(false);
+                    groupChat.printBotMessage(channel, "App _" + app.getName() + "_ deaktiviert.");
+                } else {
+                    groupChat.printBotMessage(channel, "App _" + app.getName() + "_ ist bereits inaktiv.");
+                }
+            }
+        } else if (arg.charAt(0) == '?') {
+            String appName = arg.substring(1);
+            ScriptApp app = getApp(appName);
+            if (app == null) {
+                groupChat.printBotMessage(channel, "App _" + app.getName() + "_ existiert nicht.");
+            } else {  
+                groupChat.printBotMessage(channel, "_Beschreibung:_##" + app.getDescription());
+            }
         }
+        
         boolean cmdExists = false;
         for (ScriptApp app : this.apps.values()) {
             cmdExists = app.executeChatCommand(cmd, arg, channel);
@@ -140,10 +177,17 @@ public class ScriptModule extends ModuleBase implements Module {
                     ScriptApp app = new ScriptApp(appDir.getPath(), groupChat);
                     this.apps.put(app.getName(), app);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Logger.error(e.toString());
                 }
             }
         }
+    }
+    
+    private ScriptApp getApp(String appName) {
+        for (ScriptApp app : this.apps.values())
+            if (app.getName().equalsIgnoreCase(appName))
+                return app;
+        return null;
     }
     
     // SCRIPT API

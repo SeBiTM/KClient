@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import kclient.knuddels.GroupChat;
 import kclient.knuddels.network.generic.GenericProtocol;
+import kclient.tools.Logger;
 
 /**
  *
@@ -56,7 +57,7 @@ public class Toolbar {
         try {
           this.groupChat.receive(":\u0000" + this.groupChat.getBaseNode().toString(SHOW_BUTTONS));
         } catch (Exception ex) {
-            ex.printStackTrace();
+            Logger.error(ex.toString());
         }
     }
 }

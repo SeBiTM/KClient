@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Iterator;
+import kclient.tools.Logger;
 
 /**
  *
@@ -49,16 +50,16 @@ public class KContext implements AppletContext {
     }
 
     public void showDocument(URL paramURL, String paramString) {
-            if (Desktop.isDesktopSupported()) {
-                    Desktop localDesktop = Desktop.getDesktop();
+        if (Desktop.isDesktopSupported()) {
+            Desktop localDesktop = Desktop.getDesktop();
 
-                    if (localDesktop.isSupported(Desktop.Action.BROWSE))
-                            try {
-                                    localDesktop.browse(paramURL.toURI());
-                            } catch (Exception localException) {
-                                    localException.printStackTrace();
-                            }
-            }
+            if (localDesktop.isSupported(Desktop.Action.BROWSE))
+                try {
+                    localDesktop.browse(paramURL.toURI());
+                } catch (Exception e) {
+                    Logger.error(e.toString());
+                }
+        }
     }
 
     public void showStatus(String paramString) {

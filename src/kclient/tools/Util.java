@@ -40,7 +40,7 @@ public class Util {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.error(e.toString());
         }
     }
 }

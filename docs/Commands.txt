@@ -1,0 +1,6 @@
+- ScriptModule
+    /mdl ScriptModule [Params]
+    Params:
+        -[AppName] - Deaktiviert eine App
+        +[AppName] - Akiviert eine App
+        ?[AppName] - Gibt die Beschreibung einer App aus

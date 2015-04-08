@@ -35,12 +35,13 @@ public class Parameter {
             reader = new FileReader(file);
             props.load(reader);
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.error(e.toString());
         } finally {
             try {
                 if (reader != null)
                     reader.close();
             } catch (IOException e) {
+                Logger.error(e.toString());
             }
         }
         

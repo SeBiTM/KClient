@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import kclient.tools.Logger;
 
 /**
  *
@@ -39,7 +40,7 @@ public class KClass {
             this.fields = new HashMap<>();
             this.localStorage = new HashMap<>();
         } catch (InstantiationException | IllegalAccessException ex) {
-            ex.printStackTrace();
+            Logger.error(ex.toString());
         }
     }
     public KClass(String className, Object... params) {
@@ -54,7 +55,7 @@ public class KClass {
             this.fields = new HashMap<>();
             this.localStorage = new HashMap<>();
         } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            ex.printStackTrace();
+            Logger.error(ex.toString());
         }
     }
     public KClass(Class clazz, Object... params) {
@@ -69,7 +70,7 @@ public class KClass {
             this.fields = new HashMap<>();
             this.localStorage = new HashMap<>();
         } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            ex.printStackTrace();
+            Logger.error(ex.toString());
         }
     }
     
@@ -82,7 +83,7 @@ public class KClass {
             if (this.fields.containsKey(field))
                 return this.fields.get(field).get(this.instance);
         } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-            e.printStackTrace();
+            Logger.error(e.toString());
         }
         return null;
     }
@@ -99,7 +100,7 @@ public class KClass {
                 return this.methods.get(method).invoke(instance, new Object[] { });
             }
         } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            ex.printStackTrace();
+            Logger.error(ex.toString());
         }
         return null;
     }
@@ -121,7 +122,7 @@ public class KClass {
                 return this.methods.get(method).invoke(instance, params);
             }
         } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            ex.printStackTrace();
+            Logger.error(ex.toString());
         }
         return null;
     }

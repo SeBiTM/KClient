@@ -1,7 +1,6 @@
 package kclient.module.script;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -11,16 +10,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.script.Invocable;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 import kclient.knuddels.GroupChat;
 import kclient.knuddels.network.GameConnection;
 import kclient.knuddels.network.generic.GenericProtocol;
-import kclient.tools.Parameter;
+import kclient.tools.Logger;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.NativeObject;
@@ -65,6 +58,7 @@ public class ScriptApp {
                 if (reader != null)
                     reader.close();
             } catch (IOException e) {
+                Logger.error(e.toString());
             }
         }
         
@@ -79,7 +73,7 @@ public class ScriptApp {
             byte[] arr = Files.readAllBytes(Paths.get(this.path, name));
             return new String(arr, "UTF-8");
         } catch (IOException ex) {
-            Logger.getLogger(ScriptApp.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.error(ex.toString());
         }
         return null;
     }
@@ -123,7 +117,7 @@ public class ScriptApp {
                     }
                 }
                 
-                System.out.println("[AppLoad] Name: " + getName() + ", Version: " + getVersion() + ", "
+                Logger.info("[AppLoad] Name: " + getName() + ", Version: " + getVersion() + ", "
                         + "Author: " + getAuthor() + ", State: " + getState() + "\n\t"
                         + "Hooks: " + Arrays.toString(appHooks.keySet().toArray()) + "\n\t"
                         + "Commands: " + Arrays.toString(chatCommands.keySet().toArray()));
@@ -132,7 +126,7 @@ public class ScriptApp {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.error(e.toString());
         }
     }
     
@@ -140,7 +134,7 @@ public class ScriptApp {
         try {
             this.context.evaluateString(this.scope, source, "", 1, null);
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.error(e.toString());
         }
     }
     
@@ -157,7 +151,7 @@ public class ScriptApp {
                 return (T) result;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.error(e.toString());
         }
         return null;
     }
@@ -181,12 +175,13 @@ public class ScriptApp {
     public void setState(boolean b) {
         if (b == this.state)
             return;
+        this.state = b;
         if (b) {
             try {
                 this.loadConfig();
                 this.init();
             } catch (Exception e) {
-                e.printStackTrace();
+                Logger.error(e.toString());
             }
         } else {
             this.onAppStop();

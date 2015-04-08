@@ -15,6 +15,7 @@ import java.net.URLConnection;
 import java.util.Properties;
 import javax.swing.JOptionPane;
 import kclient.module.script.ScriptApp;
+import kclient.tools.Logger;
 import kclient.ui.ClientGui;
 
 /**
@@ -29,7 +30,7 @@ public class Start {
      */
     public static void main(String[] args) {
         try {
-            System.out.println("Checking Version (Client: " + Start.REVISION + ")");
+            Logger.info("Checking Version (Client: " + Start.REVISION + ")");
             URL requestUrl = new URL("http://knds.sebitm.info/kclient/version.txt");
             URLConnection con = requestUrl.openConnection();
             con.setConnectTimeout(10000);
@@ -37,7 +38,7 @@ public class Start {
 
             Properties p = new Properties();
             p.load(con.getInputStream());
-            System.out.println(String.format(" Current Revision: %s",
+            Logger.info(String.format(" Current Revision: %s",
                     p.getProperty("rev")));
             
             if (Integer.parseInt(p.getProperty("rev")) > Start.REVISION) {
@@ -48,12 +49,14 @@ public class Start {
                             try {
                                 localDesktop.browse(new URL(p.getProperty("url")).toURI());
                             } catch (MalformedURLException | URISyntaxException e) {
+                                Logger.error(e.toString());
                             }
                     }
                     System.exit(0);
                 }
             }
         } catch (IOException e) {
+            Logger.error(e.toString());
         }
         ClientGui.main(args);
     }

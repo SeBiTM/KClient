@@ -4,6 +4,7 @@ import kclient.knuddels.reflection.tools.ManipulationData;
 import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import kclient.tools.Logger;
 import kclient.tools.Parameter;
 
 /**
@@ -33,7 +34,7 @@ public enum ChatSystem {
             this.name().toLowerCase());
         
         params.close();
-        System.out.println("   " + toString() + " initialized");
+        Logger.info("   " + toString() + " initialized");
     }
     
     public String getName() {
@@ -82,6 +83,7 @@ public enum ChatSystem {
             String v = content.substring(0, 6);
             return (v.startsWith("k") || v.startsWith("m")) ? v : getVersion();
         } catch (Exception e) {
+            Logger.error(e.toString());
         }
         return null;
     }
