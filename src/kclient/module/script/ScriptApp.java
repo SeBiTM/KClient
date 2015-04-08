@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.script.Invocable;
@@ -30,20 +31,49 @@ import org.mozilla.javascript.ScriptableObject;
  * @author SeBi
  */
 public class ScriptApp {
-    private String path;
+    private final String path;
     private Context context;
     private ScriptableObject scope;
     private NativeObject appObject;
     private Map<String, Function> appHooks;
     private Map<String, Function> chatCommands;
+    private String name, author, description, version;
+    private boolean state;
     private final GroupChat groupChat;
     
-    public ScriptApp(String path, GroupChat groupChat) {
+    public ScriptApp(String path, GroupChat groupChat) throws Exception {
         this.path = path;
         this.groupChat = groupChat;
+        
+        this.loadConfig();
         this.init();
     }
     
+    private void loadConfig() throws Exception {
+        File config = new File(this.path + File.separator + "app.config");
+        if (!config.exists())
+            throw new Exception("No App Config");
+        FileReader reader = null;
+        Properties props = new Properties();
+        try {
+            reader = new FileReader(config);
+            props.load(reader);
+        } catch (IOException e) {
+            throw new Exception("App Config error");
+        } finally {
+            try {
+                if (reader != null)
+                    reader.close();
+            } catch (IOException e) {
+            }
+        }
+        
+        this.name = props.getProperty("name");
+        this.author = props.getProperty("author");
+        this.description = props.getProperty("description");
+        this.version = props.getProperty("version");
+        this.state = props.getProperty("activeOnLoad").equals("true");
+    }
     private String loadFile(String name) {
         try {
             byte[] arr = Files.readAllBytes(Paths.get(this.path, name));
@@ -93,9 +123,13 @@ public class ScriptApp {
                     }
                 }
                 
-                
-                System.out.println("AppHooks " + Arrays.toString(appHooks.keySet().toArray()));
-                System.out.println("AppCommands " + Arrays.toString(chatCommands.keySet().toArray()));
+                System.out.println("[AppLoad] Name: " + getName() + ", Version: " + getVersion() + ", "
+                        + "Author: " + getAuthor() + ", State: " + getState() + "\n\t"
+                        + "Hooks: " + Arrays.toString(appHooks.keySet().toArray()) + "\n\t"
+                        + "Commands: " + Arrays.toString(chatCommands.keySet().toArray()));
+                if (this.state) {
+                    this.onAppStart();
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -128,10 +162,47 @@ public class ScriptApp {
         return null;
     }
     
+    public String getName() {
+        return this.name;
+    }
+    public String getAuthor() {
+        return this.author;
+    }
+    public String getVersion() {
+        return this.version;
+    }
+    public String getDescription() {
+        return this.description;
+    }
+    
+    public boolean getState() {
+        return this.state;
+    }
+    public void setState(boolean b) {
+        if (b == this.state)
+            return;
+        if (b) {
+            try {
+                this.loadConfig();
+                this.init();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            this.onAppStop();
+        }
+    }
+    
+    //Hooks
     public void onAppStart() {
         callHook("onAppStart");
     }
     public void onAppStop() {
+        this.appHooks = new HashMap<>();
+        this.chatCommands = new HashMap<>();
+        this.context = null;
+        this.appObject = null;
+        this.chatCommands = new HashMap<>();
         callHook("onAppStop");
     }
     

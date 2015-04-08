@@ -6,7 +6,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -68,7 +67,7 @@ public class Parameter {
         return null;
     }
     
-    public Color getColors(String key) {
+    public Color getColor(String key) {
         String strColor = get(key);
         if (strColor == null || strColor.isEmpty())
             return Color.black;

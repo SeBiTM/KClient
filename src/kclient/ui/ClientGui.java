@@ -171,7 +171,7 @@ public class ClientGui implements ActionListener {
         //</editor-fold>
         
         tabbedPane.addTab("KClient", root, false);
-        root.setBackground(Parameter.getDefault().getColors("background"));
+        root.setBackground(Parameter.getDefault().getColor("background"));
         
         this.frame.addWindowListener(new WindowAdapter() {
             @Override

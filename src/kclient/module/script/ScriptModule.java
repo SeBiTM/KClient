@@ -136,9 +136,12 @@ public class ScriptModule extends ModuleBase implements Module {
         for (File appDir : appFolders) {
             String appName = appDir.getName();
             if (!this.apps.containsKey(appName)) {
-                ScriptApp app = new ScriptApp(appDir.getPath(), groupChat);
-                this.apps.put(appName, app);
-                
+                try {
+                    ScriptApp app = new ScriptApp(appDir.getPath(), groupChat);
+                    this.apps.put(app.getName(), app);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
