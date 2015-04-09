@@ -2,6 +2,8 @@ package kclient.knuddels.tools;
 
 import kclient.knuddels.GroupChat;
 import kclient.module.Module;
+import kclient.module.ModuleBase;
+import kclient.tools.Logger;
 
 /**
  *
@@ -21,19 +23,69 @@ public class CommandParser {
         }
         
         if (cmd.equals("mdl")) {
-            String arg2 = "";
-            if (arg.split(" ").length > 1) {
-                arg2 = arg.substring(arg.indexOf(' ') + 1);
-                arg = arg.split(" ")[0].toLowerCase();
+            if (arg.charAt(0) == '+') {
+                String mdlName = arg.substring(1);
+                Module mdl = groupChat.getModule(mdlName);
+                if (mdl == null) {
+                    groupChat.printBotMessage(channel, "Das Module _" + mdlName + "_ existiert nicht!");
+                } else {
+                    if (((ModuleBase)mdl).getState()) {
+                        groupChat.printBotMessage(channel, "Das Module _" + mdl.getName() + "_ ist bereits aktiv!");
+                    } else {
+                        groupChat.printBotMessage(channel, "Das Module _" + mdl.getName() + "_ wurde aktiviert.");
+                        ((ModuleBase)mdl).setState(true);
+                    }
+                }
+            } else if (arg.charAt(0) == '-') {
+                String mdlName = arg.substring(1);
+                Module mdl = groupChat.getModule(mdlName);
+                if (mdl == null) {
+                    groupChat.printBotMessage(channel, "Das Module _" + mdlName + "_ existiert nicht!");
+                } else {
+                    if (!((ModuleBase)mdl).getState()) {
+                        groupChat.printBotMessage(channel, "Das Module _" + mdl.getName() + "_ ist bereits deaktiv!");
+                    } else {
+                        groupChat.printBotMessage(channel, "Das Module _" + mdl.getName() + "_ wurde deaktiviert.");
+                        ((ModuleBase)mdl).setState(false);
+                    }
+                }
+            } else if (arg.charAt(0) == '?') {
+                String mdlName = arg.substring(1);
+                Module mdl = groupChat.getModule(mdlName);
+                if (mdl == null) {
+                    groupChat.printBotMessage(channel, "Das Module _" + mdlName + "_ existiert nicht!");
+                } else {
+                    groupChat.printBotMessage(channel, "_Beschriebung (" + mdl.getName() + ")_:#" + mdl.getDescription());
+                }
             } else {
-                groupChat.printBotMessage(channel, "_Verwendung:_ /mdl MODULE__NAME COMMAND PARAMS");
-                return true;
+                String arg2 = "";
+                if (arg.split(" ").length > 1) {
+                    arg2 = arg.substring(arg.indexOf(' ') + 1);
+                    arg = arg.split(" ")[0].toLowerCase();
+                } else {
+                    groupChat.printBotMessage(channel, "_Verwendung:_ /mdl MODULE__NAME COMMAND PARAMS");
+                    return true;
+                }
+
+                for (Module mdl : groupChat.getModule()) {
+                    if (arg.toLowerCase().equals(mdl.getName().toLowerCase())) {
+                        if (mdl.handleCommand(arg, arg2, channel))
+                            return true;
+                    }
+                }
             }
-            
-            for (Module mdl : groupChat.getModule()) {
-                if (arg.toLowerCase().equals(mdl.getName().toLowerCase())) {
-                    if (mdl.handleCommand(arg, arg2, channel))
-                        return true;
+            return true;
+        } else if (cmd.equals("logger")) {
+            if (arg.isEmpty()) {
+                groupChat.printBotMessage(channel, "LogLevel angeben! _Beispiel_: /logger [Error, Info, Debug, All, None]");
+            } else {
+                try {
+                    Logger.Level level = Logger.Level.valueOf(arg.toUpperCase());
+                    Logger.get().setLevel(level);
+                    groupChat.printBotMessage(channel, "LogLevel auf _" + level.name() + "_ gesetzt!");
+                } catch (IllegalArgumentException e) {
+                    Logger.get().error(e.toString());
+                    groupChat.printBotMessage(channel, "LogLevel angeben! _Beispiel_: /logger [Error, Info, Debug, All, None]");
                 }
             }
             return true;

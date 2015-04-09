@@ -2,7 +2,6 @@ package kclient.module.script;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -15,8 +14,6 @@ import kclient.knuddels.tools.toolbar.Button;
 import kclient.module.Module;
 import kclient.module.ModuleBase;
 import kclient.tools.Logger;
-import kclient.tools.Parameter;
-import kclient.tools.Util;
 
 /**
  *
@@ -60,9 +57,6 @@ public class ScriptModule extends ModuleBase implements Module {
         if (!this.getState())
             return packet;
         
-        //ToDo: AntiAdmin für User crap implemetieren
-        //TODO: Parser für die App Hooks
-        
         for (ScriptApp app : this.apps.values())
             packet = app.onPacketReceived(packet);
         return packet;
@@ -71,6 +65,31 @@ public class ScriptModule extends ModuleBase implements Module {
     public String handleOutput(String packet, String[] tokens) {
         if (!this.getState())
             return packet;
+        
+        if (tokens[0].equals("e")) {
+            String channel = tokens[1];
+            String message = tokens[2];
+            if (message.charAt(0) == '/') {
+                String cmd = message.substring(1).split(" ")[0].toLowerCase();
+                String arg = "";
+                if (message.length() > cmd.length() + 1) {
+                    arg = message.substring(message.indexOf(' ') + 1);
+                }
+                if (cmd.equals("p")) { //Custom Command implementation in Private Chat
+                    if (arg.charAt(0) == '/') {
+                        cmd = arg.substring(1).split(" ")[0].toLowerCase();
+                        String arg2 = "";
+                        if (arg.length() > cmd.length() + 1) {
+                            arg2 = arg.substring(arg.indexOf(' ') + 1);
+                        }
+                        if (this.handleAppCommands(cmd, arg2, channel))
+                           return null;
+                    }
+                }
+                if (this.handleAppCommands(cmd, arg, channel))
+                    return null;
+            }
+        }
         
         for (ScriptApp app : this.apps.values())
             packet = app.onPacketSent(packet);
@@ -106,7 +125,7 @@ public class ScriptModule extends ModuleBase implements Module {
             String appName = arg.substring(1);
             ScriptApp app = getApp(appName);
             if (app == null) {
-                groupChat.printBotMessage(channel, "App _" + app.getName() + "_ existiert nicht.");
+                groupChat.printBotMessage(channel, "App _" + appName + "_ existiert nicht.");
             } else {  
                 if (!app.getState()) {
                     app.setState(true);
@@ -119,7 +138,7 @@ public class ScriptModule extends ModuleBase implements Module {
             String appName = arg.substring(1);
             ScriptApp app = getApp(appName);
             if (app == null) {
-                groupChat.printBotMessage(channel, "App _" + app.getName() + "_ existiert nicht.");
+                groupChat.printBotMessage(channel, "App _" + appName + "_ existiert nicht.");
             } else {  
                 if (app.getState()) {
                     app.setState(false);
@@ -137,14 +156,7 @@ public class ScriptModule extends ModuleBase implements Module {
                 groupChat.printBotMessage(channel, "_Beschreibung:_##" + app.getDescription());
             }
         }
-        
-        boolean cmdExists = false;
-        for (ScriptApp app : this.apps.values()) {
-            cmdExists = app.executeChatCommand(cmd, arg, channel);
-            if (cmdExists)
-                break;
-        }
-        return cmdExists;
+        return false;
     }
 
     @Override
@@ -177,10 +189,17 @@ public class ScriptModule extends ModuleBase implements Module {
                     ScriptApp app = new ScriptApp(appDir.getPath(), groupChat);
                     this.apps.put(app.getName(), app);
                 } catch (Exception e) {
-                    Logger.error(e.toString());
+                    Logger.get().error(e.toString());
                 }
             }
         }
+    }
+    
+    private boolean handleAppCommands(String cmd, String arg, String channel) {
+        for (ScriptApp app : this.apps.values())
+            if (app.executeChatCommand(cmd, arg, channel))
+                return true;
+        return false;
     }
     
     private ScriptApp getApp(String appName) {

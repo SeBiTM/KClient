@@ -30,7 +30,7 @@ public class Start {
      */
     public static void main(String[] args) {
         try {
-            Logger.info("Checking Version (Client: " + Start.REVISION + ")");
+            Logger.get().info("Checking Version (Client: " + Start.REVISION + ")");
             URL requestUrl = new URL("http://knds.sebitm.info/kclient/version.txt");
             URLConnection con = requestUrl.openConnection();
             con.setConnectTimeout(10000);
@@ -38,7 +38,7 @@ public class Start {
 
             Properties p = new Properties();
             p.load(con.getInputStream());
-            Logger.info(String.format(" Current Revision: %s",
+            Logger.get().info(String.format(" Current Revision: %s",
                     p.getProperty("rev")));
             
             if (Integer.parseInt(p.getProperty("rev")) > Start.REVISION) {
@@ -49,14 +49,14 @@ public class Start {
                             try {
                                 localDesktop.browse(new URL(p.getProperty("url")).toURI());
                             } catch (MalformedURLException | URISyntaxException e) {
-                                Logger.error(e.toString());
+                                Logger.get().error(e.toString());
                             }
                     }
                     System.exit(0);
                 }
             }
         } catch (IOException e) {
-            Logger.error(e.toString());
+            Logger.get().error(e.toString());
         }
         ClientGui.main(args);
     }

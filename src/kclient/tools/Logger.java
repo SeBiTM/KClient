@@ -1,25 +1,46 @@
 package kclient.tools;
 
-import java.io.FilterOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
-
 /**
  *
  * @author SeBi
  */
 public class Logger {
-    
-    public static void debug(String message) {
-        System.out.println("[DEBUG]" + message);
+    private static final Logger instance;
+    static {
+        instance = new Logger();
     }
     
-    public static void error(String message) {
-        System.err.println("[ERROR]" + message);
+    public static Logger get() {
+        synchronized (instance) {
+            return instance;
+        }
     }
     
-    public static void info(String message) {
-        System.out.println("[INFO] " + message);
+    private Level level = Level.ALL;
+    public void setLevel(Level level) {
+        this.level = level;
+    }
+    
+    public void debug(String message) {
+        if (this.level == Level.DEBUG || this.level == Level.ALL)
+            System.out.println("[DEBUG] " + message);
+    }
+    
+    public void error(String message) {
+        if (this.level == Level.ERROR || this.level == Level.ALL)
+            System.err.println("[ERROR] " + message);
+    }
+    
+    public void info(String message) {
+        if (this.level == Level.INFO || this.level == Level.ALL)
+            System.out.println("[INFO] " + message);
+    }
+    
+    public enum Level {
+        INFO,
+        DEBUG,
+        ERROR,
+        ALL,
+        NONE
     }
 }

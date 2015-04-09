@@ -57,7 +57,7 @@ public class KContext implements AppletContext {
                 try {
                     localDesktop.browse(paramURL.toURI());
                 } catch (Exception e) {
-                    Logger.error(e.toString());
+                    Logger.get().error(e.toString());
                 }
         }
     }

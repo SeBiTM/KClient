@@ -1,8 +1,11 @@
 package kclient.module.script;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -58,7 +61,7 @@ public class ScriptApp {
                 if (reader != null)
                     reader.close();
             } catch (IOException e) {
-                Logger.error(e.toString());
+                Logger.get().error(e.toString());
             }
         }
         
@@ -73,11 +76,11 @@ public class ScriptApp {
             byte[] arr = Files.readAllBytes(Paths.get(this.path, name));
             return new String(arr, "UTF-8");
         } catch (IOException ex) {
-            Logger.error(ex.toString());
+            Logger.get().error(ex.toString());
         }
-        return null;
+        return "";
     }
-    
+
     public void init() {
         this.appHooks = new HashMap<>();
         this.chatCommands = new HashMap<>();
@@ -89,7 +92,8 @@ public class ScriptApp {
             this.context.setLanguageVersion(180);
             
             this.scope = this.context.initStandardObjects();
-            ScriptableObject.putProperty(this.scope, "GroupChat", Context.javaToJS(this.groupChat, this.scope));
+            ScriptableObject.putProperty(this.scope, "groupChat", Context.javaToJS(this.groupChat, this.scope));
+            ScriptableObject.putProperty(this.scope, "Logger", Context.javaToJS(Logger.get(), this.scope));
             
             eval(mainSource);
             
@@ -117,7 +121,7 @@ public class ScriptApp {
                     }
                 }
                 
-                Logger.info("[AppLoad] Name: " + getName() + ", Version: " + getVersion() + ", "
+                Logger.get().info("[AppLoad] Name: " + getName() + ", Version: " + getVersion() + ", "
                         + "Author: " + getAuthor() + ", State: " + getState() + "\n\t"
                         + "Hooks: " + Arrays.toString(appHooks.keySet().toArray()) + "\n\t"
                         + "Commands: " + Arrays.toString(chatCommands.keySet().toArray()));
@@ -126,7 +130,7 @@ public class ScriptApp {
                 }
             }
         } catch (Exception e) {
-            Logger.error(e.toString());
+            Logger.get().error(e.toString());
         }
     }
     
@@ -134,7 +138,7 @@ public class ScriptApp {
         try {
             this.context.evaluateString(this.scope, source, "", 1, null);
         } catch (Exception e) {
-            Logger.error(e.toString());
+            Logger.get().error(e.toString());
         }
     }
     
@@ -151,7 +155,7 @@ public class ScriptApp {
                 return (T) result;
             }
         } catch (Exception e) {
-            Logger.error(e.toString());
+            Logger.get().error(e.toString());
         }
         return null;
     }
@@ -181,7 +185,7 @@ public class ScriptApp {
                 this.loadConfig();
                 this.init();
             } catch (Exception e) {
-                Logger.error(e.toString());
+                Logger.get().error(e.toString());
             }
         } else {
             this.onAppStop();

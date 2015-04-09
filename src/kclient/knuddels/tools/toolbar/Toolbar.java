@@ -57,7 +57,7 @@ public class Toolbar {
         try {
           this.groupChat.receive(":\u0000" + this.groupChat.getBaseNode().toString(SHOW_BUTTONS));
         } catch (Exception ex) {
-            Logger.error(ex.toString());
+            Logger.get().error(ex.toString());
         }
     }
 }

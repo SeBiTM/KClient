@@ -58,10 +58,13 @@ public class GroupChat extends KClass {
         return this.params.get(key);
     }
     
+    public void test(String str) {
+        Logger.get().debug(str);
+    }
+    
     public String handleInput(String packet) {
         try {
-            
-            Logger.debug(packet.replace("\0", "\\0").replace("\n", "\\n"));
+            Logger.get().debug(packet.replace("\0", "\\0").replace("\n", "\\n"));
             String[] tokens = packet.split(GroupChat.delimiter);
             String opcode = tokens[0];
             if (opcode.equals(":")) {
@@ -87,13 +90,13 @@ public class GroupChat extends KClass {
                     packet = mdl.handleInput(packet, tokens);
             }
         } catch (Exception e) {
-            Logger.error(e.toString());
+            Logger.get().error(e.toString());
         }
         return packet;
     }
     public String handleOutput(String packet) {
         try {
-            System.err.println(packet.replace("\0", "\\0").replace("\n", "\\n"));
+            Logger.get().debug(packet.replace("\0", "\\0").replace("\n", "\\n"));
             String[] tokens = packet.split(GroupChat.delimiter);
             String opcode = tokens[0];
             if (opcode.equals("t")) {
@@ -105,6 +108,9 @@ public class GroupChat extends KClass {
                     if (CommandParser.parse(this, message, channel))
                         return null;
                 }
+            } else if (opcode.equals("q")) {
+                if (packet.contains("infoSystem") && packet.contains("slash:"))
+                    return null;
             }
             
             for (Module mdl : this.modules) {
@@ -112,7 +118,7 @@ public class GroupChat extends KClass {
                     packet = mdl.handleOutput(packet, tokens);
             }
         } catch (Exception e) {
-            Logger.error(e.toString());
+            Logger.get().error(e.toString());
         }
         return packet;
     }
@@ -133,7 +139,7 @@ public class GroupChat extends KClass {
             
             buffer = this.baseExtendNode.toByteArray(node);
         } catch (Exception e) {
-            Logger.error(e.toString());
+            Logger.get().error(e.toString());
         }
         return buffer;
     }
@@ -146,7 +152,7 @@ public class GroupChat extends KClass {
             
             buffer = this.baseExtendNode.toByteArray(node);
         } catch (Exception e) {
-            Logger.error(e.toString());
+            Logger.get().error(e.toString());
         }
         return buffer;
     }
@@ -154,7 +160,7 @@ public class GroupChat extends KClass {
     public void handleFrame(int type, KClass frameClass) {
         //0 = Bingo, 1 = Poker/MauMau
         JFrame frame = (JFrame) frameClass.getInstance();
-        Logger.debug(type + " | " + frame.getTitle() + " | " + frame.toString());
+        Logger.get().debug(type + " | " + frame.getTitle() + " | " + frame.toString());
     }
     
     public Component getComponent() {
@@ -163,6 +169,12 @@ public class GroupChat extends KClass {
 
     public Collection<Module> getModule() {
         return this.modules;
+    }
+    public Module getModule(String name) {
+        for (Module mdl : this.modules)
+            if (mdl.getName().equalsIgnoreCase(name)) 
+                return mdl;
+        return null;
     }
     
     public GenericProtocol getBaseNode() {
@@ -187,10 +199,10 @@ public class GroupChat extends KClass {
     }
     
     public void print(String channel, String message) {
-        
+        receive("t\u0000 \u0000" + channel + "\u0000" + message);
     }
     public void printBotMessage(String channel, String message) {
-        receive("r\u0000KClient\u0000" + this.nickname + "\u0000" + channel + "\u0000" + message + "\u0000" + channel);
+        receive("r\u0000KClient\u0000" + this.nickname + "\u0000" + channel + "\u0000" + message + "\u0000 ");
     }
     
     public void stop() {

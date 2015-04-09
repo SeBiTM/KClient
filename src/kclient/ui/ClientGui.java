@@ -120,7 +120,7 @@ public class ClientGui implements ActionListener {
                 new Thread("GroupChatLoad") {
                     @Override
                     public void run() {
-                        Logger.info(" Initializing Manipulation for " + system.getName());
+                        Logger.get().info(" Initializing Manipulation for " + system.getName());
                         if (!KLoader.getLoader(system).isReady())
                             KLoader.getLoader(system).prepare();
                         GroupChat groupChat = new GroupChat(system);
@@ -191,7 +191,7 @@ public class ClientGui implements ActionListener {
             favicon = ImageIO.read(getClass().getResource("/res/icon/frame_icon_knuddel2.png"));
             icons.add(favicon);
         } catch (IOException e) {
-            Logger.error(e.toString());
+            Logger.get().error(e.toString());
         }
 
         this.frame.setIconImages(icons);
@@ -221,7 +221,7 @@ public class ClientGui implements ActionListener {
             try {
                 SystemTray.getSystemTray().add(icon);
             } catch (AWTException e) {
-                Logger.error(e.toString());
+                Logger.get().error(e.toString());
             }
         }
         
@@ -235,8 +235,8 @@ public class ClientGui implements ActionListener {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
-            Logger.info("Starting Client...");
-            Logger.info(" Loading ChatSystems");
+            Logger.get().info("Starting Client...");
+            Logger.get().info(" Loading ChatSystems");
             ChatSystem.values();
             for (ChatSystem cs : ChatSystem.values())
                 KLoader.getLoader(cs);
@@ -244,7 +244,7 @@ public class ClientGui implements ActionListener {
             instance = new ClientGui();
             instance.start();
         } catch (InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException | ClassNotFoundException ex) {
-            Logger.error(ex.toString());
+            Logger.get().error(ex.toString());
         }
     }    
 }

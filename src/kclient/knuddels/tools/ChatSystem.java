@@ -34,7 +34,7 @@ public enum ChatSystem {
             this.name().toLowerCase());
         
         params.close();
-        Logger.info("   " + toString() + " initialized");
+        Logger.get().info("   " + toString() + " initialized");
     }
     
     public String getName() {
@@ -83,7 +83,7 @@ public enum ChatSystem {
             String v = content.substring(0, 6);
             return (v.startsWith("k") || v.startsWith("m")) ? v : getVersion();
         } catch (Exception e) {
-            Logger.error(e.toString());
+            Logger.get().error(e.toString());
         }
         return null;
     }

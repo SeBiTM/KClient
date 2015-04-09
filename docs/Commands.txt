@@ -1,6 +1,26 @@
+- Module System
+    /mdl [Params][ModuleName]
+    Params:
+        '-' - Deaktivert ein Modul
+        '+' - Aktiviert ein Modul
+        '?' - Gibt die Beschreibung eines Modules aus
+
+    /mdl [ModuleName] [Params]
+    Module:                
+        - ScriptModule      - AntiAdminModule       - SmileyModule
+        - StayOnlineBot     - WordMixBot            - Fifty!Bot
+        - BingoBot          - MauMauBot
+
 - ScriptModule
     /mdl ScriptModule [Params]
     Params:
         -[AppName] - Deaktiviert eine App
         +[AppName] - Akiviert eine App
         ?[AppName] - Gibt die Beschreibung einer App aus
+
+- Logger
+    /logger [Level]
+    Level:
+        - All       - Debug     - Info
+        - None      - Error
+
