@@ -85,7 +85,7 @@
         - print(channel, message)
         - printBotMessage(channel, message)
         - stop()
-- Logger (Static)
+- Logger (Logger.get())
     - Methods
         - info
         - error
