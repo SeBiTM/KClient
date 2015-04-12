@@ -27,7 +27,7 @@ public class SmileyModule extends ModuleBase implements Module {
 
     @Override
     public String getName() {
-        return "SmileyModule";
+        return "Smileys";
     }
     @Override
     public String getAuthor() {
@@ -35,13 +35,13 @@ public class SmileyModule extends ModuleBase implements Module {
     }
     @Override
     public String getDescription() {
-        return "Das SmileyModule ermöglich dir jeden Smiley der auf dem Knuddels Server liegt"
+        return "Das SmileyModule ermöglich dir jeden Smiley der auf dem Knuddels Server liegt "
                 + "über einen von dir festgelten Syntax ersetzen und damit anzeigen zu lassen##"
-                + "_Anleitung:_"
+                + "_Anleitung:_#"
                 + "In der Datei 'data/module/smileys.properties' den Smiley mit dem Syntax "
-                + "(_REPLACEMENT_ = _URL_) eintragen. Anschließend den Client neustarten oder im Chat"
-                + " _/module " + getName() + " reload eingeben.#"
-                + "Danach kannst du den Smiley mit dem von dor festgelegtem Replacement verwenden."
+                + "(_REPLACEMENT_ = _URL_) eintragen.#Anschließend den Client neustarten oder im Chat"
+                + " _°>/mdl " + getName() + " reload|/mdl " + getName() + " reload<°_ eingeben.##"
+                + "Danach kannst du den Smiley mit dem von dir festgelegtem Replacement verwenden.##"
                 + "_Beispiel:_#"
                 + "Aus :-) wird °>sm_00.gif<°";
     }
@@ -53,7 +53,7 @@ public class SmileyModule extends ModuleBase implements Module {
     @Override
     public List<Button> getButtons(String channel) {
         return Arrays.asList(new Button[] {
-            new Button("SmileyModule", "/mdl " + (this.state ? "-" : "+") + getName(), "py_" + (this.state ? "g" : "r") + ".gif", false)
+            new Button("SmileyModule", "py_" + (this.state ? "g" : "r") + ".gif", "/mdl " + (this.state ? "-" : "+") + getName(), false)
         });
     }
 

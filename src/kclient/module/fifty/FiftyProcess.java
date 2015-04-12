@@ -44,6 +44,8 @@ public class FiftyProcess {
                             this.tmp_risk = (this.bot.getRisk() + 0.10000000000000001D);
                         this.tmp_risk = (this.tmp_risk * this.goalNumber);
                      }
+                } else if (msg.contains("beendet")) {
+                    this.bot.getGroupChat().refreshToolbar(channel, new Button("Neue Runde starten", "/sendpublic " + channel + ":" + tokens[1].toLowerCase() + " fifty", true));
                 } else if (msg.contains(this.bot.getGroupChat().getNickname()) && msg.contains("ist an der Reihe...")) {
                     this.number = tokens[3].split("_")[5].split(" ")[2];
                     this.goalNumber = Double.parseDouble(this.number);

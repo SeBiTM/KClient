@@ -72,6 +72,12 @@ public class Parameter {
         String strColor = get(key);
         if (strColor == null || strColor.isEmpty())
             return Color.black;
+        if (strColor.contains(",")) {
+            String[] tmp = strColor.split(",");
+            if (tmp.length != 3)
+                return Color.black;
+            return new Color(Integer.parseInt(tmp[0]), Integer.parseInt(tmp[1]), Integer.parseInt(tmp[2]));
+        }
         return Color.decode("#" + strColor);
     }
     

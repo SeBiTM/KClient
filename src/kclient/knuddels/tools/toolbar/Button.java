@@ -14,8 +14,8 @@ public class Button {
     public Button(String text, String image) {
         this(text, image, true);
     }
-    public Button(String text, String image, boolean left) {
-        this(text, image, null, left);
+    public Button(String text, String action, boolean left) {
+        this(text, null, action, left);
     }
     public Button(String text, String image, String action) {
         this(text, image, action, true);

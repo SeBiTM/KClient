@@ -26,9 +26,15 @@ public class Logger {
             System.out.println("[DEBUG] " + message);
     }
     
-    public void error(String message) {
-        if (this.level == Level.ERROR || this.level == Level.ALL)
-            System.err.println("[ERROR] " + message);
+    public void error(Object message) {
+        if (this.level == Level.ERROR || this.level == Level.ALL) {
+            if (message instanceof Exception) {
+                System.out.println("[ERROR] ");
+                ((Exception)message).printStackTrace();
+            } else {
+                System.err.println("[ERROR] " + message);
+            }
+        }
     }
     
     public void info(String message) {

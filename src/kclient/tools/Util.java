@@ -18,6 +18,10 @@ public class Util {
         return buffer.toString();
     }
     
+    public static int rnd(int min, int max) {
+        return (int) (Math.random() * (max - min + 1)) + min;
+    }
+    
     public static void downloadFile(String save, String url) {
         try {
             BufferedInputStream in = null;

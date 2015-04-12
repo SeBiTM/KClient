@@ -89,7 +89,7 @@ public class FiftyBot extends ModuleBase implements Module {
     
     @Override
     public String getName() {
-        return "Fifty!Bot";
+        return "Fifty!";
     }
     @Override
     public String getAuthor() {

@@ -212,7 +212,7 @@ public class Popup {
         buffer.writeEnd();
     }
 
-    public static String create(String title, String subtitle, String message, int width, int height) {
+    public static String create(String title, String subtitle, String message, int width, int height, boolean btn) {
 	Popup popup = new Popup(title, width, height);
 	
         Panel contentPanel = new Panel(new BorderLayout(), Location.CENTER);
@@ -221,10 +221,14 @@ public class Popup {
                         Location.CENTER
                 )); //KCode
         
-        Panel buttonPanel = new Panel(new FlowLayout(), Location.SOUTH);
-        buttonPanel.addComponent(new Button("   OK   "));
-        
-        addOldStyle(popup, subtitle, contentPanel, buttonPanel);
+        if (btn) {
+            Panel buttonPanel = new Panel(new FlowLayout(), Location.SOUTH);
+            buttonPanel.addComponent(new Button("   OK   "));
+
+            addOldStyle(popup, subtitle, contentPanel, buttonPanel);
+        } else {
+            addOldStyle(popup, subtitle, contentPanel, null);
+        }
         
 	return popup.toString();
     }
@@ -247,7 +251,8 @@ public class Popup {
         headerPanel.addComponent(new Label(" ", Location.SOUTH, 5)); //Padding Header <-> Content
         
         topPanel.addComponent(contentPanel);
-        topPanel.addComponent(buttonPanel);
+        if (buttonPanel != null)
+            topPanel.addComponent(buttonPanel);
     }
     
     public static String createNew(String title, String subtitle, String message, int width, int height) {

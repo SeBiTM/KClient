@@ -30,7 +30,7 @@ public class ScriptModule extends ModuleBase implements Module {
 
     @Override
     public String getName() {
-        return "ScriptModule";
+        return "ScriptApi";
     }
     @Override
     public String getAuthor() {
@@ -38,8 +38,25 @@ public class ScriptModule extends ModuleBase implements Module {
     }
     @Override
     public String getDescription() {
-        return "";
+        return "Die ScriptApi ermöglicht es dir eigene Bot's oder Anwendungen in dem KClient einzufügen.##"
+                + "Dazu musst du im Ordner 'data/module/scripts/' einen neuen Ordner anlegen.#"
+                + "Dieser Ordner muss den selben Namen wie die App haben.##"
+                + "Im App Ordner muss eine Datei mit dem Namen 'app.config' angelegt werden.##"
+                + "_Config_:##"
+                + "name: APP__NAME#version: APP__VERSION#author: APP__AUTHOR#description: BESCHREIBUNG#activeOnLoad: true/false##"
+                + "Danach musst du eine Datei 'main.js' anlegen.##"
+                + "_Beispiel:_##"
+                + "var App = (new function() {#"
+                + "    this.onAppStart = function () {#    };"
+                + "    #    this.onAppStop = function () {#    };"
+                + "    ##    this.onPacketReceived = function (packet) {#        return packet;#    };"
+                + "    #    this.onPacketSent = function (packet) {#        return packet;#    };"
+                + "    ##    this.onNodeReceived = function (connection, node) {#        return node;#    };"
+                + "    #    this.onNodeSent = function (connection, node) {#        return node;#    };"
+                + "    ##    this.chatCommands = {#        COMMAND: function (cmd, arg, channel) {#            return true;#        }#    };#})();"
+                + "##Beispiel und Dokumentiation findest du im Ordner 'docs/' ;)";
     }
+
     @Override
     public String getVersion() {
         return "1.0." + Start.REVISION;
@@ -48,7 +65,7 @@ public class ScriptModule extends ModuleBase implements Module {
     @Override
     public List<Button> getButtons(String channel) {
         return Arrays.asList(new Button[] {
-            new Button(getName(), "/mdl " + (this.state ? "-" : "+") + getName(), "py_" + (this.state ? "g" : "r") + ".gif", false)
+            new Button(getName(), "py_" + (this.state ? "g" : "r") + ".gif", "/mdl " + (this.state ? "-" : "+") + getName(), false)
         });
     }
 
