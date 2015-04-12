@@ -30,11 +30,16 @@ public class CommandParser {
             }
         }
         
-        if ((cmd.equals("w") && arg.equalsIgnoreCase("kclient")) || cmd.equals("kclient")) {
+        if (cmd.equals("toolbar")) {
+            groupChat.toggleToolbar();
+        } else if ((cmd.equals("w") && arg.equalsIgnoreCase("kclient")) || cmd.equals("kclient")) {
             KTab tabPanel = new KTab(0, "KClient", "°>U-Labs.de|https://u-labs.de/<°", "KClient", 
                 "°>CENTER<°"
                 + "°>http://knds.sebitm.info/kclient/logo.png<°#"
                 + "°B°Knuddels Bot Client##°r°°>LEFT<°"
+                + "Der KClient ist ein manipulierter Knuddels Client, der es ermöglicht den Client auf jede Art und Weise zu verändern und zu erweitern.##"
+                + "Die Manipulation wird automatisch durchgeführt wenn man einen Login hinzufügt. Sollte der \"\"KLoader\"\" bereits eine Instanz der gewählten Applet Version"
+                + "beinhalten wird diese verwendet und die Manipulation muss nicht erneut durchgeführt weden.#"
                 + "");
             
             for (Module mdl : groupChat.getModule()) {

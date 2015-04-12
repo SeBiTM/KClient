@@ -1,5 +1,7 @@
 package kclient.tools;
 
+import kclient.ui.ClientGui;
+
 /**
  *
  * @author SeBi
@@ -22,8 +24,10 @@ public class Logger {
     }
     
     public void debug(String message) {
-        if (this.level == Level.DEBUG || this.level == Level.ALL)
+        if (this.level == Level.DEBUG || this.level == Level.ALL) {
             System.out.println("[DEBUG] " + message);
+            ClientGui.get().addLog("[DEBUG] " + message);
+        }
     }
     
     public void error(Object message) {
@@ -38,8 +42,10 @@ public class Logger {
     }
     
     public void info(String message) {
-        if (this.level == Level.INFO || this.level == Level.ALL)
+        if (this.level == Level.INFO || this.level == Level.ALL) {
             System.out.println("[INFO] " + message);
+            ClientGui.get().addLog("[INFO] " + message);
+        }
     }
     
     public enum Level {

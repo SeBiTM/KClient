@@ -100,4 +100,13 @@ public class ManipulationData {
         return this.params.get("bingo_frame_groupchat");
     }
 
+    public String getGameFrameClass() {
+        return this.params.get("game_frame_class");
+    }
+    public String getGameFrameHelper() {
+        return this.params.get("game_frame_helper");
+    }
+    public String getGameFrameVoid() {
+        return this.params.get("game_frame_void");
+    }
 }

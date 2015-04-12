@@ -24,7 +24,7 @@ import kclient.tools.Logger;
  * @author SeBi
  */
 public class KLoader {
-    private static final int STEPS = 34;
+    private static final int STEPS = 37;
     private int currentStep = 0;
 
     private static final Map<ChatSystem, KLoader> loaders;
@@ -135,6 +135,7 @@ public class KLoader {
         this.prepareGameHandler();
         this.prepareConnection();
         this.prepareBingoFrame();
+        this.prepareGameFrame();
         this.currentStep = KLoader.STEPS;
         this.ready = true;
     }
@@ -387,7 +388,7 @@ public class KLoader {
             Logger.get().info("     - Add Field tunnel");
             this.currentStep++;
             connection.addField(CtField.make(
-                "private kclient.knuddels.GroupChat tunnel;"
+                "public kclient.knuddels.GroupChat tunnel;"
             , connection));
 
             Logger.get().info("     - Add Method getModuleParent");
@@ -512,7 +513,48 @@ public class KLoader {
             Logger.get().error(e);
         }
     }
-
+    private void prepareGameFrame() {
+        try {
+            CtClass gameFrame = this.cp.get(this.system.getManipulation().getGameFrameClass());
+            Logger.get().info("   - Prepare GameFrame (" + gameFrame.getName() + ")");
+            this.currentStep++;
+            //<editor-fold defaultstate="collapsed" desc="TUNNEL">
+            
+            Logger.get().info("     - Add Field tunnel");
+            gameFrame.addField(CtField.make("private kclient.knuddels.GroupChat tunnel;", gameFrame));
+            
+            Logger.get().info("     - Add Method check");
+            this.currentStep++;
+            gameFrame.addMethod(CtMethod.make(
+                "private boolean check() {"
+            +       "if (this.tunnel == null) {"
+            +           "this.tunnel = this." + 
+                        this.system.getManipulation().getGameFrameHelper() + "().tunnel;"
+            +       "}"
+            +       "return this.tunnel != null;"
+            +   "}"
+            , gameFrame));
+            //</editor-fold>
+         
+            Logger.get().info("     - Change Constructor");
+            this.currentStep++;
+            gameFrame.getDeclaredMethod(this.system.getManipulation().getGameFrameVoid(), new CtClass[] { this.cp.get("java.awt.Dimension") }).insertAfter(
+                "{"
+            +       "if (!check()) {"
+            +           "System.err.println(\"Tunnel not set ;(\");"
+            +       "} else {"
+            +           "kclient.knuddels.reflection.KClass kc = new kclient.knuddels.reflection.KClass(this);"
+            +           "this.tunnel.handleFrame(1, kc);"
+            +       "}"
+            +   "}"
+            );
+            
+            this.cp.toClass(gameFrame, this.loader);
+        } catch (Exception e) {
+            Logger.get().error(e);
+        }
+    }
+    
     public void setProgress(JProgressBar p, JLabel lbl) {
         this.progress = p;
         this.progressLbl = lbl;

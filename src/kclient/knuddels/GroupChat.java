@@ -146,6 +146,8 @@ public class GroupChat extends KClass {
             } else if (opcode.equals("q")) {
                 if (packet.contains("infoSystem") && packet.contains("slash:"))
                     return null;
+                if (this.baseNode == null)
+                    return packet;
                 GenericProtocol node = this.baseNode.read(packet, 2);
                 if (node.equalsName("REQUEST_W2")) {
                     String nick = node.get("NICK");
@@ -187,7 +189,7 @@ public class GroupChat extends KClass {
                 if (((ModuleBase)mdl).getState())
                     node = mdl.handleExtendInput(new GameConnection(this, connection), node);
             
-            buffer = this.baseExtendNode.toByteArray(node);
+            //buffer = this.baseExtendNode.toByteArray(node);
         } catch (Exception e) {
             Logger.get().error(e);
         }
@@ -195,12 +197,14 @@ public class GroupChat extends KClass {
     }
     public byte[] handleExtendOutput(KClass connection, byte[] buffer) { 
         try {
+            if (this.baseExtendNode == null)
+                return buffer;  
             GenericProtocol node = this.baseExtendNode.read(buffer);
             for (Module mdl : this.modules)
                 if (((ModuleBase)mdl).getState())
                     node = mdl.handleExtendOutput(new GameConnection(this, connection), node);
             
-            buffer = this.baseExtendNode.toByteArray(node);
+            //buffer = this.baseExtendNode.toByteArray(node);
         } catch (Exception e) {
             Logger.get().error(e);
         }
@@ -276,6 +280,13 @@ public class GroupChat extends KClass {
     
     public Enumeration getGameFrames() {
         return (Enumeration) new Vector(this.gameFrames.values());
+    }
+    public Enumeration getBingoFrames() {
+        Vector v = new Vector();
+        for (Map.Entry<String, JFrame> e : this.gameFrames.entrySet())
+            if (e.getKey().startsWith("BINGO"))
+                v.add(e.getValue());
+        return (Enumeration) v;
     }
     
     public String getCurrentChannel() {
