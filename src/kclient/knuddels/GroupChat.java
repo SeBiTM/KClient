@@ -1,6 +1,8 @@
 package kclient.knuddels;
 
 import java.awt.Component;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,6 +23,7 @@ import kclient.knuddels.tools.toolbar.Button;
 import kclient.knuddels.tools.toolbar.Toolbar;
 import kclient.module.Module;
 import kclient.module.ModuleBase;
+import kclient.module.bingo.BingoBot;
 import kclient.module.fifty.FiftyBot;
 import kclient.module.script.ScriptModule;
 import kclient.module.smileys.SmileyModule;
@@ -36,7 +39,7 @@ public class GroupChat extends KClass {
     public static final String delimiter = "\u0000";
     private GenericProtocol baseNode, baseExtendNode;
     private final Parameter params;
-    private List<JFrame> bingoFrames;
+    private final Map<String, JFrame> gameFrames;
     private final List<Module> modules;
     private String nickname, butler;
     public boolean showBingoFrames, showToolbar;
@@ -49,13 +52,14 @@ public class GroupChat extends KClass {
             "chatsystem" + File.separator + 
             system.name().toLowerCase());
     
+        this.gameFrames = new HashMap<>();
         this.buttonBars = new HashMap<>();
         this.showToolbar = true;
         this.channels = new ArrayList<>();
         
         this.modules = Arrays.asList(new Module[] {
             new SmileyModule(this), new ScriptModule(this), new WordMixBot(this),
-            new FiftyBot(this)
+            new FiftyBot(this), new BingoBot(this)
         });
         for (Module mdl : this.modules)
             mdl.load();
@@ -130,7 +134,8 @@ public class GroupChat extends KClass {
             String[] tokens = packet.split(GroupChat.delimiter);
             String opcode = tokens[0];
             if (opcode.equals("t")) {
-                this.bingoFrames = new ArrayList<>();
+                this.gameFrames.clear();
+                this.channels.clear();
             } else if (opcode.equals("e")) {
                 String channel = tokens[1];
                 String message = tokens[2];
@@ -206,6 +211,46 @@ public class GroupChat extends KClass {
         //0 = Bingo, 1 = Poker/MauMau
         JFrame frame = (JFrame) frameClass.getInstance();
         Logger.get().debug(type + " | " + frame.getTitle() + " | " + frame.toString());
+        if (type == 0) {
+            final long sheetId = frameClass.get("sheetId");
+
+            if (this.gameFrames.containsKey("BINGO" + sheetId)) {
+                this.gameFrames.get("BINGO" + sheetId).setVisible(false);
+                this.gameFrames.remove("BINGO" + sheetId);
+            }
+            this.gameFrames.put("BINGO" + sheetId, frame);
+
+            frame.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    try {
+                        GroupChat.this.removeFrame(0, sheetId);
+                    } catch (Exception ex) {
+                    }
+                }
+                @Override
+                public void windowOpened(WindowEvent e) {
+                    try {
+                        if (!GroupChat.this.showBingoFrames)
+                            frame.setVisible(GroupChat.this.showBingoFrames);
+                    } catch (Exception ex) {
+                    }
+                }
+            });
+        }
+    }
+    public void removeFrame(int type, long sheetId) {
+        String strType = type == 0 ? "BINGO" : type == 1 ? "POKER" : "MAUMAU";
+        if (this.gameFrames.containsKey(strType + sheetId)) {
+            this.gameFrames.get(strType + sheetId).setVisible(false);
+            this.gameFrames.remove(strType + sheetId);
+        }
+    }
+    
+    public void toggleToolbar() {
+        this.showToolbar = !this.showToolbar;
+        for (String channel : this.channels)
+            this.refreshToolbar(channel);
     }
     
     public Component getComponent() {
@@ -229,8 +274,8 @@ public class GroupChat extends KClass {
         return this.baseExtendNode;
     }
     
-    public Enumeration getBingoFrames() {
-        return (Enumeration) new Vector(this.bingoFrames);
+    public Enumeration getGameFrames() {
+        return (Enumeration) new Vector(this.gameFrames.values());
     }
     
     public String getCurrentChannel() {
