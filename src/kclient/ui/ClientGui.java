@@ -141,7 +141,7 @@ public class ClientGui implements ActionListener {
         
         JPanel labels = new JPanel(new GridLayout(4, 3, 0, 5));
         labels.setOpaque(false);
-        labels.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 30));
+        labels.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 25));
         labels.add(new JLabel("<html><b>ChatSystem:</b></html>"));
         labels.add(systems);
         labels.add(new JLabel());
