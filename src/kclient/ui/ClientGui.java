@@ -26,6 +26,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -44,6 +46,7 @@ public class ClientGui implements ActionListener {
     private JFrame frame;
     private JLabel currentVersionLbl, versionLbl, progressLbl;
     private JProgressBar progress;
+    private JTextArea logArea;
     private JTextField proxyField;
     
     private List<GroupChat> groupChats;
@@ -171,7 +174,13 @@ public class ClientGui implements ActionListener {
         root.add(bottom, BorderLayout.SOUTH);
         //</editor-fold>
         
-        tabbedPane.addTab("KClient", root, false);
+        this.logArea = new JTextArea();
+        
+        TabbedPane clientTab = new TabbedPane();
+        clientTab.addTab("Client", root, false);
+        clientTab.addTab("Log", new JScrollPane(this.logArea), false);
+        
+        tabbedPane.addTab("KClient", clientTab, false);
         root.setBackground(Parameter.getDefault().getColor("background"));
         
         this.frame.addWindowListener(new WindowAdapter() {
@@ -231,6 +240,17 @@ public class ClientGui implements ActionListener {
         this.frame.setVisible(true);
     }
    
+    public void addLog(String str) {
+        if (this.logArea != null)
+            this.logArea.append(str + "\n\r");
+    }
+    public static ClientGui get() {
+        return instance;
+    }
+    static {
+        instance = new ClientGui();
+    }
+    
     public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -240,8 +260,7 @@ public class ClientGui implements ActionListener {
             ChatSystem.values();
             for (ChatSystem cs : ChatSystem.values())
                 KLoader.getLoader(cs);
-            
-            instance = new ClientGui();
+    
             instance.start();
         } catch (InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException | ClassNotFoundException ex) {
             Logger.get().error(ex);
