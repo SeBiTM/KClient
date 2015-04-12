@@ -64,9 +64,7 @@ public class ScriptModule extends ModuleBase implements Module {
 
     @Override
     public List<Button> getButtons(String channel) {
-        return Arrays.asList(new Button[] {
-            new Button(getName(), "py_" + (this.state ? "g" : "r") + ".gif", "/mdl " + (this.state ? "-" : "+") + getName(), false)
-        });
+        return null;
     }
 
     @Override
@@ -206,7 +204,7 @@ public class ScriptModule extends ModuleBase implements Module {
                     ScriptApp app = new ScriptApp(appDir.getPath(), groupChat);
                     this.apps.put(app.getName(), app);
                 } catch (Exception e) {
-                    Logger.get().error(e.toString());
+                    Logger.get().error(e);
                 }
             }
         }

@@ -90,7 +90,7 @@ public class CommandParser {
                 for (Module mdl : groupChat.getModule()) {
                     if (arg.toLowerCase().equals(mdl.getName().toLowerCase())) {
                         if (mdl.handleCommand(arg, arg2, channel))
-                            return true;
+                            break;
                     }
                 }
             }
@@ -105,7 +105,7 @@ public class CommandParser {
                     Logger.get().setLevel(level);
                     groupChat.printBotMessage(channel, "LogLevel auf _" + level.name() + "_ gesetzt!");
                 } catch (IllegalArgumentException e) {
-                    Logger.get().error(e.toString());
+                    Logger.get().error(e);
                     groupChat.printBotMessage(channel, "LogLevel angeben! _Beispiel_: /logger [Error, Info, Debug, All, None]");
                 }
             }
@@ -116,6 +116,7 @@ public class CommandParser {
                 String sendMessage = arg.substring(toChannel.length() + 1);
                 groupChat.sendPublic(toChannel, sendMessage);
             }
+            groupChat.refreshToolbar(channel);
             return true;
         }
         return false;

@@ -39,14 +39,14 @@ public class Start {
                             try {
                                 localDesktop.browse(new URL(p.getProperty("url")).toURI());
                             } catch (MalformedURLException | URISyntaxException e) {
-                                Logger.get().error(e.toString());
+                                Logger.get().error(e);
                             }
                     }
                     System.exit(0);
                 }
             }
         } catch (IOException e) {
-            Logger.get().error(e.toString());
+            Logger.get().error(e);
         }
         ClientGui.main(args);
     }

@@ -35,7 +35,6 @@ public class WordMixProcess {
         req.running = true;
         req.containsNull = containsNull;
         groupChat.refreshToolbar(channel, new Button("Suche..."));
-        System.out.println(mix);
         for (final WordMixEngine eng : req.engines) {
             new Thread("WordMixRequest") {
                 @Override

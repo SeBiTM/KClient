@@ -60,7 +60,7 @@ public class KLoader {
             this.cp = ClassPool.getDefault();
             this.cp.insertClassPath(new LoaderClassPath(this.loader));
         } catch (Exception e) {
-            Logger.get().error(e.toString());
+            Logger.get().error(e);
         }
     }
 
@@ -68,7 +68,7 @@ public class KLoader {
         try {
             return this.loader.loadClass(name);
         } catch (ClassNotFoundException ex) {
-            Logger.get().error(ex.toString());
+            Logger.get().error(ex);
         }
         return null;
     }
@@ -97,7 +97,7 @@ public class KLoader {
 
             return urls;
         } catch (IOException e) {
-            Logger.get().error(e.toString());
+            Logger.get().error(e);
         }
         return null;
     }
@@ -324,7 +324,7 @@ public class KLoader {
 
             this.cp.toClass(groupChat, this.loader);
         } catch (CannotCompileException | NotFoundException e) {
-            Logger.get().error(e.toString());
+            Logger.get().error(e);
         }
     }
     private void prepareModule() {
@@ -358,7 +358,7 @@ public class KLoader {
 
             this.cp.toClass(module, loader);
         } catch (NotFoundException | CannotCompileException ex) {
-            Logger.get().error(ex.toString());
+            Logger.get().error(ex);
         }
     }
     private void prepareGameHandler() {
@@ -374,7 +374,7 @@ public class KLoader {
 
             this.cp.toClass(handler, loader);
         } catch (CannotCompileException | NotFoundException e) {
-            Logger.get().error(e.toString());
+            Logger.get().error(e);
         }
     }
     private void prepareConnection() {
@@ -466,7 +466,7 @@ public class KLoader {
             +   "}");
             this.cp.toClass(connection, loader);
         } catch (CannotCompileException | NotFoundException e) {
-            Logger.get().error(e.toString());
+            Logger.get().error(e);
         }
     }
     private void prepareBingoFrame() {
@@ -509,7 +509,7 @@ public class KLoader {
             
             this.cp.toClass(bingoFrame, this.loader);
         } catch (Exception e) {
-            Logger.get().error(e.toString());
+            Logger.get().error(e);
         }
     }
 

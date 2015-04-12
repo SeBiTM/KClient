@@ -191,7 +191,7 @@ public class ClientGui implements ActionListener {
             favicon = ImageIO.read(getClass().getResource("/res/icon/frame_icon_knuddel2.png"));
             icons.add(favicon);
         } catch (IOException e) {
-            Logger.get().error(e.toString());
+            Logger.get().error(e);
         }
 
         this.frame.setIconImages(icons);
@@ -221,7 +221,7 @@ public class ClientGui implements ActionListener {
             try {
                 SystemTray.getSystemTray().add(icon);
             } catch (AWTException e) {
-                Logger.get().error(e.toString());
+                Logger.get().error(e);
             }
         }
         
@@ -244,7 +244,7 @@ public class ClientGui implements ActionListener {
             instance = new ClientGui();
             instance.start();
         } catch (InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException | ClassNotFoundException ex) {
-            Logger.get().error(ex.toString());
+            Logger.get().error(ex);
         }
     }    
 }

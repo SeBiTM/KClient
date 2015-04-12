@@ -159,7 +159,7 @@ public class GenericProtocol {
         try {
             return read(new GenericReader(str, start));
         } catch (Exception ex) {
-            Logger.get().error(ex.toString());
+            Logger.get().error(ex);
         }
         return null;
     }
@@ -167,7 +167,7 @@ public class GenericProtocol {
         try {
             return read(new GenericReader(buffer));
         } catch (Exception ex) {
-            Logger.get().error(ex.toString());
+            Logger.get().error(ex);
         }
         return null;
     }
@@ -250,7 +250,7 @@ public class GenericProtocol {
             write(writer, node);
             return writer.toByteArray();
         } catch (IOException e) {
-            Logger.get().error(e.toString());
+            Logger.get().error(e);
         }
         return null;
     }
@@ -260,7 +260,7 @@ public class GenericProtocol {
             write(writer, node);
             return writer.toString();
         } catch (IOException e) {
-            Logger.get().error(e.toString());
+            Logger.get().error(e);
         }
         return null;
     }

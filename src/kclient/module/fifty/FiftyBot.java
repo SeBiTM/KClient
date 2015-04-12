@@ -11,6 +11,7 @@ import kclient.knuddels.network.generic.GenericProtocol;
 import kclient.knuddels.tools.toolbar.Button;
 import kclient.module.Module;
 import kclient.module.ModuleBase;
+import kclient.tools.Logger;
 
 /**
  *
@@ -31,8 +32,6 @@ public class FiftyBot extends ModuleBase implements Module {
 
     @Override
     public String handleInput(String packet, String[] tokens) {
-        if (!this.state)
-            return packet;
         if (tokens[0].equals("t")) {
             String channel = tokens[2].equals("-") ? this.groupChat.getCurrentChannel() : tokens[2];
             if (this.processes.containsKey(channel))
@@ -48,7 +47,7 @@ public class FiftyBot extends ModuleBase implements Module {
                     if (this.processes.containsKey(channel))
                         this.processes.remove(channel);
                     this.processes.put(channel, new FiftyProcess(channel, this));
-                    System.out.println(String.format("Start Fifty!Process for Channel %s", channel));
+                    Logger.get().debug(String.format("Start Fifty!Process for Channel %s", channel));
                 }
                 if (this.processes.containsKey(channel))
                     this.processes.get(channel).processInput(packet, tokens);

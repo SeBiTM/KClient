@@ -83,7 +83,7 @@ public enum ChatSystem {
             String v = content.substring(0, 6);
             return (v.startsWith("k") || v.startsWith("m")) ? v : getVersion();
         } catch (Exception e) {
-            Logger.get().error(e.toString());
+            Logger.get().error(e);
         }
         return null;
     }

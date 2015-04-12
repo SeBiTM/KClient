@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import kclient.Start;
 import kclient.knuddels.GroupChat;
 import kclient.knuddels.network.GameConnection;
 import kclient.knuddels.network.generic.GenericProtocol;
@@ -20,8 +21,7 @@ import kclient.module.ModuleBase;
 public class WordMixBot extends ModuleBase implements Module {
     private final Map<String, WordMixProcess> processes;
     public int rounds, found, not_found, wins;
-    private double points;
-    
+
     public WordMixBot(GroupChat groupChat) {
         super(groupChat);
         super.state = true;
@@ -76,7 +76,7 @@ public class WordMixBot extends ModuleBase implements Module {
     }
     @Override
     public String getVersion() {
-        return "1.0";
+        return "1.0." + Start.REVISION;
     }
     @Override
     public String getDescription() {
@@ -98,8 +98,6 @@ public class WordMixBot extends ModuleBase implements Module {
 
     @Override
     public String handleInput(String packet, String[] tokens) {
-        if (!this.state)
-            return packet;
         if (tokens[0].equals("e")) {
             if (tokens[1].equals(this.groupChat.getButlerName()) &&
                     tokens[2].toLowerCase().contains("wordmix") &&

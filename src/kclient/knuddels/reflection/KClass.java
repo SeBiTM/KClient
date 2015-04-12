@@ -40,7 +40,7 @@ public class KClass {
             this.fields = new HashMap<>();
             this.localStorage = new HashMap<>();
         } catch (InstantiationException | IllegalAccessException ex) {
-            Logger.get().error(ex.toString());
+            Logger.get().error(ex);
         }
     }
     public KClass(String className, Object... params) {
@@ -55,7 +55,7 @@ public class KClass {
             this.fields = new HashMap<>();
             this.localStorage = new HashMap<>();
         } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            Logger.get().error(ex.toString());
+            Logger.get().error(ex);
         }
     }
     public KClass(Class clazz, Object... params) {
@@ -70,7 +70,7 @@ public class KClass {
             this.fields = new HashMap<>();
             this.localStorage = new HashMap<>();
         } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            Logger.get().error(ex.toString());
+            Logger.get().error(ex);
         }
     }
     
@@ -83,7 +83,7 @@ public class KClass {
             if (this.fields.containsKey(field))
                 return this.fields.get(field).get(this.instance);
         } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-            Logger.get().error(e.toString());
+            Logger.get().error(e);
         }
         return null;
     }
@@ -100,7 +100,7 @@ public class KClass {
                 return this.methods.get(method).invoke(instance, new Object[] { });
             }
         } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            Logger.get().error(ex.toString());
+            Logger.get().error(ex);
         }
         return null;
     }
@@ -122,7 +122,7 @@ public class KClass {
                 return this.methods.get(method).invoke(instance, params);
             }
         } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            Logger.get().error(ex.toString());
+            Logger.get().error(ex);
         }
         return null;
     }

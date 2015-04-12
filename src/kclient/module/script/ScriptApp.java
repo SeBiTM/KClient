@@ -58,7 +58,7 @@ public class ScriptApp {
                 if (reader != null)
                     reader.close();
             } catch (IOException e) {
-                Logger.get().error(e.toString());
+                Logger.get().error(e);
             }
         }
         
@@ -73,7 +73,7 @@ public class ScriptApp {
             byte[] arr = Files.readAllBytes(Paths.get(this.path, name));
             return new String(arr, "UTF-8");
         } catch (IOException ex) {
-            Logger.get().error(ex.toString());
+            Logger.get().error(ex);
         }
         return "";
     }
@@ -127,7 +127,7 @@ public class ScriptApp {
                 }
             }
         } catch (Exception e) {
-            Logger.get().error(e.toString());
+            Logger.get().error(e);
         }
     }
     
@@ -135,7 +135,7 @@ public class ScriptApp {
         try {
             this.context.evaluateString(this.scope, source, "", 1, null);
         } catch (Exception e) {
-            Logger.get().error(e.toString());
+            Logger.get().error(e);
         }
     }
     
@@ -152,7 +152,7 @@ public class ScriptApp {
                 return (T) result;
             }
         } catch (Exception e) {
-            Logger.get().error(e.toString());
+            Logger.get().error(e);
         }
         return null;
     }
@@ -182,7 +182,7 @@ public class ScriptApp {
                 this.loadConfig();
                 this.init();
             } catch (Exception e) {
-                Logger.get().error(e.toString());
+                Logger.get().error(e);
             }
         } else {
             this.onAppStop();

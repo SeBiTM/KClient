@@ -108,10 +108,10 @@ public class GroupChat extends KClass {
                     @Override
                     public void run() {
                         try {
-                            Thread.sleep(200);
+                            Thread.sleep(1000);
+                            refreshToolbar(channel);
                         } catch (InterruptedException ex) {
                         }
-                        refreshToolbar(channel);
                     }
                 }.start();
             }
@@ -120,7 +120,7 @@ public class GroupChat extends KClass {
                     packet = mdl.handleInput(packet, tokens);
             }
         } catch (Exception e) {
-            Logger.get().error(e.toString());
+            Logger.get().error(e);
         }
         return packet;
     }
@@ -163,7 +163,7 @@ public class GroupChat extends KClass {
                     packet = mdl.handleOutput(packet, tokens);
             }
         } catch (Exception e) {
-            Logger.get().error(e.toString());
+            Logger.get().error(e);
         }
         return packet;
     }
@@ -184,7 +184,7 @@ public class GroupChat extends KClass {
             
             buffer = this.baseExtendNode.toByteArray(node);
         } catch (Exception e) {
-            Logger.get().error(e.toString());
+            Logger.get().error(e);
         }
         return buffer;
     }
@@ -197,7 +197,7 @@ public class GroupChat extends KClass {
             
             buffer = this.baseExtendNode.toByteArray(node);
         } catch (Exception e) {
-            Logger.get().error(e.toString());
+            Logger.get().error(e);
         }
         return buffer;
     }
@@ -283,6 +283,7 @@ public class GroupChat extends KClass {
         if (buttons != null)
             for (Button btn : buttons)
                 bar.addButton(btn);
+        
         if (this.buttonBars.containsKey(channel)) {
             ArrayList barbuttons = ((GenericProtocol)this.buttonBars.get(channel)).get("BUTTON");
             for (int i = 0; i < buttons.length; i++) {
@@ -303,6 +304,7 @@ public class GroupChat extends KClass {
             for (Button but : botButtons)
                 bar.addButton(but);
         }
+        
         bar.refresh(channel, this.showToolbar);
     }
     

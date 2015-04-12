@@ -14,7 +14,7 @@ import kclient.tools.Util;
 public class FiftyProcess {
     private final FiftyBot bot;
     private final String channel;
-    private String round, number;
+    private String number;
     private double tmp_risk, goalNumber;
     
     public FiftyProcess(String channel, FiftyBot bot) {
@@ -31,7 +31,6 @@ public class FiftyProcess {
         } else if (tokens[0].equals("e")) {
             if (tokens[1].equals(this.bot.getGroupChat().getButlerName())) {
                 String msg = tokens[3];
-                
                 if (msg.contains("°20RR°Achtung, °>sm_runde")) {
                     int index = msg.indexOf("##Wer über °RR20°_- ");
                     if (index > 0) {
@@ -44,7 +43,7 @@ public class FiftyProcess {
                             this.tmp_risk = (this.bot.getRisk() + 0.10000000000000001D);
                         this.tmp_risk = (this.tmp_risk * this.goalNumber);
                      }
-                } else if (msg.contains("beendet")) {
+                } else if (msg.contains("Fifty! endet")) {
                     this.bot.getGroupChat().refreshToolbar(channel, new Button("Neue Runde starten", "/sendpublic " + channel + ":" + tokens[1].toLowerCase() + " fifty", true));
                 } else if (msg.contains(this.bot.getGroupChat().getNickname()) && msg.contains("ist an der Reihe...")) {
                     this.number = tokens[3].split("_")[5].split(" ")[2];
@@ -74,6 +73,8 @@ public class FiftyProcess {
                         this.bot.getGroupChat().refreshToolbar(this.channel, new Button("Sende in " + (sleep/1000) + " Sekunden..."));
                         this.bot.getGroupChat().sendPublicDelay(this.channel, dice, sleep);
                     }
+                } else if (msg.contains("Du bist nun ")) {
+                    this.bot.getGroupChat().refreshToolbar(channel);
                 }
             }
         }
