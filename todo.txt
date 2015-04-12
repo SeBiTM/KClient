@@ -1,0 +1,86 @@
+Erledigt:
+        - Icon getauscht
+        - GUI erstellt
+        - ChatSystem wählbar
+                - Knuddels.de
+                - Knuddels.at
+                - Knuddels.com
+                - Mainfranken-Chat
+        - Proxy Support
+        - Update Benachrichtigung (Verbindung zu "sebitm.info" (37.59.107.193))
+        - ChatSystem Parameter von ChatApplet Parameter getrennt
+        - MultiChannel Support verbessert (es sollte nicht mehr vorkommen dass z. B. die WordMix Antwort bei Fifty landet)
+        - Module welches Statistiken über die "/" Funktionen enthält unterdrückt
+           
+        - Toolbar implentiert
+            - Toolbar Farb Einstellungen (toolbar.properties)
+            
+        - AntiAdminModule implementiert
+                - Nachricht im Channel/Tray wenn....
+                - CM den Channel betritt
+                - CM /m sendet
+                - CM /p sendet
+                - Admin /m sendet
+                - Admin /p sendet
+                - Admin den Channel betritt
+                - ein Notruf eröffnet wurde
+
+        - SmileyModule implementiert
+                - Smileys in der Datei "data/module/smileys.properties" anpassbar
+                - Beispiele vorhanden
+
+        - StayOnline
+
+        - WordMix implementiert
+
+        - Fifty!
+                - Fifty! Stechen wurde implementiert
+                - Fifty Runde starten Button hinzugefügt
+
+        - Bingo
+
+        - MauMau
+
+        - Poker
+
+        - Script API implementiert
+
+Bugs:
+        - Bingo Channel hängt sich auf (Knuddels)
+
+ToDo:
+        Allgemein:
+                - Poker/MauMau Frames können nun auch versteckt werden
+                - Toolbar Bug behoben
+                - Login Profile eingefügt (werden automatisch gespeichert/geladen)
+                - Popup (/kclient) hinzugefügt
+                        - Enthält Infos zu den jeweiligen Bots/Modulen
+                        - Die einzelnen Bots/Module sind nun über des Popup (/kclient) einstellbar
+
+        Network:
+                - Unterscheidung der Game-Verbindungen implementiert
+                        - MauMau Bot reagiert nun wirklich nur noch in MauMau Channels
+                - GenericProtocol auf den aktuellen Stand gebracht
+
+        Bingo:
+                - Bingo Blatt Fehler sollten nun endgültig der Vergangenheit angehören
+                - Bingo Joker Index verbessert
+                - Bingo Index verbessert
+                - Bingo Detect verbessert (findet nun auch vereinfachte Diagonalen)
+
+        WordMix:
+                - WordMix Runde starten Button hinzugefügt
+
+        MauMau:
+                - MauMauX Support implementiert
+                - MauMau Karten werden nun entfernt
+                - MauMau so verbessern das er eine "7" auf eine nächste legt
+
+        Poker:
+                - PokerSitout Bot implementiert
+                        - Nimmt alle 4 Minuten einmal am Spiel teil und Foldet, geht danach wieder in Sitout (das man nicht gekickt wird)
+                - Poker Calculator implementiert (.NET - Bridge)
+                        http://www.codeproject.com/Articles/12279/Fast-Texas-Holdem-Hand-Evaluation-and-Analysis
+
+
+
