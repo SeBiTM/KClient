@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.logging.Level;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -36,6 +37,7 @@ import kclient.knuddels.reflection.KLoader;
 import kclient.knuddels.tools.ChatSystem;
 import kclient.tools.Logger;
 import kclient.tools.Parameter;
+import kclient.tools.Util;
 
 /**
  *
@@ -86,6 +88,7 @@ public class ClientGui implements ActionListener {
         } else if (e.getSource() == close) {
             for (GroupChat gc : this.groupChats)
                 gc.stop();
+            Util.sendStats("close", "id", Util.getMac());
             System.exit(0);
         }
     }
@@ -93,7 +96,21 @@ public class ClientGui implements ActionListener {
     private void start() {
         this.groupChats = new ArrayList<>();
         this.frame = new JFrame("KClient by SeBi - u-labs.de - Rev. 5");
-         
+        new Thread("StatsCurrent") {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        String user = Util.sendStats("current");
+                        frame.setTitle("KClient by SeBi - u-labs.de - Rev. 5, User: " + user);
+                        Thread.sleep(30000);
+                    } catch (InterruptedException ex) {
+                        Logger.get().error(ex);
+                    }
+                }
+            }
+        }.start();
+        
         final TabbedPane tabbedPane = new TabbedPane();
         tabbedPane.setOpaque(false);
         
@@ -189,6 +206,7 @@ public class ClientGui implements ActionListener {
                 for (GroupChat groupChat : ClientGui.this.groupChats)
                     groupChat.stop();
                 SystemTray.getSystemTray().remove(icon);
+                Util.sendStats("close", "id", Util.getMac());
                 System.exit(0);
             }
         });

@@ -62,7 +62,7 @@ public class WordMixProcess {
         if (this.running) {
             this.bot.found++;
             //this.groupChat.print(this.channel, String.format("°>{button} %s||call|/a %s|width|100|height|20<°", answer, answer));
-            this.groupChat.refreshToolbar(this.channel, new Button(answer, String.format("/a %s", answer), true));
+            this.groupChat.refreshToolbar(this.channel, new Button(answer, String.format("/sendpublic %s:%s", channel, answer), true));
             this.stop();
         }
     }

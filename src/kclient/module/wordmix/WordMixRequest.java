@@ -23,7 +23,7 @@ public class WordMixRequest {
         try {
             URL requestUrl = new URL(this.url + "?" + this.params);
             URLConnection con = requestUrl.openConnection();
-            con.setConnectTimeout(3000);
+            con.setConnectTimeout(10000);
             con.setRequestProperty("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
             con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 6.0; de; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3");
             con.setRequestProperty("Accept-Charset", "ISO-8859-1,utf-8;q=0.7,*;q=0.7");

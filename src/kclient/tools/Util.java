@@ -1,9 +1,14 @@
 package kclient.tools;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.URL;
+import java.net.URLConnection;
 
 /**
  *
@@ -46,5 +51,46 @@ public class Util {
         } catch (IOException e) {
             Logger.get().error(e);
         }
+    }
+
+    public static String getMac() {
+        try {
+            InetAddress ip = InetAddress.getLocalHost();
+            NetworkInterface network = NetworkInterface.getByInetAddress(ip);
+            byte[] mac = network.getHardwareAddress();
+            StringBuilder sb = new StringBuilder();
+            for(byte b: mac)
+               sb.append(String.format("%02x", b & 0xff));
+            return sb.toString();
+        } catch (IOException e) {
+            Logger.get().error(e);
+        }
+        return "";
+    }
+    
+    public static String sendStats(String action, String... param) {
+        try {
+            StringBuilder buffer = new StringBuilder();
+            for (int i = 0; i < param.length; i += 2)
+                buffer.append("&").append(param[i]).append("=").append(param[i + 1]);
+            URL requestUrl = new URL("http://knds.sebitm.info/kclient/stats.php?a=" + action + buffer.toString());
+            URLConnection con = requestUrl.openConnection();
+            con.setConnectTimeout(3000);
+            con.setRequestProperty("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+            con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 6.0; de; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3");
+            con.setRequestProperty("Accept-Charset", "ISO-8859-1,utf-8;q=0.7,*;q=0.7");
+            con.connect();
+
+            buffer = new StringBuilder();
+            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"));
+            String decodedString;
+            while ((decodedString = in.readLine()) != null)
+                buffer.append(decodedString);
+            in.close();
+            return buffer.toString();
+        } catch (IOException e) {
+            Logger.get().error(e);
+        }
+        return "";
     }
 }

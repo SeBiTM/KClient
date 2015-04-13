@@ -9,6 +9,7 @@ import java.net.URLConnection;
 import java.util.Properties;
 import javax.swing.JOptionPane;
 import kclient.tools.Logger;
+import kclient.tools.Util;
 import kclient.ui.ClientGui;
 
 /**
@@ -20,6 +21,8 @@ public class Start {
     
     public static void main(String[] args) {
         try {
+            Util.sendStats("open", "id", Util.getMac());
+            
             Logger.get().info("Checking Version (Client: " + Start.REVISION + ")");
             URL requestUrl = new URL("http://knds.sebitm.info/kclient/version.txt");
             URLConnection con = requestUrl.openConnection();
