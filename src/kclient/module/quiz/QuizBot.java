@@ -37,14 +37,14 @@ public class QuizBot extends ModuleBase implements Module {
     @Override
     public String handleInput(String packet, String[] tokens) {
         if (tokens[0].equals("r")) {
-            if (tokens[4].startsWith("Es ist soweit,") && this.autoJoin) {
-                int index = tokens[4].indexOf("_°BB>/ok ");
+            if (tokens[3].startsWith("Es ist soweit,") && this.autoJoin) {
+                int index = tokens[3].indexOf("_°BB>/ok ");
                 if (index > 0) {
-                    String zahl = tokens[4].substring(index + "_°BB>/ok ".length());
+                    String zahl = tokens[3].substring(index + "_°BB>/ok ".length());
                     index = zahl.indexOf("|\"<r°_");
                     if (index > 0) {
                         zahl = zahl.substring(0, index);
-                        this.groupChat.sendPublicDelay(tokens[3].equals("-") ? this.groupChat.getCurrentChannel() : tokens[3], String.format("/ok %s", zahl), Util.rnd(5000, 10000));
+                        this.groupChat.sendPublicDelay(tokens[2].equals("-") ? this.groupChat.getCurrentChannel() : tokens[2], String.format("/ok %s", zahl), Util.rnd(5000, 10000));
                     }
                 }
             }
@@ -135,7 +135,7 @@ public class QuizBot extends ModuleBase implements Module {
         String[] args = arg.split(":");
         if (args[0].equalsIgnoreCase("autojoin")) {
             this.autoJoin = Boolean.parseBoolean(args[1]);
-            this.groupChat.print(channel, String.format("Quiz Autojoin gesetzt (%s)", this.autoJoin));
+            this.groupChat.printBotMessage(channel, String.format("Quiz Autojoin gesetzt (%s)", this.autoJoin));
         }
         this.groupChat.refreshToolbar(channel);
         return true;

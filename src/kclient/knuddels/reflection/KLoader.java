@@ -536,7 +536,7 @@ public class KLoader {
             , gameFrame));
             //</editor-fold>
          
-            Logger.get().info("     - Change Constructor");
+            Logger.get().info("     - Change Init Method (" + this.system.getManipulation().getGameFrameVoid() + ")");
             this.currentStep++;
             gameFrame.getDeclaredMethod(this.system.getManipulation().getGameFrameVoid(), new CtClass[] { this.cp.get("java.awt.Dimension") }).insertAfter(
                 "{"
