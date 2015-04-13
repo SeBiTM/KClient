@@ -37,14 +37,15 @@ public class QuizBot extends ModuleBase implements Module {
     @Override
     public String handleInput(String packet, String[] tokens) {
         if (tokens[0].equals("r")) {
-            if (tokens[3].startsWith("Es ist soweit,") && this.autoJoin) {
-                int index = tokens[3].indexOf("_°BB>/ok ");
+            //r\0James\0xSx\0Quiz\0Es ist so weit, ein neues Quizturnier beginnt genau jetzt. Alle, die jetzt mitspielen wollen, geben einfach _°BB>/ok 866372|"<r°_ ein.\0 \0 
+            if (tokens[4].contains("Es ist so weit,") && this.autoJoin) {
+                int index = tokens[4].indexOf("_°BB>/ok ");
                 if (index > 0) {
-                    String zahl = tokens[3].substring(index + "_°BB>/ok ".length());
+                    String zahl = tokens[4].substring(index + "_°BB>/ok ".length());
                     index = zahl.indexOf("|\"<r°_");
                     if (index > 0) {
                         zahl = zahl.substring(0, index);
-                        this.groupChat.sendPublicDelay(tokens[2].equals("-") ? this.groupChat.getCurrentChannel() : tokens[2], String.format("/ok %s", zahl), Util.rnd(5000, 10000));
+                        this.groupChat.sendPublicDelay(tokens[3].equals("-") ? this.groupChat.getCurrentChannel() : tokens[3], String.format("/ok %s", zahl), Util.rnd(5000, 10000));
                     }
                 }
             }

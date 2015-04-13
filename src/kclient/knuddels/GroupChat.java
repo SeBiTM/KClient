@@ -29,6 +29,7 @@ import kclient.module.maumau.MauMauBot;
 import kclient.module.quiz.QuizBot;
 import kclient.module.script.ScriptModule;
 import kclient.module.smileys.SmileyModule;
+import kclient.module.stayonline.StayOnlineBot;
 import kclient.module.wordmix.WordMixBot;
 import kclient.tools.Logger;
 import kclient.tools.Parameter;
@@ -61,7 +62,8 @@ public class GroupChat extends KClass {
         
         this.modules = Arrays.asList(new Module[] {
             new SmileyModule(this), new ScriptModule(this), new WordMixBot(this),
-            new FiftyBot(this), new BingoBot(this), new QuizBot(this), new MauMauBot(this)
+            new FiftyBot(this), new BingoBot(this), new QuizBot(this), 
+            new MauMauBot(this), new StayOnlineBot(this)
         });
         for (Module mdl : this.modules)
             mdl.load();

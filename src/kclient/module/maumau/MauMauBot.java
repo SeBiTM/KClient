@@ -16,9 +16,7 @@ import kclient.module.ModuleBase;
  * @author SeBi
  */
 public class MauMauBot extends ModuleBase implements Module {
-    private GroupChat groupChat;
-    private boolean state;
-    private Map<String, MauMauTable> tables;
+    private final Map<String, MauMauTable> tables;
     private GameConnection connection;
     
     public MauMauBot(GroupChat groupChat) {
