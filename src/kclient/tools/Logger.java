@@ -28,7 +28,7 @@ public class Logger {
     
     private String getDate() {
         Date now = Calendar.getInstance().getTime();
-        return new SimpleDateFormat().format(now);
+        return new SimpleDateFormat("[HH:mm:ss]").format(now);
     }
     
     public void debug(String message) {

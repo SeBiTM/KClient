@@ -150,7 +150,7 @@ public class QuizBot extends ModuleBase implements Module {
         Properties props = new Properties();
         FileReader reader = null;
         try {
-            reader = new FileReader("data/module/quiz.properties");
+            reader = new FileReader("data/module/quiz/database.properties");
             props.load(reader);
         } catch (IOException e) {
             Logger.get().error(e);
