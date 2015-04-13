@@ -1,5 +1,7 @@
 package kclient.module.maumau.tools;
 
+import kclient.knuddels.network.generic.GenericProtocol;
+
 /**
  *
  * @author SeBi
@@ -8,12 +10,18 @@ public class MauMauCard {
     private final long id;
     private String image;
     private int number;
-    private int category;
+    private int category, millis;
+    private short index;
+    private GenericProtocol img1, img2;
 
-    public MauMauCard(long id, String image) {
+    public MauMauCard(long id, String image, GenericProtocol img1, GenericProtocol img2, int millis, short index) {
         this.id = id;
         this.image = image;
-
+        this.img1 = img1;
+        this.img2 = img2;
+        this.index = index;
+        this.millis = millis;
+        
         if (this.image.contains("/"))
             this.image = this.image.split("/")[1];
         
@@ -28,6 +36,19 @@ public class MauMauCard {
             else
                 category = Integer.parseInt(args[0]);
         }
+    }
+    
+    public GenericProtocol getImg1() {
+        return this.img1;
+    }
+    public GenericProtocol getImg2() {
+        return this.img2;
+    }
+    public int getMillis() {
+        return this.millis;
+    }
+    public short getIndex() {
+        return this.index;
     }
     
     public long getId() {

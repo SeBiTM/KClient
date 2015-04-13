@@ -246,9 +246,10 @@ public class GenericProtocol {
     //<editor-fold defaultstate="collapsed" desc="Write">
     public byte[] toByteArray(GenericProtocol node) {
         try {
-            GenericWriter writer = new GenericWriter();
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            GenericWriter writer = new GenericWriter(buffer);
             write(writer, node);
-            return writer.toByteArray();
+            return buffer.toByteArray();
         } catch (IOException e) {
             Logger.get().error(e);
         }
@@ -256,9 +257,10 @@ public class GenericProtocol {
     }
     public String toString(GenericProtocol node) {
         try {
-            GenericWriter writer = new GenericWriter();
+            StringBuilder buffer = new StringBuilder();
+            GenericWriter writer = new GenericWriter(buffer);
             write(writer, node);
-            return writer.toString();
+            return buffer.toString();
         } catch (IOException e) {
             Logger.get().error(e);
         }

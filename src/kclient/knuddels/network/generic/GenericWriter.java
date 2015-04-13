@@ -5,21 +5,25 @@
  */
 package kclient.knuddels.network.generic;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 /**
  *
  * @author SeBi
  */
 public class GenericWriter {
-    private StringBuilder buffer;
+    private final StringBuilder buffer;
+    private final ByteArrayOutputStream byteBuffer;
     
-    public GenericWriter() {
-        buffer = new StringBuilder();
+    public GenericWriter(StringBuilder buffer) {
+        this.buffer = buffer;
+        this.byteBuffer = null;
     }
-    
-    public void write(int i) {
-        buffer.append(i & 0xff);
+    public GenericWriter(ByteArrayOutputStream buffer) {
+        this.byteBuffer = buffer;
+        this.buffer = null;
     }
     
     public void write(byte[] arr) {
@@ -32,8 +36,18 @@ public class GenericWriter {
         }
     }
     
+    public void write(int i) {
+        if (this.buffer != null)
+            this.buffer.append(i & 0xFF);
+        if (this.byteBuffer != null)
+            this.byteBuffer.write(i & 0xFF);
+    }
+    
     public void writeByte(int b) {
-        buffer.append((char) (b & 0xff));
+        if (this.buffer != null)
+            this.buffer.append((char) (b & 0xff));
+        if (this.byteBuffer != null)
+            this.byteBuffer.write((char) (b & 0xff));
     }
     
     public void writeBytes(String s) {
@@ -124,14 +138,5 @@ public class GenericWriter {
                 writeByte((byte) (0x80 | ((c >>> 0) & 0x3f)));
             }
         }
-    }
-    
-    @Override
-    public String toString() {
-        return buffer.toString();
-    }
-    
-    public byte[] toByteArray() {
-        return buffer.toString().getBytes();
     }
 }

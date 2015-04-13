@@ -2,6 +2,7 @@ package kclient.module.maumau;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import kclient.knuddels.network.generic.GenericProtocol;
 import kclient.module.maumau.tools.MauMauCard;
 import kclient.tools.Util;
@@ -30,6 +31,8 @@ public class MauMauTable {
         
         ArrayList images1 = handCards1.get("ZIMAGE");
         ArrayList images2 = handCards2.get("ZIMAGE");
+        ArrayList timeMillis = protocol.get("TIME_MILLIS");
+        ArrayList sortIndex = protocol.get("SORT_INDEX");
         for (int i = 0; i < images2.size(); i++) {
             String image = ((GenericProtocol)images2.get(i)).get("IMAGE");
             if (image.contains("/"))
@@ -37,7 +40,9 @@ public class MauMauTable {
             if (!(image.contains("c_")))
                 continue;
             long id = Long.parseLong((String)((GenericProtocol)((GenericProtocol)images1.get(i)).get("LEFT_CLICK_FUNCTION")).get("CLICK_MSG"));
-            this.handCards.add(new MauMauCard(id, image));
+            this.handCards.add(new MauMauCard(id, image, 
+                    (GenericProtocol)images1.get(i), (GenericProtocol)images2.get(i), 
+                    (int)timeMillis.get(i), (short)sortIndex.get(i)));
         }
     }
     public void removeHandCards() {
@@ -90,7 +95,7 @@ public class MauMauTable {
                     }
                 }
             } else if (image.contains("c_") && image.endsWith(".gif")) {
-                this.currentCard = new MauMauCard(-1, image);
+                this.currentCard = new MauMauCard(-1, image, null, null, 0, (short)0);
                 if (this.lastSend != null) {
                     if (this.currentCard.equals(this.lastSend)) {
                         if (this.handCards.contains(this.lastSend))
@@ -122,10 +127,8 @@ public class MauMauTable {
     }
     
     public void handleSend(GenericProtocol p) {
-        if (p.getName().equals("VOID_CONTROLLER")) {
+        if (p.getName().equals("VOID_CONTROLLER") && this.lastSend != null) {
             long id = p.get("CONTROLLER_ID");
-            if (this.lastSend == null)
-                return;
             if (id == this.lastSend.getId()) {
                 MauMauCard c= null;
                 for (MauMauCard card : this.handCards)
@@ -135,6 +138,7 @@ public class MauMauTable {
                     }
                 if (c != null) {
                     this.handCards.remove(c);
+                    this.fixCards();
                 }
             }
         }
@@ -186,6 +190,37 @@ public class MauMauTable {
             }
         }
         
+    }
+    private void fixCards() {
+              GenericProtocol remove = this.bot.getGroupChat().getExtendBaseNode().copyRef("REMOVE_ALL_HAND_CARDS");
+        remove.add("GAME_ID", gameId);
+        this.bot.getConnection().receive(remove);
+        
+        GenericProtocol addHandCards = this.bot.getGroupChat().getExtendBaseNode().copyRef("ADD_HAND_CARDS");
+        addHandCards.add("GAME_ID", this.gameId);
+        ArrayList zImage1 = new ArrayList<>();
+        ArrayList zImage2 = new ArrayList<>();
+        ArrayList timeMillis = new ArrayList<>();
+        ArrayList sortIndex = new ArrayList<>();
+        for (MauMauCard card : this.handCards) {
+            zImage1.add(card.getImg1());
+            zImage2.add(card.getImg2());
+            timeMillis.add(card.getMillis());
+            sortIndex.add(card.getIndex());
+        }
+
+        GenericProtocol imgs1 = addHandCards.copyRef("ADD_HAND_CARDS_IMGS1");
+        imgs1.add("ZIMAGE", zImage1);
+
+        GenericProtocol imgs2 = addHandCards.copyRef("ADD_HAND_CARDS_IMGS2");
+        imgs2.add("ZIMAGE", zImage2);
+
+        addHandCards.add("ADD_HAND_CARDS_IMGS1", imgs1);
+        addHandCards.add("ADD_HAND_CARDS_IMGS2", imgs2);
+
+        addHandCards.add("SORT_INDEX", sortIndex);
+        addHandCards.add("TIME_MILLIS", timeMillis);
+        this.bot.getConnection().receive(addHandCards);
     }
     private void playMau() {
         List<MauMauCard> checkedCards = new ArrayList<>();

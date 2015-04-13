@@ -36,6 +36,8 @@ public class MauMauBot extends ModuleBase implements Module {
 
     @Override
     public GenericProtocol handleExtendOutput(GameConnection connection, GenericProtocol module) {
+        for (MauMauTable table : this.tables.values())
+            table.handleSend(module);
         return module;
     }
     @Override
@@ -88,6 +90,9 @@ public class MauMauBot extends ModuleBase implements Module {
     
     public GroupChat getGroupChat() {
         return this.groupChat;
+    }
+    public GameConnection getConnection() {
+        return this.connection;
     }
     
     @Override
