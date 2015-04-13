@@ -1,5 +1,8 @@
 package kclient.tools;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import kclient.ui.ClientGui;
 
 /**
@@ -23,13 +26,20 @@ public class Logger {
         this.level = level;
     }
     
+    private String getDate() {
+        Date now = Calendar.getInstance().getTime();
+        return new SimpleDateFormat().format(now);
+    }
+    
     public void debug(String message) {
         if (this.level == Level.DEBUG || this.level == Level.ALL) {
-            System.out.println("[DEBUG] " + message);
-            ClientGui.get().addLog("[DEBUG] " + message);
+            String log = String.format("%s[DEBUG] %s", getDate(), message);
+            System.out.println(log);
+            ClientGui.get().addLog(log);
         }
     }
     
+    //ToDO xD
     public void error(Object message) {
         if (this.level == Level.ERROR || this.level == Level.ALL) {
             if (message instanceof Exception) {
@@ -43,8 +53,9 @@ public class Logger {
     
     public void info(String message) {
         if (this.level == Level.INFO || this.level == Level.ALL) {
-            System.out.println("[INFO] " + message);
-            ClientGui.get().addLog("[INFO] " + message);
+            String log = String.format("%s[INFO] %s", getDate(), message);
+            System.out.println(log);
+            ClientGui.get().addLog(log);
         }
     }
     

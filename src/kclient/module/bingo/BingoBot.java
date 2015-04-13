@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import kclient.Start;
 import kclient.knuddels.GroupChat;
 import kclient.knuddels.network.GameConnection;
 import kclient.knuddels.network.generic.GenericProtocol;
@@ -32,6 +33,10 @@ public class BingoBot extends ModuleBase implements Module {
         if (tokens[0].equals("k")) {
             if (packet.contains("Siegesruf"))
                 return null;
+        } else if (tokens[0].equals("r") && tokens[1].equals(this.groupChat.getButlerName())) {
+            String channel = tokens[2].equals("-") ? this.groupChat.getCurrentChannel() : tokens[2];
+            if (this.processes.containsKey(channel))
+                this.processes.get(channel).fixSheetError();
         } else if (tokens[0].equals(":")) {
             try {
                 GenericProtocol module = this.groupChat.getBaseNode().read(packet, 2);
@@ -94,16 +99,9 @@ public class BingoBot extends ModuleBase implements Module {
     }
     @Override
     public String getVersion() {
-        return "1.0";
+        return "1.0." + Start.REVISION;
     }
-    @Override
-    public boolean getState() {
-        return this.state;
-    }
-    @Override
-    public void setState(boolean v) {
-        this.state = v;
-    }
+
     @Override
     public List<Button> getButtons(String channel) {
         if (channel.contains("Bingo")) {

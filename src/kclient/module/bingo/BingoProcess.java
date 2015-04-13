@@ -25,6 +25,18 @@ public class BingoProcess {
         this.sheets = new HashMap<>();
     }
     
+    public void fixSheetError() {
+        long sheetId = -1L;
+        for (BingoSheet sheet : this.sheets.values()) {
+            if (sheet.getBingoCalled())
+                sheetId = sheet.getId();
+        }
+        if (sheetId != -1L) {
+            this.sheets.remove(sheetId);
+            this.groupChat.removeFrame(0, sheetId);
+        }
+    }
+    
     public void handle(GenericProtocol module) {
         if (module.getName().equals("BINGO_INIT")) {
             final GenericProtocol sheet = module.get("BINGO_SHEET");
@@ -41,7 +53,7 @@ public class BingoProcess {
             long sheetId = BingoBot.getSheetId(module);
             BingoSheetState state = BingoSheetState.parse((byte)module.get("BINGO_SHEET_STATE_CONST"));
             //System.out.println("[SetState -> " + sheetId + "] State: " + state);
-            if (this.sheets.get(sheetId) == null)
+            if (!this.sheets.containsKey(sheetId) || this.sheets.get(sheetId) == null)
                 return;
             this.sheets.get(sheetId).setState(state);
             if (state != BingoSheetState.ACTIVE) {

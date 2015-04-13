@@ -149,6 +149,7 @@ public class BingoSheet {
             return true;
         if (this.markFields.contains(field.getIndex()))
             return false;
+        this.markFields.add(field.getIndex());
         this.groupChat.sendPublicDelay(this.process.getChannel(), String.format("/bingo mark %s %s", this.sheetId, field.getIndex()), Util.rnd(1000, 3000));
         return true;
     }
