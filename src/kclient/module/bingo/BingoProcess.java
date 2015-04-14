@@ -105,10 +105,14 @@ public class BingoProcess {
         }
     }
     
+    public BingoBot getBot() {
+        return this.bot;
+    }
+    
     public String getChannel() {
         return this.channel;
     }
-    private void joinBingo() {
+    public void joinBingo() {
         if (!this.bot.getAutoJoin())
             return;
         new Thread() {

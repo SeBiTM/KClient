@@ -1,9 +1,14 @@
 package kclient.module.bingo;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import kclient.Start;
 import kclient.knuddels.GroupChat;
 import kclient.knuddels.network.GameConnection;
@@ -12,6 +17,7 @@ import kclient.knuddels.tools.toolbar.Button;
 import kclient.module.Module;
 import kclient.module.ModuleBase;
 import kclient.tools.Logger;
+import kclient.tools.Parameter;
 
 /**
  *
@@ -20,6 +26,7 @@ import kclient.tools.Logger;
 public class BingoBot extends ModuleBase implements Module {
     private final Map<String, BingoProcess> processes;
     private boolean autoJoin;
+    public int knuddels, points, rounds, sheets;
     
     public BingoBot(GroupChat groupChat) {
         super(groupChat);
@@ -34,9 +41,28 @@ public class BingoBot extends ModuleBase implements Module {
             if (packet.contains("Siegesruf"))
                 return null;
         } else if (tokens[0].equals("r") && tokens[1].equals(this.groupChat.getButlerName())) {
-            String channel = tokens[2].equals("-") ? this.groupChat.getCurrentChannel() : tokens[2];
-            if (this.processes.containsKey(channel))
-                this.processes.get(channel).fixSheetError();
+            String channel = tokens[3].equals("-") ? this.groupChat.getCurrentChannel() : tokens[2];
+            System.err.println(tokens[4].replace("\0", "\\0"));
+            if (tokens[4].contains("nimmt nicht")) {
+                if (this.processes.containsKey(channel))
+                    this.processes.get(channel).fixSheetError();
+            } else if (tokens[4].contains("kein Bingo erreicht")) {
+                if (this.processes.containsKey(channel))
+                    this.processes.get(channel).joinBingo();
+            } else if (tokens[4].contains("Runden erreicht und insgesamt ") && tokens[4].contains("Bingo-Punkte")) {
+                int index = tokens[4].indexOf("insgesamt ");
+                if (index > 0) {
+                    index += 10;
+                    String strPoints = tokens[4].substring(index, tokens[4].indexOf(" ", index));
+                    //TODO KNDS
+                    try {
+                        int p = Integer.parseInt(strPoints);
+                        this.points += p;
+                        save();
+                    } catch (Exception e) {
+                    }
+                }
+            }
         } else if (tokens[0].equals(":")) {
             try {
                 GenericProtocol module = this.groupChat.getBaseNode().read(packet, 2);
@@ -119,6 +145,9 @@ public class BingoBot extends ModuleBase implements Module {
         if (args[0].equalsIgnoreCase("autojoin")) {
             this.autoJoin = Boolean.parseBoolean(args[1]);
             this.groupChat.printBotMessage(channel, String.format("Bingo Autojoin gesetzt (%s)", this.autoJoin));
+        } else if(args[0].equalsIgnoreCase("stats")) {
+            this.groupChat.printBotMessage(channel, String.format("_Stats:_#  Runden: %s#Knuddels: %s#    Punkte: %s#     Blätter: %s#Runden bis Bingo: %s", 
+                    (rounds / 3), knuddels, points, sheets, (rounds / sheets)));
         }
         this.groupChat.refreshToolbar(channel);
         return true;
@@ -126,9 +155,37 @@ public class BingoBot extends ModuleBase implements Module {
 
     @Override
     public void save() {
+        FileOutputStream writer = null;
+        Properties props = new Properties();
+        // Stats
+        props.put("knuddels", String.valueOf(this.knuddels));
+        props.put("points", String.valueOf(this.points));
+        props.put("sheets", String.valueOf(this.sheets));
+        props.put("rounds", String.valueOf(this.rounds));
+        try {
+            writer = new FileOutputStream("data" + File.separator + "module" + File.separator + "bingo.properties");
+            props.store(writer, "KClient - Bingo Stats");
+            writer.flush();
+        } catch (IOException e) {
+            Logger.get().error(e);
+        } finally {
+            if (writer != null)
+                try {
+                    writer.close();
+                } catch (IOException e) {
+                }
+        }
     }
 
     @Override
     public void load() {
+        if (!new File("data" + File.separator + "module" + File.separator + "bingo.properties").exists())
+            save();
+        Parameter stats = new Parameter("module" + File.separator + "bingo");
+        this.knuddels = Integer.parseInt(stats.get("knuddels"));
+        this.points = Integer.parseInt(stats.get("points"));
+        this.rounds = Integer.parseInt(stats.get("rounds"));
+        this.sheets = Integer.parseInt(stats.get("sheets"));
+        
     }
 }

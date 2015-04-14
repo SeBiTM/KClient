@@ -185,13 +185,17 @@ public class GroupChat extends KClass {
                 KClass mdlParent = new KClass(connection.invokeMethod("getModuleParent"));
                 this.baseExtendNode = GenericProtocol.parseTree((String) mdlParent.invokeMethod("getTree"));
             }
+            GameConnection gCon = new GameConnection(this, connection);
             GenericProtocol node = this.baseExtendNode.read(buffer);
             if (node.equalsName("CHANGE_PROTOCOL")) {
                 this.baseExtendNode = GenericProtocol.parseTree((String) node.get("PROTOCOL_DATA"));
+            } else if (node.equalsName("ROOM_INIT")) {
+                String gameId = node.get("GAME_ID").toString().toLowerCase();
+                gCon.setType(gameId.contains("maumau") ? "MAUMAU" : gameId.contains("poker") ? "POKER" : "UNKNOWN");
             }
             for (Module mdl : this.modules)
                 if (((ModuleBase)mdl).getState())
-                    node = mdl.handleExtendInput(new GameConnection(this, connection), node);
+                    node = mdl.handleExtendInput(gCon, node);
             
             //buffer = this.baseExtendNode.toByteArray(node);
         } catch (Exception e) {
@@ -346,12 +350,12 @@ public class GroupChat extends KClass {
         
         if (this.buttonBars.containsKey(channel)) {
             ArrayList barbuttons = ((GenericProtocol)this.buttonBars.get(channel)).get("BUTTON");
-            for (int i = 0; i < buttons.length; i++) {
+            for (int i = 0; i < barbuttons.size(); i++) {
                 GenericProtocol button = (GenericProtocol)barbuttons.get(i);
                 bar.addButton(new Button(
                     (String)button.get("TEXT"),
-                    (String)button.get("CHAT_FUNCTION"),
                     (String)button.get("IMAGE"),
+                    (String)button.get("CHAT_FUNCTION"),
                     button.get("BUTTON_ALING") == null ? true : ((byte)button.get("BUTTON_ALING")) == 1
                 ));
             }

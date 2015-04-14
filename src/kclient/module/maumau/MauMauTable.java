@@ -130,7 +130,7 @@ public class MauMauTable {
         if (p.getName().equals("VOID_CONTROLLER") && this.lastSend != null) {
             long id = p.get("CONTROLLER_ID");
             if (id == this.lastSend.getId()) {
-                MauMauCard c= null;
+                MauMauCard c = null;
                 for (MauMauCard card : this.handCards)
                     if (card.getId() == id) {
                         c = card;
@@ -166,8 +166,7 @@ public class MauMauTable {
                     break;
             }
     
-        int c = this.handCards.get(0).getCategory();
-        String key = (c == 1 ? "blue" : c == 2 ? "red" : c == 3 ? "green" : "yellow");
+        String key = "red";
         if (green > blue && green > red && green > yellow)
             key = "green";
         else if (blue > green && blue > red && blue > yellow)
@@ -192,7 +191,7 @@ public class MauMauTable {
         
     }
     private void fixCards() {
-              GenericProtocol remove = this.bot.getGroupChat().getExtendBaseNode().copyRef("REMOVE_ALL_HAND_CARDS");
+        GenericProtocol remove = this.bot.getGroupChat().getExtendBaseNode().copyRef("REMOVE_ALL_HAND_CARDS");
         remove.add("GAME_ID", gameId);
         this.bot.getConnection().receive(remove);
         
@@ -205,7 +204,7 @@ public class MauMauTable {
         for (MauMauCard card : this.handCards) {
             zImage1.add(card.getImg1());
             zImage2.add(card.getImg2());
-            timeMillis.add(card.getMillis());
+            timeMillis.add(0);
             sortIndex.add(card.getIndex());
         }
 
@@ -263,6 +262,8 @@ public class MauMauTable {
         this.lastSend = rndCard;
     }
     private boolean checkCard(MauMauCard card) {
+        if (this.currentCard.getNumber() == 13 && card.getNumber() == 13)
+            return true;
         if (this.currentCard.isBube() && card.isBube()) 
             return false;
         

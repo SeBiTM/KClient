@@ -93,4 +93,28 @@ public class Util {
         }
         return "";
     }
+    
+    public static String loadSite(String url) {
+        try {
+            StringBuilder buffer = new StringBuilder();
+            URL requestUrl = new URL(url);
+            URLConnection con = requestUrl.openConnection();
+            con.setConnectTimeout(3000);
+            con.setRequestProperty("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+            con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 6.0; de; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3");
+            con.setRequestProperty("Accept-Charset", "ISO-8859-1,utf-8;q=0.7,*;q=0.7");
+            con.connect();
+
+            buffer = new StringBuilder();
+            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"));
+            String decodedString;
+            while ((decodedString = in.readLine()) != null)
+                buffer.append(decodedString);
+            in.close();
+            return buffer.toString();
+        } catch (IOException e) {
+            Logger.get().error(e);
+        }
+        return "";
+    }
 }

@@ -36,13 +36,20 @@ public class MauMauBot extends ModuleBase implements Module {
 
     @Override
     public GenericProtocol handleExtendOutput(GameConnection connection, GenericProtocol module) {
-        for (MauMauTable table : this.tables.values())
-            table.handleSend(module);
+        if (connection.isMauMau())
+            for (MauMauTable table : this.tables.values())
+                table.handleSend(module);
         return module;
     }
     @Override
     public GenericProtocol handleExtendInput(GameConnection connection, GenericProtocol module) {
-        this.connection = connection;
+        if (this.connection == null)
+            if (connection.isMauMau()) {
+                this.connection = connection;
+            } else {
+                return module;
+            }
+                
         try {
             String cmd = module.getName();
             if (cmd.equals("ROOM_INIT")) {

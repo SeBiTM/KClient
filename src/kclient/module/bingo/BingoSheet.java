@@ -29,6 +29,7 @@ public class BingoSheet {
     
     public BingoSheet(GroupChat groupChat, BingoProcess process, long sheetId, GenericProtocol sheet) {
         this.process = process;
+        this.process.getBot().sheets++;
         this.sheetId = sheetId;
         this.fields = new HashMap<>();
         this.groupChat = groupChat;
@@ -78,6 +79,7 @@ public class BingoSheet {
             return;
         
         this.bingoRound = update.get("BINGO_ROUND");
+        this.process.getBot().rounds++;
         if (this.bingoRound >= 100)
             this.callBingo();
         String bingoCalledNumber = update.get("BINGO_CALLED_NUMBER");
