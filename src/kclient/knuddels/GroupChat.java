@@ -47,6 +47,7 @@ public class GroupChat extends KClass {
     private String nickname, butler;
     public boolean showBingoFrames, showToolbar;
     private final Map<String, GenericProtocol> buttonBars;
+    private final Map<KClass, GameConnection> connections;
     private final List<String> channels;
     
     public GroupChat(ChatSystem system) {
@@ -59,6 +60,7 @@ public class GroupChat extends KClass {
         this.buttonBars = new HashMap<>();
         this.showToolbar = true;
         this.channels = new ArrayList<>();
+        this.connections = new HashMap<>();
         
         this.modules = Arrays.asList(new Module[] {
             new SmileyModule(this), new ScriptModule(this), new WordMixBot(this),
@@ -140,6 +142,7 @@ public class GroupChat extends KClass {
             if (opcode.equals("t")) {
                 this.gameFrames.clear();
                 this.channels.clear();
+                this.connections.clear();
             } else if (opcode.equals("e")) {
                 String channel = tokens[1];
                 String message = tokens[2];
@@ -185,13 +188,21 @@ public class GroupChat extends KClass {
                 KClass mdlParent = new KClass(connection.invokeMethod("getModuleParent"));
                 this.baseExtendNode = GenericProtocol.parseTree((String) mdlParent.invokeMethod("getTree"));
             }
-            GameConnection gCon = new GameConnection(this, connection);
+            GameConnection gCon;
+            if (this.connections.containsKey(connection))
+                gCon = this.connections.get(connection);
+            else {
+                gCon = new GameConnection(this, connection);
+                this.connections.put(connection, gCon);
+            }
             GenericProtocol node = this.baseExtendNode.read(buffer);
             if (node.equalsName("CHANGE_PROTOCOL")) {
                 this.baseExtendNode = GenericProtocol.parseTree((String) node.get("PROTOCOL_DATA"));
             } else if (node.equalsName("ROOM_INIT")) {
                 String gameId = node.get("GAME_ID").toString().toLowerCase();
                 gCon.setType(gameId.contains("maumau") ? "MAUMAU" : gameId.contains("poker") ? "POKER" : "UNKNOWN");
+                if (!this.connections.containsKey(connection))
+                    this.connections.put(connection, gCon);
             }
             for (Module mdl : this.modules)
                 if (((ModuleBase)mdl).getState())
@@ -207,10 +218,16 @@ public class GroupChat extends KClass {
         try {
             if (this.baseExtendNode == null)
                 return buffer;  
+            GameConnection gCon;
+            if (this.connections.containsKey(connection))
+                gCon = this.connections.get(connection);
+            else
+                gCon = new GameConnection(this, connection);
+            
             GenericProtocol node = this.baseExtendNode.read(buffer);
             for (Module mdl : this.modules)
                 if (((ModuleBase)mdl).getState())
-                    node = mdl.handleExtendOutput(new GameConnection(this, connection), node);
+                    node = mdl.handleExtendOutput(gCon, node);
             
             //buffer = this.baseExtendNode.toByteArray(node);
         } catch (Exception e) {

@@ -52,9 +52,7 @@ public class SmileyModule extends ModuleBase implements Module {
 
     @Override
     public List<Button> getButtons(String channel) {
-        return Arrays.asList(new Button[] {
-            new Button("SmileyModule", "py_" + (this.state ? "g" : "r") + ".gif", "/mdl " + (this.state ? "-" : "+") + getName(), false)
-        });
+        return null;
     }
 
     @Override

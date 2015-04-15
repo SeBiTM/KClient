@@ -16,6 +16,7 @@ public class GameConnection {
     public GameConnection(GroupChat groupChat, KClass instance) {
         this.groupChat = groupChat;
         this.instance = instance;
+        this.type = "UNKNOWN";
     }
     
     public void send(GenericProtocol node) {

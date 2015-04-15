@@ -48,6 +48,7 @@ public class MauMauTable {
     public void removeHandCards() {
         this.handCards.clear();
     }
+   
     public void turnChanges(GenericProtocol protocol) {
         //<editor-fold defaultstate="collapsed" desc="FILL_TEXT_LABEL">
         ArrayList fillTextLabels = protocol.get("FILL_TEXT_LABEL");
@@ -112,6 +113,7 @@ public class MauMauTable {
         }
         //</editor-fold>
     }
+    
     public GenericProtocol updateControls(GenericProtocol protocol) {
         ArrayList regularButtons = protocol.get("REGULAR_BUTTON");
         for (Object tb : regularButtons) {
@@ -148,7 +150,7 @@ public class MauMauTable {
         return (MauMauCard)this.handCards.get(index);
     }
     
-    private void wishColor(ArrayList images) {
+    private String getBestColor() {
         int red = 0, green = 0, blue = 0, yellow = 0;
         for (int i = 0; i < this.handCards.size(); i++)
             switch (getCard(i).getCategory()) {
@@ -175,14 +177,18 @@ public class MauMauTable {
             key = "yellow";
         else if (red > blue && red > yellow && red > green)
             key = "red";
-        
+        return key;
+    }
+    
+    private void wishColor(ArrayList images) {
+        String color = getBestColor();
         for (Object ti : images) {
             GenericProtocol zimage = (GenericProtocol)ti;
             String img = zimage.get("IMAGE");
             if (img.contains("/"))
                 img = img.split("/")[1];
             img = img.substring(0, img.indexOf("."));
-            if (img.equals("wishcolor_" + key)) {
+            if (img.equals("wishcolor_" + color)) {
                 String id = ((GenericProtocol)((GenericProtocol)zimage).get("LEFT_CLICK_FUNCTION")).get("CLICK_MSG");
                 this.bot.sendDealy(Long.parseLong(id), Util.rnd(2000, 3000));
                 break;
@@ -253,10 +259,13 @@ public class MauMauTable {
                     break;
                 }
         }
-        if (rndCard == null && checkedCards.size() > 0)
+        if (rndCard == null && checkedCards.size() > 0) {
             rndCard = checkedCards.get(Util.rnd(0, checkedCards.size() - 1));
-        else if (rndCard == null && checkedCards.size() <= 0)
+        } else if (rndCard == null || checkedCards.size() <= 0) {
+            //Karte ziehen
+            
             return;
+        }
         
         this.bot.sendDealy(rndCard.getId(), Util.rnd(500, 1500));
         this.lastSend = rndCard;
@@ -264,6 +273,9 @@ public class MauMauTable {
     private boolean checkCard(MauMauCard card) {
         if (this.currentCard.getNumber() == 13 && card.getNumber() == 13)
             return true;
+        if (this.currentCard.getNumber() == 7 && card.getNumber() == 7)
+            return true;
+        
         if (this.currentCard.isBube() && card.isBube()) 
             return false;
         

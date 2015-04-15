@@ -143,6 +143,10 @@ public class BingoSheet {
     private void callBingo() {
         if (this.state != BingoSheetState.ACTIVE)
             return;
+        if (this.bingoCalled) {
+            this.state = BingoSheetState.NO_BINGO;
+            return;
+        }
         this.bingoCalled = true;
         this.groupChat.sendPublicDelay(this.process.getChannel(), String.format("/bingo bingo %s", this.sheetId), Util.rnd(200, 300));
     }
