@@ -108,11 +108,11 @@ public class MauMauBot extends ModuleBase implements Module {
     }
     @Override
     public String getAuthor() {
-        return "SeBi| Credits to patlux";
+        return "°>_hSeBi|https://u-labs.de/members/sebi-2841/<°#_Credtis:_ °>_hpatlux|https://u-labs.de/members/patlux-4/<°";
     }
     @Override
     public String getDescription() {
-        return "";
+        return "Das MauMau Module spielt für vollkommen automatisch MauMau ;)";
     }
     @Override
     public String getVersion() {

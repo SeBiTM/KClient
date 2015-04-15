@@ -47,7 +47,7 @@ public class GroupChat extends KClass {
     private String nickname, butler;
     public boolean showBingoFrames, showToolbar;
     private final Map<String, GenericProtocol> buttonBars;
-    private final Map<KClass, GameConnection> connections;
+    private final Map<String, GameConnection> connections;
     private final List<String> channels;
     
     public GroupChat(ChatSystem system) {
@@ -189,11 +189,11 @@ public class GroupChat extends KClass {
                 this.baseExtendNode = GenericProtocol.parseTree((String) mdlParent.invokeMethod("getTree"));
             }
             GameConnection gCon;
-            if (this.connections.containsKey(connection))
-                gCon = this.connections.get(connection);
+            if (this.connections.containsKey((String)connection.invokeMethod("toString")))
+                gCon = this.connections.get((String)connection.invokeMethod("toString"));
             else {
                 gCon = new GameConnection(this, connection);
-                this.connections.put(connection, gCon);
+                this.connections.put((String)connection.invokeMethod("toString"), gCon);
             }
             GenericProtocol node = this.baseExtendNode.read(buffer);
             if (node.equalsName("CHANGE_PROTOCOL")) {
@@ -201,8 +201,6 @@ public class GroupChat extends KClass {
             } else if (node.equalsName("ROOM_INIT")) {
                 String gameId = node.get("GAME_ID").toString().toLowerCase();
                 gCon.setType(gameId.contains("maumau") ? "MAUMAU" : gameId.contains("poker") ? "POKER" : "UNKNOWN");
-                if (!this.connections.containsKey(connection))
-                    this.connections.put(connection, gCon);
             }
             for (Module mdl : this.modules)
                 if (((ModuleBase)mdl).getState())
@@ -219,11 +217,12 @@ public class GroupChat extends KClass {
             if (this.baseExtendNode == null)
                 return buffer;  
             GameConnection gCon;
-            if (this.connections.containsKey(connection))
-                gCon = this.connections.get(connection);
-            else
+            if (this.connections.containsKey((String)connection.invokeMethod("toString")))
+                gCon = this.connections.get((String)connection.invokeMethod("toString"));
+            else{
                 gCon = new GameConnection(this, connection);
-            
+                this.connections.put((String)connection.invokeMethod("toString"), gCon);
+            }
             GenericProtocol node = this.baseExtendNode.read(buffer);
             for (Module mdl : this.modules)
                 if (((ModuleBase)mdl).getState())

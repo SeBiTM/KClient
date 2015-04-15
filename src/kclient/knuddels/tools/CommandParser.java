@@ -1,5 +1,6 @@
 package kclient.knuddels.tools;
 
+import kclient.Start;
 import kclient.knuddels.GroupChat;
 import kclient.knuddels.tools.popup.Popup;
 import kclient.knuddels.tools.popup.components.Panel;
@@ -46,7 +47,7 @@ public class CommandParser {
         if (cmd.equals("toolbar")) {
             groupChat.toggleToolbar();
         } else if ((cmd.equals("w") && arg.equalsIgnoreCase("kclient")) || cmd.equals("kclient")) {
-            KTab tabPanel = new KTab(0, "KClient", "°>U-Labs.de|https://u-labs.de/<°", "KClient", 
+            KTab tabPanel = new KTab(0, "KClient [1.0." + Start.REVISION +"] by SeBi", "°>U-Labs.de|https://u-labs.de/<°", "KClient", 
                 "°>CENTER<°"
                 + "°>http://knds.sebitm.info/kclient/logo.png<°#"
                 + "°B°Knuddels Bot Client##°r°°>LEFT<°"
@@ -56,9 +57,14 @@ public class CommandParser {
                 + "");
             
             for (Module mdl : groupChat.getModule()) {
-                tabPanel.newTab(mdl.getName(), mdl.getName(), mdl.getDescription());
+                StringBuilder mdlBuffer = new StringBuilder();
+                mdlBuffer.append("_Name:_ ").append(mdl.getName()).append("#");
+                mdlBuffer.append("_Author:_ ").append(mdl.getAuthor()).append("#");
+                mdlBuffer.append("_Version:_ ").append(mdl.getVersion()).append("#");
+                mdlBuffer.append("_Beschreibung:_#").append(mdl.getDescription());
+                tabPanel.newTab(mdl.getName(), mdl.getName(), mdlBuffer.toString());
             }
-            groupChat.receive(Popup.create("KClient", null, tabPanel.getSwitchTab(), 850, 560, false));
+            groupChat.receive(Popup.create("KClient", null, tabPanel.getSwitchTab(), 750, 560, false));
             return true;
         } else if (cmd.equals("mdl")) {
             if (arg.charAt(0) == '+') {

@@ -110,11 +110,15 @@ public class QuizBot extends ModuleBase implements Module {
     }
     @Override
     public String getAuthor() {
-        return "SeBi";
+        return "°>_hSeBi|https://u-labs.de/members/sebi-2841/<°";
     }
     @Override
     public String getDescription() {
-        return "...";
+        return "Das Quiz Module hilft die im Spiel Quiz mit einer von dir defenierten Datenbank.#"
+                + "Datenbanken können in der Datei \"data/module/quiz/database.properties\" eingestellt werden.##"
+                + "°>bullet2.png<° Meldet sich auf Wunsch automatisch an#"
+                + "°>bullet2.png<° Antwort wird in der Toolbar angezeigt, und wird bei Klick in Kleinbuchstaben gesendet#"
+                + "°>bullet2.png<° Nicht gefundene Lösungen werden zur Datenabnk geschickt";
     }
     @Override
     public String getVersion() {

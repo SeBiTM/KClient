@@ -28,11 +28,14 @@ public class StayOnlineBot extends ModuleBase implements Module {
     }
     @Override
     public String getAuthor() {
-        return "SeBi";
+        return "°>_hSeBi|https://u-labs.de/members/sebi-2841/<°";
     }
     @Override
     public String getDescription() {
-        return "...";
+        return "Das StayOnline Module hält deinen Nick online und sammelt so für dich Minuten.##"
+                + "°>bullet2.png<° Kann über die Toolbar de/aktiviert werden.#"
+                + "°>bullet2.png<° Alternativ kannst du mit _/mdl +|- " + getName() + "_ den Bot aktivieren|deaktivieren.#"
+                + "°>bullet2.png<° Sendet alle 3 Minuten eine Random Zahl an " + this.groupChat.getButlerName();
     }
     @Override
     public String getVersion() {

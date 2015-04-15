@@ -113,15 +113,16 @@ public class BingoBot extends ModuleBase implements Module {
     
     @Override
     public String getName() {
-        return "BingoBot";
+        return "Bingo";
     }
     @Override
     public String getAuthor() {
-        return "SeBi";
+        return "°>_hSeBi|https://u-labs.de/members/sebi-2841/<°";
     }
     @Override
     public String getDescription() {
-        return "...";
+        return "Das Bingo Module spielt für dich vollkommen automatisch Bingo mit 3 Blättern##"
+                + "_Anleitung:_#Gehe in einen beliebigen Bingo Channel (Bingo Solo Free), aktiviere den Autojoin (Default: true) und starte ein Spiel, den rest übernimmt der Bot";
     }
     @Override
     public String getVersion() {

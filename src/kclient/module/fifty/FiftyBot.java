@@ -92,11 +92,16 @@ public class FiftyBot extends ModuleBase implements Module {
     }
     @Override
     public String getAuthor() {
-        return "SeBi";
+        return "°>_hSeBi|https://u-labs.de/members/sebi-2841/<°";
     }
     @Override
     public String getDescription() {
-        return "...";
+        return "Das Fifty! Module spielt für dich vollkommen automatisch Fifty!##"
+                + "°>bullet2.png<° Meldet sich automatisch beim Spiel an#"
+                + "°>bullet2.png<° Sendet die Würfel durch einen Random Intervall#"
+                + "°>bullet2.png<° Stricht bei einem unentschieden#"
+                + "°>bullet2.png<° Neue Runde kann über die Toolbar gestartet werden#"
+                + "°>bullet2.png<° Infos wann der Bot was amcht in der Toolbar";
     }
     @Override
     public String getVersion() {

@@ -273,9 +273,7 @@ public class MauMauTable {
     private boolean checkCard(MauMauCard card) {
         if (this.currentCard.getNumber() == 13 && card.getNumber() == 13)
             return true;
-        if (this.currentCard.getNumber() == 7 && card.getNumber() == 7)
-            return true;
-        
+
         if (this.currentCard.isBube() && card.isBube()) 
             return false;
         

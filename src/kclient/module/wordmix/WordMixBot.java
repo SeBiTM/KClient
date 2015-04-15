@@ -72,7 +72,7 @@ public class WordMixBot extends ModuleBase implements Module {
 
     @Override
     public String getAuthor() {
-        return "SeBi";
+        return "°>_hSeBi|https://u-labs.de/members/sebi-2841/<°";
     }
     @Override
     public String getVersion() {
@@ -80,7 +80,11 @@ public class WordMixBot extends ModuleBase implements Module {
     }
     @Override
     public String getDescription() {
-        return "...";
+        return "Das WordMix Module sucht für dich auf Google nach der richtigen Reihenfolge des Mix##"
+                + "_Anleitung:_#In einen beliebigen WordMix Channel gehen und _" + this.groupChat.getButlerName() + " mix_ eingeben"
+                + " alternativ auf den Button \"Neue Runde starten\" klicken.##Sobald " + this.groupChat.getButlerName() + " den Mix gesendet hat "
+                + "sucht der Bot für dich nach der richtigen Reihenfolge, wenn er dies geschafft hat wird die Antwrot als ein Button in der Toolbar "
+                + "angezeigt anderfalls wird \"Keine Antwort gefunden\" in der Toolbar angezeigt.";
     }
     @Override
     public String getName() {

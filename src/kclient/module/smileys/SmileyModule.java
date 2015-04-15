@@ -31,7 +31,7 @@ public class SmileyModule extends ModuleBase implements Module {
     }
     @Override
     public String getAuthor() {
-        return "SeBi";
+        return "°>_hSeBi|https://u-labs.de/members/sebi-2841/<°";
     }
     @Override
     public String getDescription() {

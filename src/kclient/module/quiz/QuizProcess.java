@@ -62,7 +62,7 @@ public class QuizProcess {
         }
         if (this.running) {
             //this.groupChat.print(this.channel, String.format("°>{button} %s||call|/a %s|width|150|height|30<°", answer, answer));
-            this.groupChat.refreshToolbar(this.channel, new Button(answer, String.format("/sendpublic %s:%s", channel, answer)));
+            this.groupChat.refreshToolbar(this.channel, new Button(answer, String.format("/sendpublic %s:%s", channel, answer.toLowerCase())));
             this.stop();
         }
     }
