@@ -105,6 +105,19 @@ public class GroupChat extends KClass {
                     this.buttonBars.put((String)node.get("CHANNEL_NAME"), node);
                     this.refreshToolbar((String)node.get("CHANNEL_NAME"));
                     return null;
+                } else if (node.equalsName("CHANNEL_MEMBERS")) {
+                    this.printBotMessage(tokens[1], "Hallo " + this.nickname + ", °>fullheart.png<°-lich Willkommen im _KClient_!");
+                    final String channel = node.get("CHANNEL_NAME");
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            try {
+                                Thread.sleep(1000);
+                                refreshToolbar(channel);
+                            } catch (InterruptedException ex) {
+                            }
+                        }
+                    }.start();
                 }
             } else if (opcode.equals("a")) {
                 this.nickname = tokens[2];
