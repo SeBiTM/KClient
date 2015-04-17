@@ -1,6 +1,7 @@
 package kclient.module.maumau;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import kclient.knuddels.network.generic.GenericProtocol;
@@ -14,14 +15,14 @@ import kclient.tools.Util;
 public class MauMauTable {
     private final MauMauBot bot;
     private short nicknameComponent, playerPosX, playerPosY;
-    private final List<MauMauCard> handCards;
+    private final Map<Long, MauMauCard> handCards;
     private MauMauCard currentCard;
     private String gameId;
     private MauMauCard lastSend;
     
     public MauMauTable(MauMauBot bot, GenericProtocol protocol) {
         this.bot = bot;
-        this.handCards = new ArrayList<>();
+        this.handCards = new HashMap<>();
         this.gameId = protocol.get("GAME_ID");
     }
  
@@ -29,6 +30,8 @@ public class MauMauTable {
         GenericProtocol handCards1 = protocol.get("ADD_HAND_CARDS_IMGS1");
         GenericProtocol handCards2 = protocol.get("ADD_HAND_CARDS_IMGS2");
         
+        if (handCards2 == null)
+            return;
         ArrayList images1 = handCards1.get("ZIMAGE");
         ArrayList images2 = handCards2.get("ZIMAGE");
         ArrayList timeMillis = protocol.get("TIME_MILLIS");
@@ -40,7 +43,7 @@ public class MauMauTable {
             if (!(image.contains("c_")))
                 continue;
             long id = Long.parseLong((String)((GenericProtocol)((GenericProtocol)images1.get(i)).get("LEFT_CLICK_FUNCTION")).get("CLICK_MSG"));
-            this.handCards.add(new MauMauCard(id, image, 
+            this.handCards.put(id, new MauMauCard(id, image, 
                     (GenericProtocol)images1.get(i), (GenericProtocol)images2.get(i), 
                     (int)timeMillis.get(i), (short)sortIndex.get(i)));
         }
@@ -99,8 +102,8 @@ public class MauMauTable {
                 this.currentCard = new MauMauCard(-1, image, null, null, 0, (short)0);
                 if (this.lastSend != null) {
                     if (this.currentCard.equals(this.lastSend)) {
-                        if (this.handCards.contains(this.lastSend))
-                            this.handCards.remove(this.lastSend);
+                        if (this.handCards.containsKey(this.lastSend.getId()))
+                            this.handCards.remove(this.lastSend.getId());
                         this.lastSend = null;
                     }
                 }
@@ -133,27 +136,23 @@ public class MauMauTable {
             long id = p.get("CONTROLLER_ID");
             if (id == this.lastSend.getId()) {
                 MauMauCard c = null;
-                for (MauMauCard card : this.handCards)
+                for (MauMauCard card : this.handCards.values())
                     if (card.getId() == id) {
                         c = card;
                         break;
                     }
                 if (c != null) {
-                    this.handCards.remove(c);
+                    this.handCards.remove(c.getId());
                     this.fixCards();
                 }
             }
         }
     }
-    
-    private MauMauCard getCard(int index) {
-        return (MauMauCard)this.handCards.get(index);
-    }
-    
+
     private String getBestColor() {
         int red = 0, green = 0, blue = 0, yellow = 0;
-        for (int i = 0; i < this.handCards.size(); i++)
-            switch (getCard(i).getCategory()) {
+        for (MauMauCard c : this.handCards.values())
+            switch (c.getCategory()) {
                 case 1:
                     blue++;
                     break;
@@ -207,7 +206,7 @@ public class MauMauTable {
         ArrayList zImage2 = new ArrayList<>();
         ArrayList timeMillis = new ArrayList<>();
         ArrayList sortIndex = new ArrayList<>();
-        for (MauMauCard card : this.handCards) {
+        for (MauMauCard card : this.handCards.values()) {
             zImage1.add(card.getImg1());
             zImage2.add(card.getImg2());
             timeMillis.add(0);
@@ -229,44 +228,46 @@ public class MauMauTable {
     }
     private void playMau() {
         List<MauMauCard> checkedCards = new ArrayList<>();
-        for (int i = 0; i < this.handCards.size(); i++) {
-            MauMauCard card = getCard(i);
+        for (MauMauCard card : this.handCards.values()) {
             if (checkCard(card)) {
                 checkedCards.add(card);
             }
         }
         
         MauMauCard rndCard = null;
-        if (this.currentCard.getNumber() == 7 || this.currentCard.getNumber() == 8 || this.currentCard.getNumber() == 14) {
-            for (MauMauCard card : this.handCards)
-                if (card.getNumber() == this.currentCard.getNumber()) {
-                    rndCard = card;
+        if (checkedCards.size() <= 0) {
+            for (MauMauCard c : this.handCards.values())
+                if (c.isBube()) {
+                    rndCard = c;
                     break;
                 }
+        } else {
+            if (this.currentCard.getNumber() == 7 || this.currentCard.getNumber() == 8 || this.currentCard.getNumber() == 14) {
+                for (MauMauCard card : this.handCards.values())
+                    if (card.getNumber() == this.currentCard.getNumber()) {
+                        rndCard = card;
+                        break;
+                    }
+            } else if (checkedCards.size() <= 0 && !this.currentCard.isBube()) {
+                for (MauMauCard card : this.handCards.values())
+                    if (card.isBube()) {
+                        rndCard = card;
+                        break;
+                    }
+            } else if (checkedCards.size() <= 0 && this.currentCard.isBube()) {
+                for (MauMauCard card : this.handCards.values())
+                    if (card.getCategory() == this.currentCard.getCategory()) {
+                        rndCard = card;
+                        break;
+                    }
+            }
+
+            if (rndCard == null && checkedCards.size() > 0) {
+                rndCard = checkedCards.get(Util.rnd(0, checkedCards.size() - 1));
+            }
         }
-        
-        if (checkedCards.size() <= 0 && !this.currentCard.isBube()) {
-            for (MauMauCard card : this.handCards)
-                if (card.isBube()) {
-                    rndCard = card;
-                    break;
-                }
-        }
-        if (checkedCards.size() <= 0 && this.currentCard.isBube()) {
-            for (MauMauCard card : this.handCards)
-                if (card.getCategory() == this.currentCard.getCategory()) {
-                    rndCard = card;
-                    break;
-                }
-        }
-        if (rndCard == null && checkedCards.size() > 0) {
-            rndCard = checkedCards.get(Util.rnd(0, checkedCards.size() - 1));
-        } else if (rndCard == null || checkedCards.size() <= 0) {
-            //Karte ziehen
-            
+        if (rndCard == null)
             return;
-        }
-        
         this.bot.sendDealy(rndCard.getId(), Util.rnd(500, 1500));
         this.lastSend = rndCard;
     }

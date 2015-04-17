@@ -42,7 +42,6 @@ public class BingoBot extends ModuleBase implements Module {
                 return null;
         } else if (tokens[0].equals("r") && tokens[1].equals(this.groupChat.getButlerName())) {
             String channel = tokens[3].equals("-") ? this.groupChat.getCurrentChannel() : tokens[2];
-            System.err.println(tokens[4].replace("\0", "\\0"));
             if (tokens[4].contains("nimmt nicht")) {
                 if (this.processes.containsKey(channel))
                     this.processes.get(channel).fixSheetError();
@@ -50,18 +49,13 @@ public class BingoBot extends ModuleBase implements Module {
                 if (this.processes.containsKey(channel))
                     this.processes.get(channel).joinBingo();
             } else if (tokens[4].contains("Runden erreicht und insgesamt ") && tokens[4].contains("Bingo-Punkte")) {
-                int index = tokens[4].indexOf("insgesamt ");
-                if (index > 0) {
-                    index += 10;
-                    String strPoints = tokens[4].substring(index, tokens[4].indexOf(" ", index));
-                    //TODO KNDS
-                    try {
-                        int p = Integer.parseInt(strPoints);
-                        this.points += p;
-                        save();
-                    } catch (Exception e) {
-                    }
-                }
+                if (tokens[4].contains("1 Knuddel"))
+                    this.knuddels++;
+                if (tokens[4].contains("25 Bingo-Punkte"))
+                    this.points += 25;
+                if (tokens[4].contains("10 Bingo-Punkte"))
+                    this.points += 10;
+                save();
             }
         } else if (tokens[0].equals(":")) {
             try {

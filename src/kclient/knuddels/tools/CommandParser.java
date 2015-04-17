@@ -46,7 +46,7 @@ public class CommandParser {
         
         if (cmd.equals("toolbar")) {
             groupChat.toggleToolbar();
-        } else if ((cmd.equals("w") && arg.equalsIgnoreCase("kclient")) || cmd.equals("kclient")) {
+        } else if (cmd.equals("kclient")) {
             KTab tabPanel = new KTab(0, "KClient [1.0." + Start.REVISION +"] by SeBi", "°>U-Labs.de|https://u-labs.de/<°", "KClient", 
                 "°>CENTER<°"
                 + "°>http://knds.sebitm.info/kclient/logo.png<°#"

@@ -168,15 +168,7 @@ public class GroupChat extends KClass {
                     return null;
                 if (this.baseNode == null)
                     return packet;
-                GenericProtocol node = this.baseNode.read(packet, 2);
-                if (node.equalsName("REQUEST_W2")) {
-                    String nick = node.get("NICK");
-                    if (nick.equalsIgnoreCase("kclient")) {
-                        CommandParser.parse(this, "/w kclient", getCurrentChannel());
-                        return null;
-                    }
-                }
-            }else if (opcode.equals("w")) {
+            } else if (opcode.equals("w")) {
                 String channel = tokens[1].equals("-") ? this.getCurrentChannel() : tokens[1];
                 if (this.channels.contains(channel))
                     this.channels.remove(channel);
@@ -368,7 +360,7 @@ public class GroupChat extends KClass {
         receive("t\u0000 \u0000" + channel + "\u0000" + message);
     }
     public void printBotMessage(String channel, String message) {
-        receive("r\u0000KClient\u0000" + this.nickname + "\u0000" + channel + "\u0000" + message + "\u0000 ");
+        receive("r\u0000" + getButlerName() + "\u0000" + this.nickname + "\u0000" + channel + "\u0000" + message + "\u0000 ");
     }
     
     public void refreshToolbar(String channel, Button... buttons) {
