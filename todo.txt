@@ -74,7 +74,7 @@ Bugs:
 ToDo:
         Allgemein:
                 - Poker/MauMau Frames können nun auch versteckt werden
-                - Login Profile eingefügt (werden automatisch gespeichert/geladen)
+                - Login Profile eingefügt (werden automatisch gespeichert)
 
         Bingo:
                 - Bingo Joker Index verbessert
@@ -83,7 +83,6 @@ ToDo:
 
         MauMau:
                 - MauMauX Support implementiert
-                - MauMau so verbessern das er eine "7" auf eine nächste legt
 
         Poker:
                 - PokerSitout Bot implementiert
