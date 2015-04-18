@@ -54,10 +54,8 @@ public class ClientGui implements ActionListener {
     private List<GroupChat> groupChats;
     
     private TrayIcon icon;
-    private MenuItem trayClient;
-    private MenuItem trayChannels;
-    private MenuItem close;
-    private MenuItem trayBingoFrames;
+    private MenuItem trayClient, trayChannels, close, trayBingoFrames,
+            trayMauMauFrames, trayPokerFrames;
     
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -69,7 +67,7 @@ public class ClientGui implements ActionListener {
             boolean show = this.trayChannels.getLabel().equals("Show Channels");
             this.trayChannels.setLabel(show ? "Hide Channels" : "Show Channels");
             for (GroupChat groupChat : this.groupChats) {
-                Enumeration channels = groupChat.getChannels();
+                Enumeration channels = groupChat.getChannelFrames();
 
                 while (channels.hasMoreElements()) {
                     ((Frame) channels.nextElement()).setVisible(show);
@@ -79,13 +77,33 @@ public class ClientGui implements ActionListener {
             boolean show = this.trayBingoFrames.getLabel().equals("Show Bingo Frames");
             this.trayBingoFrames.setLabel(show ? "Hide Bingo Frames" : "Show Bingo Frames");
             for (GroupChat groupChat : this.groupChats) {
-                groupChat.showBingoFrames = show;
+                groupChat.setShowBingoFrames(show);
                 Enumeration frames = groupChat.getBingoFrames();
                 while (frames.hasMoreElements()) {
                     ((Frame) frames.nextElement()).setVisible(show);
                 }
             }
-        } else if (e.getSource() == close) {
+        } else if (e.getSource() == this.trayMauMauFrames) {
+            boolean show = this.trayMauMauFrames.getLabel().equals("Show MauMau Frames");
+            this.trayMauMauFrames.setLabel(show ? "Hide MauMau Frames" : "Show MauMau Frames");
+            for (GroupChat groupChat : this.groupChats) {
+                groupChat.setShowMauMauFrames(show);
+                Enumeration frames = groupChat.getMauMauFrames();
+                while (frames.hasMoreElements()) {
+                    ((Frame) frames.nextElement()).setVisible(show);
+                }
+            }
+        } else if (e.getSource() == this.trayPokerFrames) {
+            boolean show = this.trayPokerFrames.getLabel().equals("Show Poker Frames");
+            this.trayPokerFrames.setLabel(show ? "Hide Poker Frames" : "Show Poker Frames");
+            for (GroupChat groupChat : this.groupChats) {
+                groupChat.setShowPokerFrames(show);
+                Enumeration frames = groupChat.getPokerFrames();
+                while (frames.hasMoreElements()) {
+                    ((Frame) frames.nextElement()).setVisible(show);
+                }
+            }
+        } else if (e.getSource() == this.close) {
             for (GroupChat gc : this.groupChats)
                 gc.stop();
             Util.sendStats("close", "id", Util.getMac());
@@ -144,6 +162,7 @@ public class ClientGui implements ActionListener {
                         if (!KLoader.getLoader(system).isReady())
                             KLoader.getLoader(system).prepare();
                         GroupChat groupChat = new GroupChat(system);
+                        groupChats.add(groupChat);
                         tabbedPane.addTab(system.getName(), groupChat.getComponent(), true);
                     }
                 }.start();
@@ -239,6 +258,14 @@ public class ClientGui implements ActionListener {
             this.trayChannels.addActionListener(this);
             menu.add(this.trayChannels);
 
+            this.trayMauMauFrames = new MenuItem("Hide MauMau Frames");
+            this.trayMauMauFrames.addActionListener(this);
+            menu.add(this.trayMauMauFrames);
+            
+            this.trayPokerFrames = new MenuItem("Hide Poker Frames");
+            this.trayPokerFrames.addActionListener(this);
+            menu.add(this.trayPokerFrames);
+            
             this.close = new MenuItem("Close");
             this.close.addActionListener(this);
             menu.add(this.close);

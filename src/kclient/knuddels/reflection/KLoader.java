@@ -508,6 +508,19 @@ public class KLoader {
             +   "}"
             );
             
+            bingoFrame.addMethod(CtMethod.make(
+                "public void setVisible(boolean v) {"
+            +       "if (check()) {"
+            +           "if (this.tunnel.getBingoVisible() && $1 == true) {"
+            +               "super.setVisible($1); "
+            +           "} else if (!$1) {"
+            +               "super.setVisible($1);"
+            +           "}"
+            +       "} else {"
+            +           "super.setVisible($1);"
+            +       "}"
+            +   "}", bingoFrame));
+            
             this.cp.toClass(bingoFrame, this.loader);
         } catch (Exception e) {
             Logger.get().error(e);
@@ -548,7 +561,7 @@ public class KLoader {
             +       "}"
             +   "}"
             );
-            
+
             this.cp.toClass(gameFrame, this.loader);
         } catch (Exception e) {
             Logger.get().error(e);

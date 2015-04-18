@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.logging.Level;
 import javax.swing.JFrame;
 import kclient.knuddels.network.GameConnection;
 import kclient.knuddels.network.generic.GenericProtocol;
@@ -45,7 +46,7 @@ public class GroupChat extends KClass {
     private final Map<String, JFrame> gameFrames;
     private final List<Module> modules;
     private String nickname, butler;
-    public boolean showBingoFrames, showToolbar;
+    private boolean showBingoFrames, showToolbar, showMauMauFrames, showPokerFrames;
     private final Map<String, GenericProtocol> buttonBars;
     private final Map<String, GameConnection> connections;
     private final List<String> channels;
@@ -56,6 +57,9 @@ public class GroupChat extends KClass {
             "chatsystem" + File.separator + 
             system.name().toLowerCase());
     
+        this.showMauMauFrames = true;
+        this.showPokerFrames = true;
+        
         this.gameFrames = new HashMap<>();
         this.buttonBars = new HashMap<>();
         this.showToolbar = true;
@@ -243,16 +247,13 @@ public class GroupChat extends KClass {
     public void handleFrame(int type, KClass frameClass) {
         //0 = Bingo, 1 = Poker/MauMau
         JFrame frame = (JFrame) frameClass.getInstance();
-        Logger.get().debug(type + " | " + frame.getTitle() + " | " + frame.toString());
         if (type == 0) {
             final long sheetId = frameClass.get("sheetId");
-
             if (this.gameFrames.containsKey("BINGO" + sheetId)) {
-                this.gameFrames.get("BINGO" + sheetId).setVisible(false);
+                this.gameFrames.get("BINGO" + sheetId).dispose();
                 this.gameFrames.remove("BINGO" + sheetId);
             }
             this.gameFrames.put("BINGO" + sheetId, frame);
-
             frame.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosing(WindowEvent e) {
@@ -261,31 +262,70 @@ public class GroupChat extends KClass {
                     } catch (Exception ex) {
                     }
                 }
-                @Override
-                public void windowOpened(WindowEvent e) {
-                    try {
-                        if (!GroupChat.this.showBingoFrames)
-                            frame.setVisible(GroupChat.this.showBingoFrames);
-                    } catch (Exception ex) {
+            });
+        } else if (type == 1) {
+            new Thread("WaitForTitle") {
+                @Override 
+                public void run() {
+                    while (true) {
+                        String title = frame.getTitle();
+                        if (title == null || title.isEmpty()) {
+                            try {
+                                Thread.sleep(100);
+                            } catch (InterruptedException ex) {
+                            }
+                            continue;
+                        }
+                        
+                        int index = title.indexOf(":");
+                        if (index > 0) {
+                            final String tmpName = title.substring(index + 2);
+                            index = tmpName.indexOf(",");
+                            if (index > 0) {
+                                String channelName = tmpName.substring(0, index);
+                                if (channelName.contains("Poker")) {
+                                    if (gameFrames.containsKey("POKER" + channelName))
+                                        gameFrames.remove("POKER" + channelName);
+                                    gameFrames.put("POKER" + channelName, frame);
+                                } else if (channelName.contains("MauMau")) {
+                                    if (gameFrames.containsKey("MAUMAU" + channelName))
+                                        gameFrames.remove("MAUMAU" + channelName);
+                                    gameFrames.put("MAUMAU" + channelName, frame);
+                                }
+                                
+                                frame.addWindowListener(new WindowAdapter() {
+                                    @Override
+                                    public void windowClosing(WindowEvent e) {
+                                        try {
+                                            GroupChat.this.removeGameFrame(channelName);
+                                        } catch (Exception ex) {
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                        break;
                     }
                 }
-            });
+            }.start();
         }
     }
     public void removeFrame(int type, long sheetId) {
         String strType = type == 0 ? "BINGO" : type == 1 ? "POKER" : "MAUMAU";
         if (this.gameFrames.containsKey(strType + sheetId)) {
-            this.gameFrames.get(strType + sheetId).setVisible(false);
+            this.gameFrames.get(strType + sheetId).dispose();
             this.gameFrames.remove(strType + sheetId);
         }
     }
-    
-    public void toggleToolbar() {
-        this.showToolbar = !this.showToolbar;
-        for (String channel : this.channels)
-            this.refreshToolbar(channel);
+    public void removeGameFrame(String channelName) {
+        String t = channelName.contains("Poker") ? "POKER" : "MAUMAU";
+        if (this.gameFrames.containsKey(t + channelName)) {
+            this.gameFrames.get(t + channelName).dispose();
+            this.gameFrames.remove(t + channelName);
+        }
     }
     
+    //<editor-fold defaultstate="collapsed" desc="Get">
     public Component getComponent() {
         return (Component) super.getInstance();
     }
@@ -308,14 +348,29 @@ public class GroupChat extends KClass {
     }
     
     public Enumeration getGameFrames() {
-        return (Enumeration) new Vector(this.gameFrames.values());
+        return new Vector(this.gameFrames.values()).elements();
     }
     public Enumeration getBingoFrames() {
         Vector v = new Vector();
-        for (Map.Entry<String, JFrame> e : this.gameFrames.entrySet())
+        for (Map.Entry<String, JFrame> e : this.gameFrames.entrySet()) {
             if (e.getKey().startsWith("BINGO"))
                 v.add(e.getValue());
-        return (Enumeration) v;
+        }
+        return v.elements();
+    }
+    public Enumeration getMauMauFrames() {
+        Vector v = new Vector();
+        for (Map.Entry<String, JFrame> e : this.gameFrames.entrySet())
+            if (e.getKey().startsWith("MAUMAU"))
+                v.add(e.getValue());
+        return v.elements();
+    }
+    public Enumeration getPokerFrames() {
+        Vector v = new Vector();
+        for (Map.Entry<String, JFrame> e : this.gameFrames.entrySet())
+            if (e.getKey().startsWith("POKER"))
+                v.add(e.getValue());
+        return v.elements();
     }
     
     public String getCurrentChannel() {
@@ -323,20 +378,41 @@ public class GroupChat extends KClass {
             return null;
         return this.channels.get(this.channels.size() - 1);
     }
-    public Enumeration getChannels() {
+    public Enumeration getChannelFrames() {
         return (Enumeration) super.invokeMethod("getChannels");
     }
 
+    public boolean getBingoVisible() {
+        return this.showBingoFrames;
+    }
+    public boolean getPokerVisible() {
+        return this.showPokerFrames;
+    }
+    public boolean getMauMauVisible() {
+        return this.showMauMauFrames;
+    }
+    
     public String getNickname() {
         return this.nickname;
     }
     public String getButlerName() {
         return this.butler;
     }
+    //</editor-fold>
     
-    public void receive(String packet) {
-        this.invokeMethod("receive", packet);
+    //<editor-fold defaultstate="collapsed" desc="Set">
+    public void setShowMauMauFrames(boolean v) {
+        this.showMauMauFrames = v;
     }
+    public void setShowPokerFrames(boolean v) {
+        this.showPokerFrames = v;
+    }
+    public void setShowBingoFrames(boolean v) {
+        this.showBingoFrames = v;
+    }
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="Send / Receive / Print">
     public void send(String packet) {
         super.invokeMethod("send", packet);
     }
@@ -356,13 +432,24 @@ public class GroupChat extends KClass {
         }.start();
     }
     
+    public void receive(String packet) {
+        this.invokeMethod("receive", packet);
+    }
+    
     public void print(String channel, String message) {
         receive("t\u0000 \u0000" + channel + "\u0000" + message);
     }
     public void printBotMessage(String channel, String message) {
         receive("r\u0000" + getButlerName() + "\u0000" + this.nickname + "\u0000" + channel + "\u0000" + message + "\u0000 ");
     }
+    //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="Toolbar">
+    public void toggleToolbar() {
+        this.showToolbar = !this.showToolbar;
+        for (String channel : this.channels)
+            this.refreshToolbar(channel);
+    }
     public void refreshToolbar(String channel, Button... buttons) {
         Toolbar bar = new Toolbar(this);
         if (buttons != null)
@@ -374,14 +461,14 @@ public class GroupChat extends KClass {
             for (int i = 0; i < barbuttons.size(); i++) {
                 GenericProtocol button = (GenericProtocol)barbuttons.get(i);
                 bar.addButton(new Button(
-                    (String)button.get("TEXT"),
-                    (String)button.get("IMAGE"),
-                    (String)button.get("CHAT_FUNCTION"),
-                    button.get("BUTTON_ALING") == null ? true : ((byte)button.get("BUTTON_ALING")) == 1
+                        (String)button.get("TEXT"),
+                        (String)button.get("IMAGE"),
+                        (String)button.get("CHAT_FUNCTION"),
+                        button.get("BUTTON_ALING") == null ? true : ((byte)button.get("BUTTON_ALING")) == 1
                 ));
             }
         }
-
+        
         for (Module b : this.modules) {
             List<Button> botButtons = b.getButtons(channel);
             if (botButtons == null)
@@ -392,6 +479,7 @@ public class GroupChat extends KClass {
         
         bar.refresh(channel, this.showToolbar);
     }
+    //</editor-fold>
     
     public void stop() {
         for (Module mdl : this.modules)
