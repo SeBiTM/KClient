@@ -55,7 +55,6 @@ public class QuizProcess {
             this.failCount++;
             if (this.failCount >= this.bot.getDatabases().size()) {
                 this.groupChat.refreshToolbar(this.channel, new Button("Keine Antwort gefunden"));
-                this.groupChat.refreshToolbar(channel);
                 this.stop();
             }
             return;

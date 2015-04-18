@@ -30,6 +30,7 @@ public class QuizBot extends ModuleBase implements Module {
     public QuizBot(GroupChat groupChat) {
         super(groupChat);
         super.state = true;
+        this.autoJoin = true;
         this.databases = new ArrayList<>();
         this.processes = new HashMap<>();
     }

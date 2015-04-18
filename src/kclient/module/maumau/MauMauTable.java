@@ -60,7 +60,6 @@ public class MauMauTable {
             String text = textLabel.get("TEXT");
             if (text.toLowerCase().equals(this.bot.getGroupChat().getNickname().toLowerCase())) {
                 this.nicknameComponent = textLabel.get("COMPONENT_ID");
-                break;
             }
         }
         //</editor-fold>
@@ -75,7 +74,7 @@ public class MauMauTable {
                 GenericProtocol position = baseComponent.get("POSITION");
                 this.playerPosX = position.get("POS_X");
                 this.playerPosY = position.get("POS_Y");
-             }
+            }
         }
         //</editor-fold>
                 
