@@ -167,6 +167,8 @@ public class GroupChat extends KClass {
                     if (CommandParser.parse(this, message, channel))
                         return null;
                 }
+            } else if (opcode.equals("1")) {
+                return null;
             } else if (opcode.equals("q")) {
                 if (packet.contains("infoSystem") && packet.contains("slash:"))
                     return null;

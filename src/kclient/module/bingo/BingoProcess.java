@@ -53,16 +53,14 @@ public class BingoProcess {
             long sheetId = BingoBot.getSheetId(module);
             BingoSheetState state = BingoSheetState.parse((byte)module.get("BINGO_SHEET_STATE_CONST"));
             //System.out.println("[SetState -> " + sheetId + "] State: " + state);
-            if (!this.sheets.containsKey(sheetId) || this.sheets.get(sheetId) == null)
+            if (!this.sheets.containsKey(sheetId) || this.sheets.get(sheetId) == null) {
                 return;
+            }
             this.sheets.get(sheetId).setState(state);
             if (state != BingoSheetState.ACTIVE) {
                 this.sheets.remove(sheetId);
                 this.groupChat.removeFrame(0, sheetId);
             }
-            //System.out.println(this.sheets.size());
-            if (this.sheets.isEmpty())
-                joinBingo();
         } else if (module.getName().equals("BINGO_UPDATE")) {
             ArrayList bingoSheets = module.get("BINGO_SHEET_UPDATE");
             for (Object bso : bingoSheets) {

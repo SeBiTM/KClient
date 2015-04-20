@@ -160,29 +160,51 @@ public class BingoSheet {
         return true;
     }
     
+    private boolean isSelected(int index) {
+        BingoField field = getField(index);
+        if (field == null)
+            return false;
+        return field.getState() == BingoFieldState.SELECTED;
+    }
     private int getBestIndex(BingoField[] field) {
         int index1 = field[0].getIndex();
         int index2 = field[1].getIndex();
         
-        if (getField(index1 - 1) != null && getField(index1 - 1).getState() == BingoFieldState.SELECTED)
+        if (isSelected(index1 - 1)) //Left
             return 0;
-        if (getField(index1 + 1) != null && getField(index1 + 1).getState() == BingoFieldState.SELECTED)
+        if (isSelected(index1 + 1)) //Right
             return 0;
-        if (getField(index1 + this.matrixSize + 1) != null && getField(index1 + this.matrixSize + 1).getState() == BingoFieldState.SELECTED)
+        if (isSelected(index1 - this.matrixSize)) //Top
             return 0;
-        if (getField(index1 - this.matrixSize - 1) != null && getField(index1 - this.matrixSize - 1).getState() == BingoFieldState.SELECTED)
+        if (isSelected(index1 + this.matrixSize)) //Bottom
+            return 0;
+        if (isSelected(index1 - (this.matrixSize + 1))) //Dia. Top Left
+            return 0;
+        if (isSelected(index1 - (this.matrixSize - 1))) //Dia. Top Right
+            return 0;
+        if (isSelected(index1 + (this.matrixSize - 1))) //Dia. Bottom Left
+            return 0;
+        if (isSelected(index1 + (this.matrixSize + 1))) //Dia. Bottom Right
             return 0;
         
-        if (getField(index2 - 1) != null && getField(index2 - 1).getState() == BingoFieldState.SELECTED)
+        if (isSelected(index2 - 1)) //Left
             return 1;
-        if (getField(index2 + 1) != null && getField(index2 + 1).getState() == BingoFieldState.SELECTED)
+        if (isSelected(index2 + 1)) //Right
             return 1;
-        if (getField(index2 + this.matrixSize + 1) != null && getField(index2 + this.matrixSize + 1).getState() == BingoFieldState.SELECTED)
+        if (isSelected(index2 - this.matrixSize)) //Top
             return 1;
-        if (getField(index2 - this.matrixSize - 1) != null && getField(index2 - this.matrixSize - 1).getState() == BingoFieldState.SELECTED)
+        if (isSelected(index2 + this.matrixSize)) //Bottom
+            return 1;
+        if (isSelected(index2 - (this.matrixSize + 1))) //Dia. Top Left
+            return 1;
+        if (isSelected(index2 - (this.matrixSize - 1))) //Dia. Top Right
+            return 1;
+        if (isSelected(index2 + (this.matrixSize - 1))) //Dia. Bottom Left
+            return 1;
+        if (isSelected(index2 + (this.matrixSize + 1))) //Dia. Bottom Right
             return 1;
         
-        return 0;
+        return Util.rnd(0, 1);
     }
     
     public int getSize() {
@@ -210,14 +232,14 @@ public class BingoSheet {
     }
     
     private int getJokerIndex() {
-        int index = getHorizontalJokerIndex();
+        int index = getDiagonalJokerIndex();
         
         if (index == -1) {
-            index = getVerticalJokerIndex();
+            index = getHorizontalJokerIndex();
         }
         
         if (index == -1) {
-            index = getDiagonalJokerIndex();
+            index = getVerticalJokerIndex();
         }
         
         if (index == -1) {
@@ -228,71 +250,42 @@ public class BingoSheet {
     }
     private int getHorizontalJokerIndex() {
         for (int i = 0; i < getSize(); i++) {
-            BingoField field = getField(i);
-            if (field.getState() == BingoFieldState.SELECTED) {
-                try {
-                    if (getField(i + 1).getState() == BingoFieldState.NOT_SELECTED && getField(i + 2).getState() == BingoFieldState.SELECTED &&  
-                        getField(i + 3).getState() == BingoFieldState.SELECTED && getField(i + 4).getState() == BingoFieldState.SELECTED &&
-                        getField(i + 5).getState() == BingoFieldState.SELECTED && getField(i + 6).getState() == BingoFieldState.SELECTED){
-
-                        return i + 1;
-                    } else if (getField(i + 1).getState() == BingoFieldState.SELECTED && getField(i + 2).getState() == BingoFieldState.NOT_SELECTED &&  
-                        getField(i + 3).getState() == BingoFieldState.SELECTED && getField(i + 4).getState() == BingoFieldState.SELECTED &&
-                        getField(i + 5).getState() == BingoFieldState.SELECTED && getField(i + 6).getState() == BingoFieldState.SELECTED){
-
-                        return i + 2;
-                    } else if (getField(i + 1).getState() == BingoFieldState.SELECTED && getField(i + 2).getState() == BingoFieldState.SELECTED &&  
-                        getField(i + 3).getState() == BingoFieldState.NOT_SELECTED && getField(i + 4).getState() == BingoFieldState.SELECTED &&
-                        getField(i + 5).getState() == BingoFieldState.SELECTED && getField(i + 6).getState() == BingoFieldState.SELECTED){
-
-                        return i + 3;
-                    } else if (getField(i + 1).getState() == BingoFieldState.SELECTED && getField(i + 2).getState() == BingoFieldState.SELECTED &&  
-                        getField(i + 3).getState() == BingoFieldState.SELECTED && getField(i + 4).getState() == BingoFieldState.NOT_SELECTED &&
-                        getField(i + 5).getState() == BingoFieldState.SELECTED && getField(i + 6).getState() == BingoFieldState.SELECTED){
-
-                        return i + 4;
-                    } else if (getField(i + 1).getState() == BingoFieldState.SELECTED && getField(i + 2).getState() == BingoFieldState.SELECTED &&  
-                        getField(i + 3).getState() == BingoFieldState.SELECTED && getField(i + 4).getState() == BingoFieldState.SELECTED &&
-                        getField(i + 5).getState() == BingoFieldState.NOT_SELECTED && getField(i + 6).getState() == BingoFieldState.SELECTED){
-
-                        return i + 5;
-                    } else if (getField(i + 1).getState() == BingoFieldState.SELECTED && getField(i + 2).getState() == BingoFieldState.SELECTED &&  
-                        getField(i + 3).getState() == BingoFieldState.SELECTED && getField(i + 4).getState() == BingoFieldState.SELECTED &&
-                        getField(i + 5).getState() == BingoFieldState.SELECTED && getField(i + 6).getState() == BingoFieldState.NOT_SELECTED){
-
-                        return i + 6;
-                    }
-                } catch (Exception e) {
-                }
+            if (isSelected(i)) {
+                if (isSelected(i + 2) && isSelected(i + 3) && isSelected(i + 4) && isSelected(i + 5) && isSelected(i + 6) && !isSelected(i + 1))
+                    return i + 1;
+                if (isSelected(i + 1) && isSelected(i + 3) && isSelected(i + 4) && isSelected(i + 5) && isSelected(i + 6) && !isSelected(i + 2))
+                    return i + 2;
+                if (isSelected(i + 1) && isSelected(i + 2) && isSelected(i + 4) && isSelected(i + 5) && isSelected(i + 6) && !isSelected(i + 3))
+                    return i + 3;
+                if (isSelected(i + 1) && isSelected(i + 2) && isSelected(i + 3) && isSelected(i + 5) && isSelected(i + 6) && !isSelected(i + 4))
+                    return i + 4;
+                if (isSelected(i + 1) && isSelected(i + 2) && isSelected(i + 3) && isSelected(i + 4) && isSelected(i + 6) && !isSelected(i + 5))
+                    return i + 5;
+                if (isSelected(i + 1) && isSelected(i + 2) && isSelected(i + 3) && isSelected(i + 4) && isSelected(i + 5) && !isSelected(i + 6))
+                    return i + 6;
             }
         }
         return -1;
     }
     private int getVerticalJokerIndex() {
         for (int i = 0; i < getSize(); i += this.matrixSize) {
-            BingoField field = getField(i);
-            if (field.getState() == BingoFieldState.SELECTED) {
-                try {
-                    int tmp = i + this.matrixSize - 1;
-                    if (getField(tmp + 1).getState() == BingoFieldState.NOT_SELECTED && getField(tmp + 2).getState() == BingoFieldState.SELECTED &&
-                            getField(tmp + 3).getState() == BingoFieldState.SELECTED && getField(tmp + 4).getState() == BingoFieldState.SELECTED) {
-
-                        return tmp + 1;
-                    } else if (getField(tmp + 1).getState() == BingoFieldState.SELECTED && getField(tmp + 2).getState() == BingoFieldState.NOT_SELECTED &&
-                            getField(tmp + 3).getState() == BingoFieldState.SELECTED && getField(tmp + 4).getState() == BingoFieldState.SELECTED) {
-
-                        return tmp + 2;
-                    } else if (getField(tmp + 1).getState() == BingoFieldState.SELECTED && getField(tmp + 2).getState() == BingoFieldState.SELECTED &&
-                            getField(tmp + 3).getState() == BingoFieldState.NOT_SELECTED && getField(tmp + 4).getState() == BingoFieldState.SELECTED) {
-
-                        return tmp + 3;
-                    } else if (getField(tmp + 1).getState() == BingoFieldState.SELECTED && getField(tmp + 2).getState() == BingoFieldState.SELECTED &&
-                            getField(tmp + 3).getState() == BingoFieldState.SELECTED && getField(tmp + 4).getState() == BingoFieldState.NOT_SELECTED) {
-
-                        return tmp + 4;
-                    }
-                } catch (Exception e) {
-                }
+            if (isSelected(i)) {
+                if (isSelected(i + this.matrixSize) && 
+                        isSelected(i + (this.matrixSize * 2)) && 
+                        isSelected(i + (this.matrixSize * 3)) && !isSelected(i + (this.matrixSize * 4)))
+                    return i + (this.matrixSize * 4);
+                if (isSelected(i + this.matrixSize) && 
+                        isSelected(i + (this.matrixSize * 2)) && 
+                        isSelected(i + (this.matrixSize * 4)) && !isSelected(i + (this.matrixSize * 3)))
+                    return i + (this.matrixSize * 3);
+                if (isSelected(i + this.matrixSize) && 
+                        isSelected(i + (this.matrixSize * 4)) && 
+                        isSelected(i + (this.matrixSize * 3)) && !isSelected(i + (this.matrixSize * 2)))
+                    return i + (this.matrixSize * 2);
+                if (isSelected(i + (this.matrixSize * 4)) && 
+                        isSelected(i + (this.matrixSize * 2)) && 
+                        isSelected(i + (this.matrixSize * 3)) && !isSelected(i + this.matrixSize))
+                    return i + (this.matrixSize);
             }
         }
         return -1;
@@ -352,10 +345,12 @@ public class BingoSheet {
         boolean found = false;
         for (int i = 0; i < getSize(); i++) {
             found = checkHorizontalForward(i);
-            if (!found) {
+            if (!found)
                 found = checkVerticalTopBottom(i);
-            }
-
+            if (!found)
+                found = checkDiagonalLeftRight(i);
+            if (!found)
+                found = checkDiagonalRightLeft(i);
             if (found)
                 break;
         }
@@ -389,5 +384,30 @@ public class BingoSheet {
         }
         return false;
     }
-
+    private boolean checkDiagonalLeftRight(int index) {
+        int count = 0;
+        for (int i = index; i < this.getSize(); i += (this.matrixSize + 1)) {
+            if (getField(i).getState() == BingoFieldState.SELECTED) {
+                count++;
+                if (count >= 7)
+                    return true;
+            } else {
+                return false;
+            }
+        }
+        return false;
+    }
+    private boolean checkDiagonalRightLeft(int index) {
+        int count = 0;
+        for (int i = index; i > 0; i -= (this.matrixSize + 1)) {
+            if (getField(i).getState() == BingoFieldState.SELECTED) {
+                count++;
+                if (count >= 7)
+                    return true;
+            } else {
+                return false;
+            }
+        }
+        return false;
+    }
 }

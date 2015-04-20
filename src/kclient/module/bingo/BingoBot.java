@@ -2,7 +2,6 @@ package kclient.module.bingo;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -41,14 +40,24 @@ public class BingoBot extends ModuleBase implements Module {
             if (packet.contains("Siegesruf"))
                 return null;
         } else if (tokens[0].equals("r") && tokens[1].equals(this.groupChat.getButlerName())) {
-            String channel = tokens[3].equals("-") ? this.groupChat.getCurrentChannel() : tokens[2];
+            String channel = tokens[3].equals("-") ? this.groupChat.getCurrentChannel() : tokens[3];
+            System.out.println(channel + " - " + tokens[4]);
             if (tokens[4].contains("nimmt nicht")) {
                 if (this.processes.containsKey(channel))
                     this.processes.get(channel).fixSheetError();
-            } else if (tokens[4].contains("kein Bingo erreicht")) {
+            }
+            if (tokens[4].contains("kein Bingo erreicht")) {
                 if (this.processes.containsKey(channel))
                     this.processes.get(channel).joinBingo();
-            } else if (tokens[4].contains("Runden erreicht und insgesamt ") && tokens[4].contains("Bingo-Punkte")) {
+            }
+            if (tokens[4].contains("Runden erreicht und insgesamt ") && tokens[4].contains("Bingo-Punkte")) {
+                if (this.processes.containsKey(channel)) {
+                    System.out.println("JOIN BINGO !!!!");
+                    this.processes.get(channel).joinBingo();
+                } else {
+                    System.err.println("ERRROROR");
+                }
+                
                 if (tokens[4].contains("1 Knuddel"))
                     this.knuddels++;
                 if (tokens[4].contains("25 Bingo-Punkte"))

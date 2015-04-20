@@ -20,6 +20,7 @@ Erledigt:
                 - Knuddels.com
                 - Mainfranken-Chat
 
+            - Poker/MauMau Frames können nun auch versteckt werden
             - Proxy Support (Java Properties)
             - ChatSystem Parameter von ChatApplet Parameter getrennt
             - MultiChannel Support verbessert (es sollte nicht mehr vorkommen dass z. B. die WordMix Antwort bei Fifty landet)
@@ -50,16 +51,6 @@ Erledigt:
             - Karten werden nun richtig angezeigt 
             - Karten Auswahl verbessert
 
-        - AntiAdminModule implementiert
-            - Nachricht im Channel/Tray wenn....
-            - CM den Channel betritt
-            - CM /m sendet
-            - CM /p sendet
-            - Admin /m sendet
-            - Admin /p sendet
-            - Admin den Channel betritt
-            - ein Notruf eröffnet wurde
-
         - SmileyModule implementiert
             - Smileys in der Datei "data/module/smileys.properties" anpassbar
             - Beispiele vorhanden
@@ -73,8 +64,18 @@ Bugs:
 
 ToDo:
         Allgemein:
-                - Poker/MauMau Frames können nun auch versteckt werden
                 - Login Profile eingefügt (werden automatisch gespeichert)
+
+        - AntiAdminModule implementiert
+            - Nachricht im Channel/Tray wenn....
+            - CM den Channel betritt
+            - CM /m sendet
+            - CM /p sendet
+            - Admin /m sendet
+            - Admin /p sendet
+            - Admin den Channel betritt
+            - ein Notruf eröffnet wurde
+
 
         Bingo:
                 - Bingo Joker Index verbessert
