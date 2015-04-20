@@ -7,9 +7,9 @@
 
     /mdl [ModuleName] [Params]
     Module:                
-        - ScriptModule      - AntiAdminModule       - SmileyModule
-        - StayOnlineBot     - WordMixBot            - Fifty!Bot
-        - BingoBot          - MauMauBot
+        - ScriptApi      - AntiAdmin       - Smileys
+        - StayOnline     - WordMix         - Fifty!
+        - Bingo          - MauMau          - Quiz
 
 - ScriptModule
     /mdl ScriptModule [Params]
@@ -17,6 +17,7 @@
         -[AppName] - Deaktiviert eine App
         +[AppName] - Akiviert eine App
         ?[AppName] - Gibt die Beschreibung einer App aus
+        r[AppName] - Läd die App neu
 
 - Logger
     /logger [Level]
@@ -24,3 +25,8 @@
         - All       - Debug     - Info
         - None      - Error
 
+
+//sendrnd LENGTH
+            //sendrnd LENGTH WDH
+            //sendrnd LENGTH WDH SLEEP
+            //sendrnd LENGTH WDH SLEEP TEXT

@@ -13,6 +13,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.plaf.basic.BasicButtonUI;
+import kclient.knuddels.GroupChat;
+import kclient.knuddels.reflection.KClass;
 
 /**
  *
@@ -70,6 +72,9 @@ public class TabbedPane extends JTabbedPane {
             int i = pane.indexOfTabComponent(bpanel);
             if (i != -1) {
                 Component component = pane.getComponentAt(i);
+                if (component.getClass().getName().equals("Start")) {
+                    ((GroupChat)new KClass(component).getField("tunnel")).stop();
+                }
                 pane.remove(i);
             }
         }

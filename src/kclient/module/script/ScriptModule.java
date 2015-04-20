@@ -3,6 +3,7 @@ package kclient.module.script;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -136,6 +137,7 @@ public class ScriptModule extends ModuleBase implements Module {
         arg = args[0];
         if (arg.equals("reload")) {
             this.load();
+            return true;
         } else if (arg.charAt(0) == '+') {
             String appName = arg.substring(1);
             ScriptApp app = getApp(appName);
@@ -149,6 +151,7 @@ public class ScriptModule extends ModuleBase implements Module {
                     groupChat.printBotMessage(channel, "App _" + app.getName() + "_ ist bereits aktiv.");
                 }
             }
+            return true;
         } else if (arg.charAt(0) == '-') {
             String appName = arg.substring(1);
             ScriptApp app = getApp(appName);
@@ -162,6 +165,19 @@ public class ScriptModule extends ModuleBase implements Module {
                     groupChat.printBotMessage(channel, "App _" + app.getName() + "_ ist bereits inaktiv.");
                 }
             }
+            return true;
+        } else if (arg.charAt(0) == 'r') {
+            String appName = arg.substring(1);
+            ScriptApp app = getApp(appName);
+            if (app == null) {
+                groupChat.printBotMessage(channel, "App _" + appName + "_ existiert nicht.");
+            } else {  
+                if (app.getState()) {
+                    app.init();
+                    groupChat.printBotMessage(channel, "App _" + app.getName() + "_ reloaded.");
+                }
+            }
+            return true;
         } else if (arg.charAt(0) == '?') {
             String appName = arg.substring(1);
             ScriptApp app = getApp(appName);
@@ -170,6 +186,7 @@ public class ScriptModule extends ModuleBase implements Module {
             } else {  
                 groupChat.printBotMessage(channel, "_Beschreibung:_##" + app.getDescription());
             }
+            return true;
         }
         return false;
     }
@@ -222,6 +239,10 @@ public class ScriptModule extends ModuleBase implements Module {
             if (app.getName().equalsIgnoreCase(appName))
                 return app;
         return null;
+    }
+    
+    public Collection<ScriptApp> getApps() {
+        return this.apps.values();
     }
     
     // SCRIPT API

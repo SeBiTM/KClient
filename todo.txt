@@ -10,7 +10,8 @@ Erledigt:
         - Allgemein
             - Popup (/kclient) hinzugefügt
                 - Enthält Infos zu den jeweiligen Bots/Modulen
-                - Die einzelnen Bots/Module sind nun über des Popup (/kclient) einstellbar
+                - Die einzelnen Bots/Module sind nun über des Popup (/kclient) de/aktivierbar
+                - Scripts können im Reiter "Apps" gesteuert werden
             
             - Icon getauscht
             - GUI erstellt
@@ -46,6 +47,9 @@ Erledigt:
         - Bingo
             - vermehrte Bingo Blatt Fehler sollten nun endgültig der Vergangenheit angehören
                 können auftreten wenn der Bot einen Bingo findet obwohl er keinen hat, dies erkennt der Bot und hört auf mit diesem Blatt zu spielen
+            - Bingo Joker Index verbessert
+            - Bingo Index verbessert
+            - Bingo Detect verbessert (findet nun auch vereinfachte Diagonalen)
 
         - MauMau
             - Karten werden nun richtig angezeigt 
@@ -75,12 +79,6 @@ ToDo:
             - Admin /p sendet
             - Admin den Channel betritt
             - ein Notruf eröffnet wurde
-
-
-        Bingo:
-                - Bingo Joker Index verbessert
-                - Bingo Index verbessert
-                - Bingo Detect verbessert (findet nun auch vereinfachte Diagonalen)
 
         MauMau:
                 - MauMauX Support implementiert

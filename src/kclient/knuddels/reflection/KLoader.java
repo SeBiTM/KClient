@@ -301,6 +301,11 @@ public class KLoader {
             , groupChat));
             //</editor-fold>
 
+            groupChat.addMethod(CtMethod.make(
+            "public void login(String nick, String pass, String chan) {"
+            +   this.system.getManipulation().getGroupChatLogin() + "($1, $2, $3, false);"
+            + "}", groupChat));
+            
             Logger.get().info("     - Add Method getChannels");
             this.currentStep++;
             groupChat.addMethod(CtMethod.make(

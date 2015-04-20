@@ -31,6 +31,9 @@ public class ManipulationData {
     public String getGroupChatModule() {
         return this.params.get("groupchat_get_module");
     }
+    public String getGroupChatLogin() {
+        return this.params.get("groupchat_login");
+    }
 
     public String getModuleClass() {
         return this.params.get("module_class");

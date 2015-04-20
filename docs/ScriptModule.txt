@@ -42,12 +42,6 @@
         - Wird ausgeführt wenn ein Packet vom Client an dem GameServer gesendet wird
 - Commands
     COMMAND: function (cmd, arg, channel) { return true/false; }
-- User
-    - getNickname (String)
-    - getAge (int)
-    - getColor (String)
-    - isCM (boolean)
-    - isAdmin (boolean)
 - Node
     - Static
         - printNode (node) (String)
@@ -57,7 +51,7 @@
         - getSize() (int)
         - getNodes() (Map<String, Object>)
         - getNode() (Node)
-        - get(key) (return Generic T)
+        - get(key) (Generic T)
         - copyRef() (Node)
         - copyRef(nodeName) (Node)
         - copyRed(nodeIndex) (Node)
@@ -84,9 +78,10 @@
         - send(packet)
         - print(channel, message)
         - printBotMessage(channel, message)
+        - login(nickname, channel, password)
         - stop()
 - Logger (Logger.get())
     - Methods
-        - info
-        - error
-        - debug
+        - info(msg)
+        - error(msg|ex)
+        - debug(msg)

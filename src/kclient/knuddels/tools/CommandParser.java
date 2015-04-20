@@ -1,5 +1,11 @@
 package kclient.knuddels.tools;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import kclient.Start;
 import kclient.knuddels.GroupChat;
 import kclient.knuddels.tools.popup.Popup;
@@ -9,6 +15,8 @@ import kclient.knuddels.tools.popup.tools.Location;
 import kclient.knuddels.tools.popup.tools.layout.BorderLayout;
 import kclient.module.Module;
 import kclient.module.ModuleBase;
+import kclient.module.script.ScriptApp;
+import kclient.module.script.ScriptModule;
 import kclient.tools.Logger;
 import kclient.tools.Util;
 
@@ -32,27 +40,17 @@ public class CommandParser {
             }
         }
         
-        if (cmd.equals("sendrnd")) {
-            int length = Integer.parseInt(arg);
-            String wiki = "Das Stammesgebiet der Yankton und Yanktonai erstreckte sich über die Präriegebiete des heutigen North und South Dakota, des nordwestlichen Iowa und südwestlichen Minnesota.\n" +
-            "Früher wurden unter dem falschen Sammelbegriff Nakota neben den Westlichen Dakȟóta (Yankton und Yanktonai) auch die sprachlich verwandten Assiniboine (Nakhóta, Nakhóda oder Nakhóna) sowie Stoney (Nakhóda oder Nakhóta, eine Assiniboine-Splittergruppe) gezählt - jedoch hatten sich Letztere bereits 1640 von der Wazikute (‘Shooters Among the Pines’) Band der Upper Yanktonai abgespaltet und waren größtenteils nach Norden auf die Prärieprovinzen von Kanada westlich des Lake Winnipeg gezogen. Dort bildeten sie die Cree-Assiniboine (Nehiyaw-Pwat) oder Iron Confederacy, eine mächtige Militär-sowie Handels-Konföderation der dominierenden Woodland und Plains Cree sowie der Assiniboine, Stoney und später der Manitoba Saulteaux und Westliche Saulteaux (Plains Ojibwe) (den Erzfeinden der Sioux-Völker), was nun zu immer wieder auftretenden Kämpfen und Konflikten zwischen Sioux und Assiniboine führte. Die Sioux bezeichneten die nun feindlichen Assiniboine daher als Hohe („Rebellen“).\n" +
-            "Die Plains Assiniboine (Southern Assiniboine) dominierten Mitte des 18. Jahrhunderts bis Anfang des 19. Jahrhunderts die kanadischen Prärieprovinzen im Südosten Saskatchewans, Südwesten Manitobas sowie im Osten Albertas, die Täler des Saskatchewan Rivers und des Assiniboine Rivers sowie im Süden die Great Plains bis zum Milk River und Missouri River im Nordosten Montanas und Nordwesten North Dakotas in den USA. Im Norden streiften und wanderten die Woodland Assiniboine (Northern Assiniboine) in den Steppen und Wald- und Seengebiete der borealen Wälder entlang des Athabasca, McLeod und North Saskatchewan River.\n" +
-            "Mitte des 18. Jahrhunderts trennten sich die nordwestlichsten Bands der Assiniboine von diesen, und entwickelten zusammen mit zugezogenen Lakota eine neue Stammesidentität als Stoney (auch als Stoney Nakoda Nation oder Lyärhe Nakoda bezeichnet), blieben jedoch Mitglied der Cree-Assiniboine-Allianz. Einige Stoney behaupten daher, sie verstünden die Lakota besser als die benachbarten Assiniboine und bezeichnen sich als Rocky Mountain Sioux.[3] Da die Assiniboine oft Stone oder Rocky Sioux genannt wurden, manche der Stoney sich iyarhe Nakodabi - ‘Rocky Mountain Sioux’ nannten [4]und beide sich als Nakhóda bezeichneten, wurden sie oft verwechselt oder gar als ein Volk behandelt.";
-            
-            System.err.println(wiki.length());
-            String str = wiki.substring(0, length);
-            groupChat.sendPublic(channel, str);
-        }
-        
         if (cmd.equals("toolbar")) {
             groupChat.toggleToolbar();
-        } else if (cmd.equals("kclient")) {
+        } else 
+        //<editor-fold defaultstate="collapsed" desc="kclient">
+        if (cmd.equals("kclient")) {
             KTab tabPanel = new KTab(0, "KClient [1.0." + Start.REVISION +"] by SeBi", "°>U-Labs.de|https://u-labs.de/<°", "KClient", 
                 "°>CENTER<°"
                 + "°>http://knds.sebitm.info/kclient/logo.png<°#"
                 + "°B°Knuddels Bot Client##°r°°>LEFT<°"
                 + "Der KClient ist ein manipulierter Knuddels Client, der es ermöglicht den Client auf jede Art und Weise zu verändern und zu erweitern.##"
-                + "Die Manipulation wird automatisch durchgeführt wenn man einen Login hinzufügt. Sollte der \"\"KLoader\"\" bereits eine Instanz der gewählten Applet Version"
+                + "Die Manipulation wird automatisch durchgeführt wenn man einen Login hinzufügt. Sollte der \"\"KLoader\"\" bereits eine Instanz der gewählten Applet Version "
                 + "beinhalten wird diese verwendet und die Manipulation muss nicht erneut durchgeführt weden.#"
                 + "");
             
@@ -62,11 +60,27 @@ public class CommandParser {
                 mdlBuffer.append("_Author:_ ").append(mdl.getAuthor()).append("#");
                 mdlBuffer.append("_Version:_ ").append(mdl.getVersion()).append("#");
                 mdlBuffer.append("_Beschreibung:_#").append(mdl.getDescription());
-                tabPanel.newTab(mdl.getName(), mdl.getName(), mdlBuffer.toString());
+                tabPanel.newTab(mdl.getName(), (((ModuleBase)mdl).getState() ? "°>py_g.gif<°" : "°>py_r.gif<°") + mdl.getName() + "             " + (((ModuleBase)mdl).getState() ? 
+                        "°BB>py_r.gif<>_hDeaktivieren|/mdl -" + mdl.getName() + "<°" : 
+                        "°BB>py_g.gif<>_hAktivieren|/mdl +" + mdl.getName() + "<°") + "§", mdlBuffer.toString());
             }
+            
+            StringBuilder buffer = new StringBuilder();
+            for (ScriptApp app : ((ScriptModule)groupChat.getModule("ScriptApi")).getApps()) {
+                buffer.append("°>py_").append(app.getState() ? "g" : "r").append(".gif<° _").append(app.getName()).append("_ [").append(app.getVersion()).append("] by ").append(app.getAuthor()).append("#");
+                buffer.append("°%05°").append(app.getDescription()).append("#");
+                buffer.append("°BB>_hDeaktivieren|/mdl scriptapi -").append(app.getName()).append("<° | ");
+                buffer.append("°BB>_hAktivieren|/mdl scriptapi +").append(app.getName()).append("<° | ");
+                buffer.append("°BB>_hNeuladen|").append("/mdl scriptapi r").append(app.getName()).append("<°#°r°§°-°");
+            }
+            
+            tabPanel.newTab("Apps", "Apps [°BB>_hReload|/mdl scriptapi reload<°]", buffer.toString());
             groupChat.receive(Popup.create("KClient", null, tabPanel.getSwitchTab(), 750, 560, false));
             return true;
-        } else if (cmd.equals("mdl")) {
+        } else 
+        //</editor-fold>
+        //<editor-fold defaultstate="collapsed" desc="mdl">
+        if (cmd.equals("mdl")) {
             if (arg.charAt(0) == '+') {
                 String mdlName = arg.substring(1);
                 Module mdl = groupChat.getModule(mdlName);
@@ -111,16 +125,23 @@ public class CommandParser {
                     return true;
                 }
 
+                boolean exists = false;
                 for (Module mdl : groupChat.getModule()) {
                     if (arg.toLowerCase().equals(mdl.getName().toLowerCase())) {
-                        if (mdl.handleCommand(arg, arg2, channel))
+                        if (mdl.handleCommand(arg, arg2, channel)) {
+                            exists = true;
                             break;
+                        }
                     }
                 }
+                if (!exists)
+                    groupChat.printBotMessage(channel, "Das Module _" + arg + "_ existiert nicht!");
             }
             groupChat.refreshToolbar(channel);
             return true;
-        } else if (cmd.equals("logger")) {
+        } else 
+        //</editor-fold>
+        if (cmd.equals("logger")) {
             if (arg.isEmpty()) {
                 groupChat.printBotMessage(channel, "LogLevel angeben! _Beispiel_: /logger [Error, Info, Debug, All, None]");
             } else {
@@ -142,7 +163,84 @@ public class CommandParser {
             }
             groupChat.refreshToolbar(channel);
             return true;
+        } else 
+        //<editor-fold defaultstate="collapsed" desc="sendrnd">
+        if (cmd.equals("sendrnd")) {
+            StringBuilder buffer = new StringBuilder();
+            BufferedReader reader = null;
+            try {
+                reader = new BufferedReader(new InputStreamReader(new FileInputStream("data" + File.separator + "rndText.txt"), "UTF-8"));
+                String line;
+                while ((line = reader.readLine()) != null)
+                    buffer.append(line).append("\n");
+            } catch (IOException e) {
+                Logger.get().error(e);
+            } finally {
+                if (reader != null)
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                    }
+            }
+            String[] args = arg.split(" ");
+            if (args.length == 1) {
+                try {
+                    int length = Integer.parseInt(args[0]);
+                    if (buffer.length() < length) {
+                        return true;
+                    }
+                    String rndText = buffer.substring(0, length);
+                    groupChat.sendPublic(channel, rndText);
+                } catch (Exception e) {
+                }
+            } else if (args.length == 2) {
+                try {
+                    int length = Integer.parseInt(args[0]);
+                    int wdh = Integer.parseInt(args[1]);
+                    if (buffer.length() < length) {
+                        return true;
+                    }
+                    String rndText = buffer.substring(0, length);
+                    for (int i = 0; i < wdh; i++) {
+                        groupChat.sendPublicDelay(channel, rndText, i * 5000);
+                    }
+                } catch (NumberFormatException e) {
+                }
+            } else if (args.length == 3) {
+                try {
+                    int length = Integer.parseInt(args[0]);
+                    int wdh = Integer.parseInt(args[1]);
+                    int sleep = Integer.parseInt(args[2]);
+                    if (buffer.length() < length) {
+                        return true;
+                    }
+                    String rndText = buffer.substring(0, length);
+                    for (int i = 0; i < wdh; i++) {
+                        groupChat.sendPublicDelay(channel, rndText, i * sleep);
+                    }
+                } catch (NumberFormatException e) {
+                }
+            } else if (args.length == 5) {
+                try {
+                    int length = Integer.parseInt(args[0]);
+                    int wdh = Integer.parseInt(args[1]);
+                    int sleep = Integer.parseInt(args[2]);
+                    String text = arg.substring(args[0].length() + args[1].length() + args[2].length() + 2);
+                    if (buffer.length() < length) {
+                        return true;
+                    }
+                    String rndText = buffer.substring(0, length);
+                    for (int i = 0; i < wdh; i++) {
+                        groupChat.sendPublicDelay(channel, text + rndText, i * sleep);
+                    }
+                } catch (NumberFormatException e) {
+                }
+            } else {
+                groupChat.printBotMessage(channel, "_Verwendung:_#/sendrnd LENGTH#/sendrnd LENGTH WDH#/sendrnd LENGTH WDH SLEEP#/sendrnd LENGTH WDH SLEEP TEXT");
+            }
+            return true;
         }
+        //</editor-fold>
         return false;
     }
 }

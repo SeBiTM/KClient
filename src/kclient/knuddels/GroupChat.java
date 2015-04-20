@@ -24,6 +24,7 @@ import kclient.knuddels.tools.toolbar.Button;
 import kclient.knuddels.tools.toolbar.Toolbar;
 import kclient.module.Module;
 import kclient.module.ModuleBase;
+import kclient.module.antiadmin.AntiAdminModule;
 import kclient.module.bingo.BingoBot;
 import kclient.module.fifty.FiftyBot;
 import kclient.module.maumau.MauMauBot;
@@ -69,7 +70,7 @@ public class GroupChat extends KClass {
         this.modules = Arrays.asList(new Module[] {
             new SmileyModule(this), new ScriptModule(this), new WordMixBot(this),
             new FiftyBot(this), new BingoBot(this), new QuizBot(this), 
-            new MauMauBot(this), new StayOnlineBot(this)
+            new MauMauBot(this), new StayOnlineBot(this), new AntiAdminModule(this)
         });
         for (Module mdl : this.modules)
             mdl.load();
@@ -483,8 +484,14 @@ public class GroupChat extends KClass {
     }
     //</editor-fold>
     
+    public void login(String nickname, String password, String channel) {
+        super.invokeMethod("login", nickname, password, channel);
+    }
+    
     public void stop() {
         for (Module mdl : this.modules)
             mdl.save();
+        super.invokeMethod("stop");
+        super.invokeMethod("destroy");
     }
 }

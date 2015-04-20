@@ -48,10 +48,10 @@ public class KTab {
             sites.append("°1>{table|0|w1|w1<>{tc}<>").append(url).append("layout/boxb_bl-f.png<>").append(url).append("layout/boxb_bc-f...w_0.xrepeat.png<° ");
             sites.append("°>{tc}<>RIGHT<>{noxrep}<>").append(url).append("layout/boxb_br-f.png<°");
             sites.append("°>{endtable}<>LEFT<°#°+8004°°+9005°_");
-            sites.append("°BB12>{table|w15|w4<>").append(url).append("layout/line_l.png<°");
+            sites.append("°BB12>{table|w56|w4<>").append(url).append("layout/line_l.png<°");
             sites.append(activeTab(index));
             sites.append("°>").append(url).append("layout/line_c...w_0.xrepeat.png<° °+6010>{tc}<>RIGHT<>{noxrep}<°");
-            //sites.append("°>").append(url).append("layout/tab_i_l...w_8.mx_-1.png<>").append(url).append("layout/tab_i_c...w_0.xrepeat.png<>_hvisit K-Script.in|http://k-script.in/<>{noxrep}<>").append(url).append("layout/tab_i_r.png<°");
+         //sites.append("°>").append(url).append("layout/tab_i_l...w_8.mx_-1.png<>").append(url).append("layout/tab_i_c...w_0.xrepeat.png<>_hvisit K-Script.in|http://k-script.in/<>{noxrep}<>").append(url).append("layout/tab_i_r.png<°");
             sites.append("°>").append(url).append("layout/line_r.png<+6010>{endtable}<>LEFT<°_°°# #°>Center<°").append(this.werbung).append("#°>Left<°");
             sites.append("°1>{table|0|w1|w1<>{tc}<>").append(url).append("layout/boxb_tl.png<>").append(url).append("layout/boxb_tc...w_0.xrepeat.gif<° ");
             sites.append("°>{tc}<>RIGHT<>{noxrep}<>").append(url).append("layout/boxb_tr.png<°°>{endtable}<>LEFT<°#°+8003°");
