@@ -122,9 +122,8 @@ public class ScriptApp {
                         + "Author: " + getAuthor() + ", State: " + getState() + "\n\t"
                         + "Hooks: " + Arrays.toString(appHooks.keySet().toArray()) + "\n\t"
                         + "Commands: " + Arrays.toString(chatCommands.keySet().toArray()));
-                if (this.state) {
-                    this.onAppStart();
-                }
+                
+                this.onAppStart();
             }
         } catch (Exception e) {
             Logger.get().error(e);
@@ -145,8 +144,8 @@ public class ScriptApp {
     
     private <T> T callHook(String hook, Object... params) {
         try {
-            if (this.appHooks.containsKey(hook.toLowerCase())) {
-                Object result = this.appHooks.get(hook.toLowerCase()).call(this.context, this.scope, this.scope, params);
+            if (this.appHooks.containsKey(hook)) {
+                Object result = this.appHooks.get(hook).call(this.context, this.scope, this.scope, params);
                 if (result.toString().equals("false"))
                     return null;
                 return (T) result;

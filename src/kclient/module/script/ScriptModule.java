@@ -173,6 +173,7 @@ public class ScriptModule extends ModuleBase implements Module {
                 groupChat.printBotMessage(channel, "App _" + appName + "_ existiert nicht.");
             } else {  
                 if (app.getState()) {
+                    app.onAppStop();
                     app.init();
                     groupChat.printBotMessage(channel, "App _" + app.getName() + "_ reloaded.");
                 }
