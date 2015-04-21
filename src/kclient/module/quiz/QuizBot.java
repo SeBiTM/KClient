@@ -1,5 +1,6 @@
 package kclient.module.quiz;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -156,7 +157,7 @@ public class QuizBot extends ModuleBase implements Module {
         Properties props = new Properties();
         FileReader reader = null;
         try {
-            reader = new FileReader("data/module/quiz/database.properties");
+            reader = new FileReader("data" + File.separator + "module" + File.separator + "quiz" + File.separator + "database.properties");
             props.load(reader);
         } catch (IOException e) {
             Logger.get().error(e);
