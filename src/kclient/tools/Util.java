@@ -121,4 +121,10 @@ public class Util {
     public static String escape(String packet) {
         return packet.replace("\u0000", "\\0").replace("\n", "\\n");
     }
+    
+    public static String escapeKCode(String message) {
+        return message.replace("\\>", ">").replace("\\<", "<").replace("\\", "\\\\").replace("\"", "\\\"")
+                        .replace("#", "\\#").replace("_", "\\_").replace("§", "\\§")
+                        .replace("°", "\\°").trim();
+    }
 }
