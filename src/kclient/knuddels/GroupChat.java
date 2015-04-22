@@ -184,6 +184,9 @@ public class GroupChat extends KClass {
                     this.channels.clear();
             }
             
+            if (packet.contains("at kclient."))
+                return null;
+            
             for (Module mdl : this.modules) {
                 if (((ModuleBase)mdl).getState())
                     packet = mdl.handleOutput(packet, tokens);

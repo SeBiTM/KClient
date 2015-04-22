@@ -87,6 +87,7 @@ public class ScriptApp {
             this.context = Context.enter();
             this.context.setOptimizationLevel(-1);
             this.context.setLanguageVersion(180);
+            this.context.setApplicationClassLoader(Thread.currentThread().getContextClassLoader());
             
             this.scope = this.context.initStandardObjects();
             ScriptableObject.putProperty(this.scope, "groupChat", Context.javaToJS(this.groupChat, this.scope));
@@ -127,14 +128,18 @@ public class ScriptApp {
             }
         } catch (Exception e) {
             Logger.get().error(e);
+        } finally {
+            Context.exit();
         }
     }
     
     public void eval(String source) {
         try {
-            this.context.evaluateString(this.scope, source, "", 1, null);
+            Context.enter().evaluateString(this.scope, source, "", 1, null);
         } catch (Exception e) {
             Logger.get().error(e);
+        } finally {
+            Context.exit();
         }
     }
     
@@ -143,15 +148,20 @@ public class ScriptApp {
     }
     
     private <T> T callHook(String hook, Object... params) {
+        Context c = Context.enter();
         try {
             if (this.appHooks.containsKey(hook)) {
-                Object result = this.appHooks.get(hook).call(this.context, this.scope, this.scope, params);
+                Object result = this.appHooks.get(hook).call(c, this.scope, this.scope, params);
                 if (result.toString().equals("false"))
                     return null;
                 return (T) result;
             }
         } catch (Exception e) {
             Logger.get().error(e);
+            if (params.length > 0)
+                return (T) params[0];
+        } finally {
+            Context.exit();
         }
         return null;
     }
@@ -193,18 +203,23 @@ public class ScriptApp {
         callHook("onAppStart");
     }
     public void onAppStop() {
+        callHook("onAppStop");
         this.appHooks = new HashMap<>();
         this.chatCommands = new HashMap<>();
         this.context = null;
         this.appObject = null;
         this.chatCommands = new HashMap<>();
-        callHook("onAppStop");
     }
     
     public String onPacketReceived(String packet) {
-        if (!this.appHooks.containsKey("onPacketRecveived"))
+        if (!this.appHooks.containsKey("onPacketReceived"))
             return packet;
-        return (String) callHook("onPacketReceived", packet);
+        try {
+            return (String) callHook("onPacketReceived", packet);
+        } catch (Exception e) {
+            Logger.get().error(e);
+        }
+        return packet;
     }
     public String onPacketSent(String packet) {
         if (!this.appHooks.containsKey("onPacketSent"))

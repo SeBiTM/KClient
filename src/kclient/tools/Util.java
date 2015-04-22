@@ -117,4 +117,8 @@ public class Util {
         }
         return "";
     }
+    
+    public static String escape(String packet) {
+        return packet.replace("\u0000", "\\0").replace("\n", "\\n");
+    }
 }
