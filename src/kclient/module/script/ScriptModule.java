@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import kclient.Start;
 import kclient.knuddels.GroupChat;
 import kclient.knuddels.network.GameConnection;
@@ -172,10 +173,14 @@ public class ScriptModule extends ModuleBase implements Module {
             if (app == null) {
                 groupChat.printBotMessage(channel, "App _" + appName + "_ existiert nicht.");
             } else {  
-                if (app.getState()) {
+                try {
+                    app.loadConfig();
+                    app.setState(true);
                     app.onAppStop();
                     app.init();
                     groupChat.printBotMessage(channel, "App _" + app.getName() + "_ reloaded.");
+                } catch (Exception ex) {
+                    Logger.get().error(ex);
                 }
             }
             return true;

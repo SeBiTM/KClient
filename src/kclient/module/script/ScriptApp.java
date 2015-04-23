@@ -42,7 +42,7 @@ public class ScriptApp {
         this.init();
     }
     
-    private void loadConfig() throws Exception {
+    public void loadConfig() throws Exception {
         File config = new File(this.path + File.separator + "app.config");
         if (!config.exists())
             throw new Exception("No App Config");
@@ -188,7 +188,7 @@ public class ScriptApp {
         this.state = b;
         if (b) {
             try {
-                this.loadConfig();
+                //this.loadConfig();
                 this.init();
             } catch (Exception e) {
                 Logger.get().error(e);
@@ -200,9 +200,15 @@ public class ScriptApp {
     
     //Hooks
     public void onAppStart() {
+        if (!this.state)
+            return;
+        
         callHook("onAppStart");
     }
     public void onAppStop() {
+        if (!this.state)
+            return;
+        
         callHook("onAppStop");
         this.appHooks = new HashMap<>();
         this.chatCommands = new HashMap<>();
@@ -212,6 +218,9 @@ public class ScriptApp {
     }
     
     public String onPacketReceived(String packet) {
+        if (!this.state)
+            return packet;
+        
         if (!this.appHooks.containsKey("onPacketReceived"))
             return packet;
         try {
@@ -222,23 +231,35 @@ public class ScriptApp {
         return packet;
     }
     public String onPacketSent(String packet) {
+        if (!this.state)
+            return packet;
+        
         if (!this.appHooks.containsKey("onPacketSent"))
             return packet;
         return (String) callHook("onPacketSent", packet);
     }
     
     public GenericProtocol onNodeReceived(GameConnection gameConnection, GenericProtocol node) {
+        if (!this.state)
+            return node;
+        
         if (!this.appHooks.containsKey("onNodeReceived"))
             return node;
         return (GenericProtocol) callHook("onNodeReceived", gameConnection, node);
     }
     public GenericProtocol onNodeSent(GameConnection gameConnection, GenericProtocol node) {
+        if (!this.state)
+            return node;
+        
         if (!this.appHooks.containsKey("onNodeSent"))
             return node;
         return (GenericProtocol) callHook("onNodeSent", gameConnection, node);
     }
     
     public boolean executeChatCommand(String cmd, String arg, String channel) {
+        if (!this.state)
+            return false;
+        
         if (this.chatCommands.containsKey(cmd.toLowerCase())) {
             return (boolean) this.chatCommands.get(cmd.toLowerCase()).call(this.context, this.scope, this.scope, new Object[] { cmd, arg, channel });
         }

@@ -51,8 +51,8 @@ public class CommandParser {
                 + "°B°Knuddels Bot Client##°r°°>LEFT<°"
                 + "Der KClient ist ein manipulierter Knuddels Client, der es ermöglicht den Client auf jede Art und Weise zu verändern und zu erweitern.##"
                 + "Die Manipulation wird automatisch durchgeführt wenn man einen Login hinzufügt. Sollte der \"\"KLoader\"\" bereits eine Instanz der gewählten Applet Version "
-                + "beinhalten wird diese verwendet und die Manipulation muss nicht erneut durchgeführt weden.#"
-                + "");
+                + "beinhalten wird diese verwendet und die Manipulation muss nicht erneut durchgeführt weden.##"
+                + "Ein sehr großer Dank geht an °>patlux|https://u-labs.de/members/patlux-4/<° und °>UnReal|https://u-labs.de/members/unreal-2321/<°");
             
             for (Module mdl : groupChat.getModule()) {
                 StringBuilder mdlBuffer = new StringBuilder();
@@ -60,7 +60,7 @@ public class CommandParser {
                 mdlBuffer.append("_Author:_ ").append(mdl.getAuthor()).append("#");
                 mdlBuffer.append("_Version:_ ").append(mdl.getVersion()).append("#");
                 mdlBuffer.append("_Beschreibung:_#").append(mdl.getDescription());
-                tabPanel.newTab(mdl.getName(), (((ModuleBase)mdl).getState() ? "°>py_g.gif<°" : "°>py_r.gif<°") + mdl.getName() + "             " + (((ModuleBase)mdl).getState() ? 
+                tabPanel.newTab(mdl.getName(), (((ModuleBase)mdl).getState() ? "°>py_g.gif<°" : "°>py_r.gif<°") + mdl.getName() + "°+0600°" + (((ModuleBase)mdl).getState() ? 
                         "°BB>py_r.gif<>_hDeaktivieren|/mdl -" + mdl.getName() + "<°" : 
                         "°BB>py_g.gif<>_hAktivieren|/mdl +" + mdl.getName() + "<°") + "§", mdlBuffer.toString());
             }
@@ -75,7 +75,7 @@ public class CommandParser {
             }
             
             tabPanel.newTab("Apps", "Apps [°BB>_hReload|/mdl scriptapi reload<°]", buffer.toString());
-            groupChat.receive(Popup.create("KClient", null, tabPanel.getSwitchTab(), 750, 560, false));
+            groupChat.receive(Popup.create("KClient", null, tabPanel.getSwitchTab(), 770, 570, false));
             return true;
         } else 
         //</editor-fold>

@@ -14,7 +14,6 @@ import kclient.tools.Parameter;
 public enum ChatSystem {
     DE("Knuddels.de", "http://www.knuddels.de/applet.jnlp"),
     AT("Knuddels.at", "http://www.knuddels.at/applet.jnlp"),
-    MFC("Mainfranken-Chat", "http://www.mainfranken-chat.de/zumchat.htm"),
     COM("Knuddels.com", "http://knuddels.com/");
     
     private final String name;
