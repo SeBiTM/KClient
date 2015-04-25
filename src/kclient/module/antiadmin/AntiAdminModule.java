@@ -27,7 +27,6 @@ import kclient.tools.Util;
 public class AntiAdminModule extends ModuleBase implements Module {
     private Parameter config;
     private List<String> admins;
-    private Map<String, List<String>> cms;
     
     public AntiAdminModule(GroupChat groupChat) {
         super(groupChat);
@@ -61,6 +60,7 @@ public class AntiAdminModule extends ModuleBase implements Module {
     @Override
     public String handleInput(String packet, String[] tokens) {
         String opcode = tokens[0];
+        //<editor-fold defaultstate="collapsed" desc="Load Admins">
         if (opcode.equals("k") && tokens[1].contains("Hilfe")) {
             int index = packet.indexOf("##Admins sind derzeit:#");
             if (index > 0) {
@@ -83,15 +83,16 @@ public class AntiAdminModule extends ModuleBase implements Module {
                 }
                 return null;
             }
-        } else if (opcode.equals(":")) {
+        } else
+        //</editor-fold>
+        //<editor-fold defaultstate="collapsed" desc="New Protocol">
+        if (opcode.equals(":")) {
             GenericProtocol node = this.groupChat.getBaseNode().read(packet, 2);
             if (node.equalsName("CHANNEL_MEMBERS")) {
                 String channel = node.get("CHANNEL_NAME");
+                ArrayList<String> cms = new ArrayList<>();
                 if (this.admins.isEmpty())
                     this.groupChat.sendPublic(channel, "/h");
-                if (this.cms.containsKey(channel))
-                    this.cms.remove(channel);
-                this.cms.put(channel, new ArrayList<>());
                 
                 ArrayList<String> cusers = new ArrayList<>();
                 ArrayList<GenericProtocol> members = node.get("CHANNEL_MEMBER");
@@ -101,61 +102,71 @@ public class AntiAdminModule extends ModuleBase implements Module {
                     for (GenericProtocol icon : icons) {
                         String image = icon.get("IMAGE");
                         if (image.endsWith("cm.png")) {
-                            if (!this.cms.get(channel).contains(nickname))
-                                this.cms.get(channel).add(nickname);
+                            if (!cms.contains(nickname))
+                                cms.add(nickname);
                         }
                     }
                     cusers.add(nickname);
                 }
-                StringBuilder warnBuffer = new StringBuilder("_Achtung:_  Aktuell befinden sich _");
-                if (!this.cms.get(channel).isEmpty()) {
-                    warnBuffer.append(this.cms.get(channel).size()).append("_ CM").append(this.cms.get(channel).size() > 1 ? "'s" : "").append(" (");
-                    for (String nickname : this.cms.get(channel)) {
-                        System.out.println(nickname);
-                        warnBuffer.append("_°>_h").append(Util.escapeKCode(nickname).replace(">", "\\>").replace("<", "\\<")).append("|/w \"|/pp \"<°_, ");
-                    }
-                    warnBuffer.delete(warnBuffer.length() - 2, warnBuffer.length());
-                    warnBuffer.append(") ");
-                    StringBuilder adminBuffer = new StringBuilder();
-                    int acount = 0;
-                    for (String nickname : cusers) {
-                        if (this.admins.contains(nickname)) {
-                            System.err.println(nickname);
-                            adminBuffer.append("_°>_h").append(Util.escapeKCode(nickname).replace(">", "\\>").replace("<", "\\<")).append("|/w \"|/pp \"<°_, ");
-                            acount++;
-                        }
-                    }
-                    if(adminBuffer.length() > 0) {
-                        adminBuffer.delete(adminBuffer.length() - 2, adminBuffer.length());
-                        warnBuffer.append(" und _").append(acount).append("_ Admin").append(acount > 1 ? "'s" : "").append(" (").append(adminBuffer).append(")");
-                    }
-                    warnBuffer.append(" im Channel!");
-                    this.groupChat.printBotMessage(channel, warnBuffer.toString());
-                }
+                this.checkWarnBuffer(channel, cms, cusers);
             } else if (node.equalsName("ADD_CHANNEL_MEMBER")) {
                 String channel = node.get("CHANNEL_NAME");
                 String nickname = node.get("NAME");
                 boolean isCM = false;
                 boolean isAdmin = this.admins.contains(nickname);
                 ArrayList<GenericProtocol> icons = node.get("NICKLIST_ICON");
-                for (GenericProtocol icon : icons) {
-                    String image = icon.get("IMAGE");
-                    if (image.endsWith("cm.png")) {
-                        isCM = true;
-                        break;
+                if (icons != null)
+                    for (GenericProtocol icon : icons) {
+                        String image = icon.get("IMAGE");
+                        if (image.endsWith("cm.png")) {
+                            isCM = true;
+                            break;
+                        }
                     }
-                }
                 
                 if (isCM || isAdmin) {
                     
                 }
             }
-        } else if (opcode.equals("u")) {
+        } else 
+        //</editor-fold>
+        //<editor-fold defaultstate="collapsed" desc="Old Protocol">
+        if (opcode.equals("u")) {
             if (this.admins.isEmpty())
                 this.groupChat.sendPublic(tokens[1], "/h");
             
+            String channel = tokens[1];
+            String rawPacket = packet.substring(tokens[1].length() + 3);
+            String[] splitRaw = rawPacket.split("\u0000-\u0000");
+            ArrayList<String> cusers = new ArrayList<>();
+            ArrayList<String> cms = new ArrayList<>();
+            for (String userRaw : splitRaw) {
+                String[] usr = userRaw.split("\u0000");
+                String nickname = usr[0].split("\n")[0];
+                for (int i = 3; i < usr.length; i++) {
+                    if (usr[i].endsWith("cm.png")) {
+                        cms.add(nickname);
+                        break;
+                    }
+                }
+                cusers.add(nickname);
+            }
+            this.checkWarnBuffer(channel, cms, cusers);
+        } else if (opcode.equals("l")) {
+            String channel = tokens[1].equals("-") ? this.groupChat.getCurrentChannel() : tokens[1];
+            String nickname = tokens[2].split("\n")[0];
+            boolean isCM = false;
+            boolean isAdmin = this.admins.contains(nickname);
+            for (int i = 5; i < tokens.length; i++)
+                if (tokens[i].endsWith("cm.png")) {
+                    isCM = true;
+                    break;
+                }
+            
             
         }
+        //</editor-fold>
+        
         return packet;
     }
     @Override
@@ -199,6 +210,33 @@ public class AntiAdminModule extends ModuleBase implements Module {
     public void load() {
         this.config = new Parameter("antiadmin");
         this.admins = new ArrayList<>();
-        this.cms = new HashMap<>();
+    }
+
+    private void checkWarnBuffer(String channel, ArrayList<String> cms, ArrayList<String> cusers) {
+        StringBuilder warnBuffer = new StringBuilder("_Achtung:_  Aktuell befinden sich _");
+        if (!cms.isEmpty()) {
+            warnBuffer.append(cms.size()).append("_ CM").append(cms.size() > 1 ? "'s" : "").append(" (");
+            for (String nickname : cms) {
+                System.out.println(nickname);
+                warnBuffer.append("_°>_h").append(Util.escapeKCode(nickname).replace(">", "\\>").replace("<", "\\<")).append("|/w \"|/pp \"<°_, ");
+            }
+            warnBuffer.delete(warnBuffer.length() - 2, warnBuffer.length());
+            warnBuffer.append(") ");
+            StringBuilder adminBuffer = new StringBuilder();
+            int acount = 0;
+            for (String nickname : cusers) {
+                if (this.admins.contains(nickname)) {
+                    System.err.println(nickname);
+                    adminBuffer.append("_°>_h").append(Util.escapeKCode(nickname).replace(">", "\\>").replace("<", "\\<")).append("|/w \"|/pp \"<°_, ");
+                    acount++;
+                }
+            }
+            if(adminBuffer.length() > 0) {
+                adminBuffer.delete(adminBuffer.length() - 2, adminBuffer.length());
+                warnBuffer.append(" und _").append(acount).append("_ Admin").append(acount > 1 ? "'s" : "").append(" (").append(adminBuffer).append(")");
+            }
+            warnBuffer.append(" im Channel!");
+            this.groupChat.printBotMessage(channel, warnBuffer.toString());
+        }
     }
 }
