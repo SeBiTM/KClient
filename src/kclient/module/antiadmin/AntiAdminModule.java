@@ -132,6 +132,23 @@ public class AntiAdminModule extends ModuleBase implements Module {
                     warnBuffer.append(" im Channel!");
                     this.groupChat.printBotMessage(channel, warnBuffer.toString());
                 }
+            } else if (node.equalsName("ADD_CHANNEL_MEMBER")) {
+                String channel = node.get("CHANNEL_NAME");
+                String nickname = node.get("NAME");
+                boolean isCM = false;
+                boolean isAdmin = this.admins.contains(nickname);
+                ArrayList<GenericProtocol> icons = node.get("NICKLIST_ICON");
+                for (GenericProtocol icon : icons) {
+                    String image = icon.get("IMAGE");
+                    if (image.endsWith("cm.png")) {
+                        isCM = true;
+                        break;
+                    }
+                }
+                
+                if (isCM || isAdmin) {
+                    
+                }
             }
         } else if (opcode.equals("u")) {
             if (this.admins.isEmpty())

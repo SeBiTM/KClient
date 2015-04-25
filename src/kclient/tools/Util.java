@@ -9,6 +9,11 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.URL;
 import java.net.URLConnection;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 /**
  *
@@ -126,5 +131,21 @@ public class Util {
         return message.replace("\\>", ">").replace("\\<", "<").replace("\\", "\\\\").replace("\"", "\\\"")
                         .replace("#", "\\#").replace("_", "\\_").replace("§", "\\§")
                         .replace("°", "\\°").trim();
+    }
+    
+    public static void playSound(String file) {
+        new Thread("Sound [" + file + "]") {
+            @Override
+            public void run() {
+                try {
+                    Clip clip = AudioSystem.getClip();
+                    AudioInputStream inp = AudioSystem.getAudioInputStream(Util.class.getResourceAsStream("/data/sounds/" + file + ".wav"));
+                    clip.open(inp);
+                    clip.start();
+                } catch (LineUnavailableException | UnsupportedAudioFileException | IOException e) {
+                    Logger.get().error(e);
+                }
+            }
+        }.start();
     }
 }
