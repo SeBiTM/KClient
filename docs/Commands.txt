@@ -1,18 +1,35 @@
+/kclient - Übersichts Fenster
+
 - Module System
-    /mdl [Params][ModuleName]
+    Module:                
+        - ScriptApi      - AntiAdmin       - Smileys
+        - StayOnline     - WordMix         - Fifty!
+        - Bingo          - MauMau          - Quiz
+
+	/mdl [Params][ModuleName]
     Params:
         '-' - Deaktivert ein Modul
         '+' - Aktiviert ein Modul
         '?' - Gibt die Beschreibung eines Modules aus
 
     /mdl [ModuleName] [Params]
-    Module:                
-        - ScriptApi      - AntiAdmin       - Smileys
-        - StayOnline     - WordMix         - Fifty!
-        - Bingo          - MauMau          - Quiz
-
-- ScriptModule
-    /mdl ScriptModule [Params]
+	Params:
+		Bingo:
+			stats 				- Gibt Statistiken für den BingoBot aus
+			autojoin:true/false	- Aktiviert/Deaktivert den Autojoin für Bingo
+		Fifty:
+			risk:RISK			- Setz den Risikowert für Fifty
+			autojoin:true/false	- Aktiviert/Deaktivert den Autojoin für Fifty
+		Quiz:
+			autojoin:true/false	- Aktiviert/Deaktivert den Autojoin für Quiz
+		ScriptApi:
+			reload				- Läd alle Apps neu
+		Smileys:
+			reload				- Läd die Liste der Smileys neu
+		
+			
+- ScriptApi
+    /mdl ScriptApi [Params]
     Params:
         -[AppName] - Deaktiviert eine App
         +[AppName] - Akiviert eine App
@@ -25,8 +42,11 @@
         - All       - Debug     - Info
         - None      - Error
 
-
-//sendrnd LENGTH
-            //sendrnd LENGTH WDH
-            //sendrnd LENGTH WDH SLEEP
-            //sendrnd LENGTH WDH SLEEP TEXT
+- SendRandom (Text in 'data/rndText.txt')
+	/sendrnd [Length]						- Sendet einen [Length] Zeichen langen Text öffentlich
+	/sendrnd [Length] [Wdh]					- Sendet einen [Length] Zeichen langen Text [Wdh] mal
+	/sendrnd [Length] [Wdh] [Sleep]			- Sendet einen [Length] Zeichen langen Text [Wdh] mal im abstand von [Sleep] millisekunden
+	/sendrnd [Length] [Wdh] [Sleep] [Text]	- Sendet einen [Length] Zeichen langen Text [Wdh] mal im abstand von [Sleep] millisekunden mit vorangehängten [Text]
+											- /sendrnd 100 5 5000 /p James:
+												Sendet einen 100 Zeichen langen Text 5 mal im Abstand von 5 Sekunden private an James
+												

@@ -112,4 +112,11 @@ public class ManipulationData {
     public String getGameFrameVoid() {
         return this.params.get("game_frame_void");
     }
+    
+    public String getSmileyWarsField() {
+        return this.params.get("smileywars_field");
+    }
+    public String getSmileyWarsMetaField() {
+        return this.params.get("smileywars_meta_field");
+    }
 }

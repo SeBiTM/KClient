@@ -160,6 +160,7 @@ public class ScriptModule extends ModuleBase implements Module {
                 groupChat.printBotMessage(channel, "App _" + appName + "_ existiert nicht.");
             } else {  
                 if (app.getState()) {
+                    app.onAppStop();
                     app.setState(false);
                     groupChat.printBotMessage(channel, "App _" + app.getName() + "_ deaktiviert.");
                 } else {
@@ -174,9 +175,11 @@ public class ScriptModule extends ModuleBase implements Module {
                 groupChat.printBotMessage(channel, "App _" + appName + "_ existiert nicht.");
             } else {  
                 try {
-                    app.loadConfig();
-                    app.setState(true);
                     app.onAppStop();
+                    boolean tmp = app.getState();
+                    app.setState(false);
+                    app.loadConfig();
+                    app.setState(tmp);
                     app.init();
                     groupChat.printBotMessage(channel, "App _" + app.getName() + "_ reloaded.");
                 } catch (Exception ex) {

@@ -73,7 +73,7 @@ public class Popup {
 	buffer.writeEnd();
 	return buffer.toString();
     }
-    private void writeComponent(Component com, PopupWriter buffer) {
+    private static void writeComponent(Component com, PopupWriter buffer) {
         if (com.getLocation() != Location.NONE)
             buffer.write(com.getLocation().getValue());
         buffer.write(com.getType().getValue());
@@ -275,8 +275,7 @@ public class Popup {
         
         addNewStyle(popup, subtitle, kcPanel, buttonPanel);                        
         return popup.toString();
-    }
-    
+    }    
     public static void addNewStyle(Popup popup, String subtitle, Panel kcPanel, Panel buttonPanel) {
         popup.setBackground(new int[] { 255,255,255 });
                 
@@ -351,4 +350,5 @@ public class Popup {
             centerPanel.addComponent(new Panel(new BorderLayout(), Location.EAST, "pics/layout/bg_trend.png", 10, 10));
             centerPanel.addComponent(new Panel(new BorderLayout(), Location.WEST, "pics/layout/bg_trend.png", 10, 10));                
     }
+
 }

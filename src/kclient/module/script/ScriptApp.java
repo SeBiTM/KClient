@@ -158,8 +158,11 @@ public class ScriptApp {
             }
         } catch (Exception e) {
             Logger.get().error(e);
-            if (params.length > 0)
+            if (params.length > 0) {
+                if (hook.equals("onNodeSent") || hook.equals("onNodeReceived"))
+                    return (T) params[1];
                 return (T) params[0];
+            }
         } finally {
             Context.exit();
         }

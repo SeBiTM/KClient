@@ -1,7 +1,16 @@
 package kclient.tools;
 
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.Rectangle;
+import java.awt.TrayIcon;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -14,12 +23,18 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.WindowConstants;
+import kclient.ui.ClientGui;
 
 /**
  *
  * @author SeBi
  */
 public class Util {
+    
     public static String join(String deli, Object[] arr) {
         StringBuilder buffer = new StringBuilder();
         for (Object obj : arr)
@@ -133,13 +148,17 @@ public class Util {
                         .replace("°", "\\°").trim();
     }
     
+    public static void showNotification(String title, String message) {
+        ClientGui.get().getTray().displayMessage(title, message, TrayIcon.MessageType.INFO);
+    }
+    
     public static void playSound(String file) {
         new Thread("Sound [" + file + "]") {
             @Override
             public void run() {
                 try {
                     Clip clip = AudioSystem.getClip();
-                    AudioInputStream inp = AudioSystem.getAudioInputStream(Util.class.getResourceAsStream("/data/sounds/" + file + ".wav"));
+                    AudioInputStream inp = AudioSystem.getAudioInputStream(new File("data" + File.separator + "sounds" + File.separator + file + ".wav"));
                     clip.open(inp);
                     clip.start();
                 } catch (LineUnavailableException | UnsupportedAudioFileException | IOException e) {

@@ -17,6 +17,7 @@ import kclient.module.Module;
 import kclient.module.ModuleBase;
 import kclient.tools.Logger;
 import kclient.tools.Parameter;
+import kclient.tools.Util;
 
 /**
  *
@@ -41,7 +42,6 @@ public class BingoBot extends ModuleBase implements Module {
                 return null;
         } else if (tokens[0].equals("r") && tokens[1].equals(this.groupChat.getButlerName())) {
             String channel = tokens[3].equals("-") ? this.groupChat.getCurrentChannel() : tokens[3];
-            System.out.println(channel + " - " + tokens[4]);
             if (tokens[4].contains("nimmt nicht")) {
                 if (this.processes.containsKey(channel))
                     this.processes.get(channel).fixSheetError();
@@ -52,10 +52,22 @@ public class BingoBot extends ModuleBase implements Module {
             }
             if (tokens[4].contains("Runden erreicht und insgesamt ") && tokens[4].contains("Bingo-Punkte")) {
                 if (this.processes.containsKey(channel)) {
-                    System.out.println("JOIN BINGO !!!!");
                     this.processes.get(channel).joinBingo();
                 } else {
-                    System.err.println("ERRROROR");
+                    if (this.autoJoin) {
+                        new Thread() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Thread.sleep(10000);
+                                    int sheetsCount = 3;
+                                    for (int i = 0; i < sheetsCount; i++)
+                                        BingoBot.this.groupChat.sendPublicDelay(channel, "/bingo buy", Util.rnd(5000, 10000));
+                                } catch (InterruptedException ex) {
+                                }
+                            }
+                        }.start();
+                    }
                 }
                 
                 if (tokens[4].contains("1 Knuddel"))

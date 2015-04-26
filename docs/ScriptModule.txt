@@ -79,6 +79,7 @@
         - print(channel, message)
         - printBotMessage(channel, message)
         - login(nickname, channel, password)
+		- logout()
         - stop()
 - Logger (Logger.get())
     - Methods

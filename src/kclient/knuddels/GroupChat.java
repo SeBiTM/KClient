@@ -4,6 +4,8 @@ import java.awt.Component;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -20,6 +22,7 @@ import kclient.knuddels.reflection.KClass;
 import kclient.knuddels.reflection.KLoader;
 import kclient.knuddels.tools.ChatSystem;
 import kclient.knuddels.tools.CommandParser;
+import kclient.knuddels.tools.popup.Popup;
 import kclient.knuddels.tools.toolbar.Button;
 import kclient.knuddels.tools.toolbar.Toolbar;
 import kclient.module.Module;
@@ -102,6 +105,7 @@ public class GroupChat extends KClass {
                 if (node == null) {
                     return packet;
                 }
+ 
                 if (node.equalsName("CHANGE_PROTOCOL")) {
                     this.baseNode = GenericProtocol.parseTree((String) node.get("PROTOCOL_DATA"));
                 } else if (node.equalsName("SHOW_BUTTONS")) {
@@ -239,6 +243,9 @@ public class GroupChat extends KClass {
                 this.connections.put((String)connection.invokeMethod("toString"), gCon);
             }
             GenericProtocol node = this.baseExtendNode.read(buffer);
+            if (node.equalsName("KNOCK_ON_SERVER")) {
+                gCon.setType("SMILEYWARS");
+            }
             for (Module mdl : this.modules)
                 if (((ModuleBase)mdl).getState())
                     node = mdl.handleExtendOutput(gCon, node);
@@ -489,6 +496,9 @@ public class GroupChat extends KClass {
     
     public void login(String nickname, String password, String channel) {
         super.invokeMethod("login", nickname, password, channel);
+    }
+    public void logout() {
+        send("d");
     }
     
     public void stop() {

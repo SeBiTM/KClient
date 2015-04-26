@@ -289,6 +289,10 @@ public class ClientGui implements ActionListener {
         if (this.logArea != null)
             this.logArea.append(str + "\n\r");
     }
+    public TrayIcon getTray() {
+        return this.icon;
+    }
+    
     public static ClientGui get() {
         return instance;
     }

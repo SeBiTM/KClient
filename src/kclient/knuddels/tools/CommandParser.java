@@ -4,10 +4,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import kclient.Start;
 import kclient.knuddels.GroupChat;
+import kclient.knuddels.network.generic.GenericProtocol;
+import kclient.knuddels.network.generic.GenericReader;
 import kclient.knuddels.tools.popup.Popup;
 import kclient.knuddels.tools.popup.components.Panel;
 import kclient.knuddels.tools.popup.components.TextPanel;
@@ -106,6 +109,19 @@ public class CommandParser {
                         groupChat.printBotMessage(channel, "Das Module _" + mdl.getName() + "_ wurde deaktiviert.");
                         ((ModuleBase)mdl).setState(false);
                     }
+                }
+            } else if (arg.charAt(0) == 'r') {
+                String mdlName = arg.substring(1);
+                Module mdl = groupChat.getModule(mdlName);
+                if (mdl == null) {
+                    groupChat.printBotMessage(channel, "Das Module _" + mdlName + "_ existiert nicht!");
+                } else {
+                    boolean cState = ((ModuleBase)mdl).getState();
+                    mdl.save();
+                    ((ModuleBase)mdl).setState(false);
+                    mdl.load();
+                    ((ModuleBase)mdl).setState(cState);
+                    groupChat.printBotMessage(channel, "Das Module _" + mdl.getName() + "_ wurde neugeladen!");
                 }
             } else if (arg.charAt(0) == '?') {
                 String mdlName = arg.substring(1);

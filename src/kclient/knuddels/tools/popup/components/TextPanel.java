@@ -13,6 +13,7 @@ public class TextPanel implements Component {
     private int position, width, height;
     private String text, backgroundImage;
     private Location location;
+    private String id, updateId;
 
     public TextPanel(String text, int width, int height, Location loc) {
         this(text, width, height, new int[] {0,0,0}, new int[] {0xBE, 0xBC, 0xFB}, "pics/cloudsblue.gif", 17, loc);
@@ -73,5 +74,19 @@ public class TextPanel implements Component {
     }
     public int getHeight() {
         return this.height;
+    }
+    
+    public void setId(String id) {
+        this.id = id;
+    }
+    public String getId() {
+        return this.id;
+    }
+    
+    public void setUpdateId(String id) {
+        this.updateId = id;
+    }
+    public String getUpdateId() {
+        return this.updateId;
     }
 }

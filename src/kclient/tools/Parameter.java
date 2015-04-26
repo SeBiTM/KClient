@@ -68,6 +68,12 @@ public class Parameter {
         return null;
     }
     
+    public boolean getBoolean(String key) {
+        if (this.containsKey(key))
+            return this.get(key).equals("true");
+        return false;
+    }
+    
     public Color getColor(String key) {
         String strColor = get(key);
         if (strColor == null || strColor.isEmpty())

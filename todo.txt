@@ -72,12 +72,13 @@ ToDo:
 
         - AntiAdminModule implementiert
             - Nachricht im Channel/Tray wenn....
-            - CM den Channel betritt
-            - CM /m sendet
-            - CM /p sendet
-            - Admin /m sendet
-            - Admin /p sendet
-            - Admin den Channel betritt
+            - CM den Channel betritt x
+            - CM /m sendet x
+            - CM /p sendet x
+            - Admin /m sendet x
+            - Admin /p sendet x
+            - Admin den Channel betritt x
+SOUNDS!!!!!!!!
             - ein Notruf eröffnet wurde
 
         MauMau:

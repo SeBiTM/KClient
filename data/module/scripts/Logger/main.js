@@ -4,7 +4,6 @@ var App = (new function() {
     this.frame = new javax.swing.JFrame("Logger");
         
     this.onAppStart = function () {
-        Logger.info('test');
         var tabbedPane = new Packages.kclient.ui.TabbedPane();
         tabbedPane.addTab("Chat-Server", new javax.swing.JScrollPane(App.chatLog));
         tabbedPane.addTab("Card-Server", new javax.swing.JScrollPane(App.cardLog));
@@ -15,6 +14,7 @@ var App = (new function() {
         App.frame.setVisible(true);
     };
     this.onAppStop = function () {
+        Logger.info('Test');
         App.frame.dispose(); 
     };
     

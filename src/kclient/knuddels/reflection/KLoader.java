@@ -14,6 +14,7 @@ import javassist.CtField;
 import javassist.CtMethod;
 import javassist.LoaderClassPath;
 import javassist.NotFoundException;
+import javax.lang.model.element.Modifier;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import kclient.knuddels.tools.ChatSystem;
@@ -24,7 +25,7 @@ import kclient.tools.Logger;
  * @author SeBi
  */
 public class KLoader {
-    private static final int STEPS = 37;
+    private static final int STEPS = 39;
     private int currentStep = 0;
 
     private static final Map<ChatSystem, KLoader> loaders;
@@ -133,6 +134,7 @@ public class KLoader {
         this.prepareGroupChat();
         this.prepareModule();
         this.prepareGameHandler();
+        this.prepareSmileyWars();
         this.prepareConnection();
         this.prepareBingoFrame();
         this.prepareGameFrame();
@@ -383,6 +385,43 @@ public class KLoader {
             Logger.get().error(e);
         }
     }
+    private void prepareSmileyWars() {
+        try {
+            CtClass sw = this.cp.get("smileywars.SmileyWarsModule").getSuperclass();
+            sw.defrost();
+            
+            Logger.get().info("   - Prepare SmileyWarsModule (" + sw.getName() + ")");
+            this.currentStep++;
+
+            Logger.get().info("      - Add Method getField()");
+            CtField tmpField = sw.getDeclaredField(this.system.getManipulation().getSmileyWarsField());
+            sw.addMethod(CtMethod.make(
+                "public " + tmpField.getType().getName() + " getField() {"
+            +       "return this." + tmpField.getName() + ";"
+            +   "}"
+            , sw));
+            
+            this.cp.toClass(sw, loader);
+            //--------------------------------------------------------------------------------
+            CtClass swMeta = this.cp.get("smileywarsmeta.SmileyWarsMetaModule").getSuperclass();
+            swMeta.defrost();
+            
+            Logger.get().info("   - Prepare SmileyWarsMetaModule (" + swMeta.getName() + ")");
+            this.currentStep++;
+
+            Logger.get().info("      - Add Method getMetaField()");
+            CtField tmpMetaField = swMeta.getDeclaredField(this.system.getManipulation().getSmileyWarsMetaField());
+            swMeta.addMethod(CtMethod.make(
+                "public " + tmpMetaField.getType().getName() + " getMetaField() {"
+            +       "return this." + tmpMetaField.getName() + ";"
+            +   "}"
+            , swMeta));
+            
+            this.cp.toClass(swMeta, loader);
+        } catch (Exception e) {
+            Logger.get().error(e);
+        }
+    }
     private void prepareConnection() {
         try {
             CtClass connection = this.cp.get(this.system.getManipulation().getConnectionClass());
@@ -424,8 +463,15 @@ public class KLoader {
             this.currentStep++;
             connection.addMethod(CtMethod.make(
                 "private kclient.knuddels.GroupChat getTunnel() {"
+                        //smileywarsmeta.SmileyWarsMetaModule cannot be cast to Q4
             +       "if (this.tunnel == null) {"
-            +           "this.tunnel = ((" + this.system.getManipulation().getGroupChat() + ")((" + this.system.getManipulation().getGameHandlerClass() + ")this." + this.system.getManipulation().getConnectionField() + ")." + this.system.getManipulation().getGameHandlerField() + ").tunnel;"
+            +           "if (this." + this.system.getManipulation().getConnectionField() + " instanceof smileywarsmeta.SmileyWarsMetaModule) {"
+            +               "this.tunnel = ((" + this.system.getManipulation().getGroupChat() + ")((smileywarsmeta.SmileyWarsMetaModule)this." + this.system.getManipulation().getConnectionField() + ").getMetaField()).tunnel;"
+            +           "} else if (this." + this.system.getManipulation().getConnectionField() + " instanceof smileywars.SmileyWarsModule) {"
+            +               "this.tunnel = ((" + this.system.getManipulation().getGroupChat() + ")((smileywars.SmileyWarsModule)this." + this.system.getManipulation().getConnectionField() + ").getField()).tunnel;"
+            +           "} else {"
+            +               "this.tunnel = ((" + this.system.getManipulation().getGroupChat() + ")((" + this.system.getManipulation().getGameHandlerClass() + ")this." + this.system.getManipulation().getConnectionField() + ")." + this.system.getManipulation().getGameHandlerField() + ").tunnel;"
+            +           "}"
             +       "}"
             +       "return this.tunnel;"
             +   "}"
