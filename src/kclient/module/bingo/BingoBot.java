@@ -3,6 +3,7 @@ package kclient.module.bingo;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +16,7 @@ import kclient.knuddels.network.generic.GenericProtocol;
 import kclient.knuddels.tools.toolbar.Button;
 import kclient.module.Module;
 import kclient.module.ModuleBase;
+import kclient.module.bingo.tools.BingoSheetState;
 import kclient.tools.Logger;
 import kclient.tools.Parameter;
 import kclient.tools.Util;
@@ -24,15 +26,16 @@ import kclient.tools.Util;
  * @author SeBi
  */
 public class BingoBot extends ModuleBase implements Module {
-    private final Map<String, BingoProcess> processes;
+    private final Map<Long, BingoSheet> bingoSheets;
     private boolean autoJoin;
+    private String channel;
     public int knuddels, points, rounds, sheets;
     
     public BingoBot(GroupChat groupChat) {
         super(groupChat);
         super.state = true;
         this.autoJoin = true;
-        this.processes = new HashMap<>();
+        this.bingoSheets = new HashMap<>();
     }
 
     @Override
@@ -42,32 +45,20 @@ public class BingoBot extends ModuleBase implements Module {
                 return null;
         } else if (tokens[0].equals("r") && tokens[1].equals(this.groupChat.getButlerName())) {
             String channel = tokens[3].equals("-") ? this.groupChat.getCurrentChannel() : tokens[3];
-            if (tokens[4].contains("nimmt nicht")) {
-                if (this.processes.containsKey(channel))
-                    this.processes.get(channel).fixSheetError();
-            }
-            if (tokens[4].contains("kein Bingo erreicht")) {
-                if (this.processes.containsKey(channel))
-                    this.processes.get(channel).joinBingo();
-            }
             if (tokens[4].contains("Runden erreicht und insgesamt ") && tokens[4].contains("Bingo-Punkte")) {
-                if (this.processes.containsKey(channel)) {
-                    this.processes.get(channel).joinBingo();
-                } else {
-                    if (this.autoJoin) {
-                        new Thread() {
-                            @Override
-                            public void run() {
-                                try {
-                                    Thread.sleep(10000);
-                                    int sheetsCount = 3;
-                                    for (int i = 0; i < sheetsCount; i++)
-                                        BingoBot.this.groupChat.sendPublicDelay(channel, "/bingo buy", Util.rnd(5000, 10000));
-                                } catch (InterruptedException ex) {
-                                }
+                if (this.autoJoin) {
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            try {
+                                Thread.sleep(8000);
+                                int sheetsCount = 3;
+                                for (int i = 0; i < sheetsCount; i++)
+                                    BingoBot.this.groupChat.sendPublicDelay(channel, "/bingo buy", Util.rnd(3000, 6000));
+                            } catch (InterruptedException ex) {
                             }
-                        }.start();
-                    }
+                        }
+                    }.start();
                 }
                 
                 if (tokens[4].contains("1 Knuddel"))
@@ -87,10 +78,71 @@ public class BingoBot extends ModuleBase implements Module {
                         module.getName().equals("BINGO_SET_STATE")) 
                     {
                         String channelName = module.get("CHANNEL_NAME");
-                        if (!this.processes.containsKey(channelName) && module.getName().equals("BINGO_INIT"))
-                            this.processes.put(channelName, new BingoProcess(channelName, this, this.groupChat));
-                        if (this.processes.containsKey(channelName))
-                            this.processes.get(channelName).handle(module);
+                        this.channel = channelName;
+                        if (module.equalsName("BINGO_INIT")) {
+                            final GenericProtocol sheet = module.get("BINGO_SHEET");
+                            final long sheetId = BingoBot.getSheetId(sheet);
+                            
+                            if (this.bingoSheets.containsKey(sheetId))
+                                this.bingoSheets.remove(sheetId);
+                            
+                            new Thread("BingoSheet[" + sheetId + "]") {
+                                @Override
+                                public void run() {
+                                    BingoBot.this.bingoSheets.put(sheetId, new BingoSheet(BingoBot.this.groupChat, BingoBot.this, sheetId, sheet));
+                                }
+                            }.start();   
+                        } else if (module.equalsName("BINGO_SET_STATE")) {
+                            long sheetId = BingoBot.getSheetId(module);
+                            BingoSheetState state = BingoSheetState.parse((byte)module.get("BINGO_SHEET_STATE_CONST"));
+                            //System.out.println("[SetState -> " + sheetId + "] State: " + state);
+                            if (this.bingoSheets.containsKey(sheetId) && this.bingoSheets.get(sheetId) != null) {
+                                this.bingoSheets.get(sheetId).setState(state);
+                                if (state != BingoSheetState.ACTIVE) {
+                                    this.bingoSheets.remove(sheetId);
+                                    this.groupChat.removeFrame(0, sheetId);
+                                }
+                            }
+                        } else if (module.getName().equals("BINGO_UPDATE")) {
+                            ArrayList tmpBingoSheets = module.get("BINGO_SHEET_UPDATE");
+                            for (Object bso : tmpBingoSheets) {
+                                GenericProtocol sheet = (GenericProtocol)bso;
+                                long sheetId = BingoBot.getSheetId(sheet);
+                                if (!this.bingoSheets.containsKey(sheetId))
+                                    continue;
+                                this.bingoSheets.get(sheetId).handleUpdate(sheet);
+                            }
+                            //messages
+                            ArrayList tmpMessages = module.get("BINGO_GAME_MESSAGE");
+                            for (Object tm : tmpMessages) {
+                                GenericProtocol msg = (GenericProtocol)tm;
+                                int msgId = msg.get("MES_ID");
+                                String msgText = msg.get("TEXT");
+                                if (msgText.contains("hattest _kein_ Bingo") || msgText.contains("Fehler: Das Bingo-Blatt nimmt")) {
+                                    long sheetId = -1L;
+                                    for (BingoSheet sheet : this.bingoSheets.values()) {
+                                        if (sheet.getBingoCalled())
+                                            sheetId = sheet.getId();
+                                    }
+                                    if (sheetId != -1L) {
+                                        this.bingoSheets.remove(sheetId);
+                                        this.groupChat.removeFrame(0, sheetId);
+                                    } else
+                                        this.bingoSheets.clear();
+                                }
+                                //System.out.println("Global Message -> " + msgId + " = " + msgText);
+                            }
+
+                            //history update
+                            ArrayList tmpHistory = module.get("BINGO_HISTORY_UPDATE");
+                            for (Object th : tmpHistory) {
+                                GenericProtocol history = (GenericProtocol)th;
+                                long sheetId = BingoBot.getSheetId(history);
+                                if (!this.bingoSheets.containsKey(sheetId))
+                                    continue;
+                                this.bingoSheets.get(sheetId).handleHistoryUpdate(history);
+                            }
+                        }
                     }
                 }
             } catch (Exception e) {
@@ -124,6 +176,10 @@ public class BingoBot extends ModuleBase implements Module {
 
     public boolean getAutoJoin() {
         return this.autoJoin;
+    }
+    
+    public String getChannel() {
+        return this.channel;
     }
     
     @Override

@@ -9,16 +9,31 @@ import kclient.module.wordmix.WordMixRequest;
  *
  * @author SeBi
  */
-public class GoogleEngine implements WordMixEngine {
+public class BingEngine implements WordMixEngine {
     private final WordMixProcess process;
     
-    public GoogleEngine(WordMixProcess p) {
+    public BingEngine(WordMixProcess p) {
         this.process = p;
     }
     
     @Override
     public void getAnswer(String mix) {
         String source = this.makeRequest(mix);
+        int lIndex = 0;
+        int index = 0;
+        do {
+            index = source.indexOf("<strong>", lIndex);
+            if (index == -1)
+                break;
+            int endIndex = source.indexOf("</strong>", index);
+            if (endIndex == -1)
+                break;
+            
+            String data = source.substring(index, endIndex);
+            System.err.println(data);
+            lIndex = endIndex;
+        } while (index != -1);
+        
         for (String s : source.split("<b>")) {
             String[] t = s.split("</b>");
             if (t[0].split(" ").length == mix.split(" ").length){
@@ -28,8 +43,8 @@ public class GoogleEngine implements WordMixEngine {
                 }
             }
         }
-        for(String s : source.split("<em>")) {
-            String[] t = s.split("</em>");
+        for(String s : source.split("<strong>")) {
+            String[] t = s.split("</strong>");
             if (t[0].split(" ").length == mix.split(" ").length) {
                 if (!WordMixBot.replace(t[0]).equalsIgnoreCase(WordMixBot.replace(mix))) {
                     this.process.setAnswer(t[0], this);
@@ -52,10 +67,10 @@ public class GoogleEngine implements WordMixEngine {
             }
         }
         
-        data = source.split("<em>");
+        data = source.split("<strong>");
         buffer = new StringBuilder();
         for (int i = 0; i < data.length; i++) {
-            String word = data[i].split("</em>")[0];
+            String word = data[i].split("</strong>")[0];
             if (mix.contains("\"" + word + "\"")) {
                 buffer.append(word).append(" ");
                 if (WordMixBot.replace(buffer.toString()).length() >= WordMixBot.replace(mix).length()) {
@@ -71,8 +86,8 @@ public class GoogleEngine implements WordMixEngine {
     
     private String makeRequest(String mix) {
         try {
-            WordMixRequest r = new WordMixRequest("http://www.google.de/search", 
-                    "hl=&num=100&q=" + URLEncoder.encode(mix, "UTF-8") + "&btnG=Google-Suche&meta=");
+            WordMixRequest r = new WordMixRequest("http://www.bing.com/search", 
+                    "?q=" + URLEncoder.encode(mix, "UTF-8") + "&go=Senden");
             return r.make();
         } catch (UnsupportedEncodingException ex) {
         }

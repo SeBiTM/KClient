@@ -133,6 +133,17 @@ public class GroupChat extends KClass {
                 if (this.channels.contains(tokens[1]))
                     this.channels.remove(tokens[1]);
                 this.channels.add(tokens[1]);
+            } else if (opcode.equals("d")) {
+                String channelFrom = tokens[1].equals("-") ? this.getCurrentChannel() : tokens[1];
+                String channel = tokens[2];
+                if (this.channels.contains(channelFrom)) {
+                    for (int i = 0; i < this.channels.size(); i++)
+                        if (this.channels.get(i).equals(channelFrom)) {
+                            this.channels.remove(i);
+                            this.channels.add(i, channel);
+                            break;
+                        }
+                }
             } else if (opcode.equals("u")) {
                 this.printBotMessage(tokens[1], "Hallo " + this.nickname + ", °>fullheart.png<°-lich Willkommen im _KClient_!");
                 final String channel = tokens[1];

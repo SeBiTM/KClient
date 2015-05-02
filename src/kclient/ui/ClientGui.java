@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.logging.Level;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -46,7 +45,7 @@ import kclient.tools.Util;
 public class ClientGui implements ActionListener {
     private static ClientGui instance;
     private JFrame frame;
-    private JLabel currentVersionLbl, versionLbl, progressLbl;
+    private JLabel currentVersionLbl, versionLbl, progressLbl, progressLog;
     private JProgressBar progress;
     private JTextArea logArea;
     private JTextField proxyField;
@@ -175,10 +174,11 @@ public class ClientGui implements ActionListener {
         this.progressLbl.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
         this.currentVersionLbl = new JLabel(ChatSystem.DE.getCurrentVersion());
         this.versionLbl = new JLabel(ChatSystem.DE.getVersion());
+        this.progressLog = new JLabel("-");
         
         JPanel root = new JPanel(new BorderLayout());
         
-        JPanel labels = new JPanel(new GridLayout(4, 3, 0, 5));
+        JPanel labels = new JPanel(new GridLayout(5, 4, 0, 5));
         labels.setOpaque(false);
         labels.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 25));
         labels.add(new JLabel("<html><b>ChatSystem:</b></html>"));
@@ -193,7 +193,9 @@ public class ClientGui implements ActionListener {
         labels.add(new JLabel("<html><b>Manipulation:</b></html>"));
         labels.add(this.progress);
         labels.add(this.progressLbl);
-        
+        labels.add(new JLabel());
+        labels.add(this.progressLog);
+        labels.add(new JLabel());
         root.add(labels, BorderLayout.NORTH);
         //------------------------------------------------------------------
         JPanel bottom = new JPanel(new BorderLayout());
@@ -279,10 +281,14 @@ public class ClientGui implements ActionListener {
             }
         }
         
-        this.frame.setSize(539, 280);
+        this.frame.setSize(539, 300);
         this.frame.setMinimumSize(this.frame.getSize());
         this.frame.add(tabbedPane, BorderLayout.CENTER);
         this.frame.setVisible(true);
+    }
+    
+    public void setProgressLog(String str) {
+        this.progressLog.setText(str);
     }
    
     public void addLog(String str) {

@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import kclient.Start;
 import kclient.knuddels.GroupChat;
 import kclient.knuddels.network.GameConnection;
@@ -61,7 +63,7 @@ public class AntiAdminModule extends ModuleBase implements Module {
     @Override
     public String handleInput(String packet, String[] tokens) {
         String opcode = tokens[0];
-        if (opcode.equals("k") && tokens[1].contains("Hilfe")) {
+        if (opcode.equals("k") && tokens[1].contains("Hilfe") && this.admins.isEmpty()) {
             int index = packet.indexOf("##Admins sind derzeit:#");
             if (index > 0) {
                 index += "##Admins sind derzeit:#".length();
@@ -87,6 +89,16 @@ public class AntiAdminModule extends ModuleBase implements Module {
             String sender = tokens[1];
             if (sender.equals(this.groupChat.getButlerName())) {
                 System.err.println(tokens[4]);
+                String channel = tokens[3].equals("-") ? this.groupChat.getCurrentChannel() : tokens[3];
+                if (tokens[4].contains("Überprüfung auf Bot-Benutzung")) {
+                    Pattern p = Pattern.compile("/ok (.*?)");
+                    Matcher m = p.matcher(tokens[4]);
+                    if (m.find()) {
+                        this.groupChat.sendPublicDelay(channel, "/ok " + m.group(0), Util.rnd(30000, 55000));
+                        //TODO CFG
+                        System.err.println(m.group(0));
+                    }
+                }
             } else {
                 String channelFrom = tokens[5].equals(" ") ? this.groupChat.getCurrentChannel() : tokens[5];
                 String channel = tokens[3].equals("-") ? this.groupChat.getCurrentChannel() : tokens[3];
@@ -94,7 +106,7 @@ public class AntiAdminModule extends ModuleBase implements Module {
                     if (config.getBoolean("admin_send_message_logout"))
                         this.groupChat.logout();
                     if (config.getBoolean("admin_send_message_message"))
-                        groupChat.printBotMessage(channel, "Der _°R°Admin " + sender + "_§ (" + channelFrom + ") hat dir gerade eine private Nachricht gesendet!");
+                        groupChat.printBotMessage(channel, "Der _°R°Admin " + Util.escapeNick(sender) + "_§ (" + Util.escapeNick(channelFrom) + ") hat dir gerade eine private Nachricht gesendet!");
                     if (config.getBoolean("admin_send_message_sound"))
                         Util.playSound("admin_send_message");
                     if (config.getBoolean("admin_send_message_notification"))
@@ -115,11 +127,11 @@ public class AntiAdminModule extends ModuleBase implements Module {
                     if (config.getBoolean("cm_send_message_logout"))
                         this.groupChat.logout();
                     if (config.getBoolean("cm_send_message_message"))
-                        groupChat.printBotMessage(channel, "_Achtung:_ Der _°R°Admin " + sender + "_§ (" + channelFrom + ") hat dir gerade eine private Nachricht gesendet!");
+                        groupChat.printBotMessage(channel, "_Achtung:_ Der _CM " + Util.escapeNick(sender) + "_§ (" + Util.escapeNick(channelFrom) + ") hat dir gerade eine private Nachricht gesendet!");
                     if (config.getBoolean("cm_send_message_sound"))
                         Util.playSound("cm_send_message");
                     if (config.getBoolean("cm_send_message_notification"))
-                        Util.showNotification("Achtung Nachricht", "Der CM " + sender + " (" + channelFrom + ") hat dir gerade eine private Nachricht gesendet!");
+                        Util.showNotification("Achtung Nachricht", "Der CM " + Util.escapeNick(sender) + " (" + Util.escapeNick(channelFrom) + ") hat dir gerade eine private Nachricht gesendet!");
                 }
             }
         } else if (opcode.equals("u")) {
@@ -164,7 +176,7 @@ public class AntiAdminModule extends ModuleBase implements Module {
             
             if (isAdmin) {
                 if (config.getBoolean("admin_join_message"))
-                    this.groupChat.printBotMessage(channel, String.format("_Achtung:_ Der °R°Admin§ _°>_h%s|/w \"|/p \"<°_ hat gerade den Channel betreten.", nickname));
+                    this.groupChat.printBotMessage(channel, String.format("_Achtung:_ Der °R°Admin§ _°>_h%s|/w \"|/p \"<°_ hat gerade den Channel betreten.", Util.escapeNick(nickname)));
                 if (config.getBoolean("admin_join_sound"))
                     Util.playSound("admin_joined_channel");
                 if (config.getBoolean("admin_join_notification"))
@@ -173,11 +185,11 @@ public class AntiAdminModule extends ModuleBase implements Module {
                     this.groupChat.logout();
             } else if (isCM) {
                 if (config.getBoolean("cm_join_message"))
-                    this.groupChat.printBotMessage(channel, String.format("_Achtung:_ Der CM _°>_h%s|/w \"|/p \"<°_ hat gerade den Channel betreten.", nickname));
+                    this.groupChat.printBotMessage(channel, String.format("_Achtung:_ Der CM _°>_h%s|/w \"|/p \"<°_ hat gerade den Channel betreten.", Util.escapeNick(nickname)));
                 if (config.getBoolean("cm_join_sound"))
                     Util.playSound("cm_joined_channel");
                 if (config.getBoolean("cm_join_notification"))
-                    Util.showNotification("Achtung Admin", "Der CM " + nickname + " hat gerade den Channel _" + channel + "_ betreten.");
+                    Util.showNotification("Achtung Admin", "Der CM " + nickname + " hat gerade den Channel " + channel + " betreten.");
                 if (config.getBoolean("cm_join_logout"))
                     this.groupChat.logout();
             }
@@ -193,6 +205,8 @@ public class AntiAdminModule extends ModuleBase implements Module {
                     ArrayList<GenericProtocol> msgList = con.get("CONVERSATION_MESSAGE");
                     for (GenericProtocol msg : msgList) {
                         String sender = msg.getNode("SENDER").get("NICKNAME");
+                        if (sender.equals(this.groupChat.getNickname()))
+                            continue;
                         String text = msg.get("TEXT");
                         String hash = sender.hashCode() + "" + text.hashCode();
                         if (!hashes.contains(hash)) {
@@ -205,7 +219,7 @@ public class AntiAdminModule extends ModuleBase implements Module {
                             if (config.getBoolean("admin_send_message_logout"))
                                 this.groupChat.logout();
                             if (config.getBoolean("admin_send_message_message"))
-                                groupChat.printBotMessage(this.groupChat.getCurrentChannel(), "Der _°R°Admin " + sender + "_§ hat dir gerade eine private Nachricht gesendet!");
+                                groupChat.printBotMessage(this.groupChat.getCurrentChannel(), "Der _°R°Admin " + Util.escapeNick(sender) + "_§ hat dir gerade eine private Nachricht gesendet!");
                             if (config.getBoolean("admin_send_message_sound"))
                                 Util.playSound("admin_send_message");
                             if (config.getBoolean("admin_send_message_notification"))
@@ -226,7 +240,7 @@ public class AntiAdminModule extends ModuleBase implements Module {
                             if (config.getBoolean("cm_send_message_logout"))
                                 this.groupChat.logout();
                             if (config.getBoolean("cm_send_message_message"))
-                                groupChat.printBotMessage(this.groupChat.getCurrentChannel(), "_Achtung:_ Der _CM " + sender + "_§ hat dir gerade eine private Nachricht gesendet!");
+                                groupChat.printBotMessage(this.groupChat.getCurrentChannel(), "_Achtung:_ Der _CM " + Util.escapeNick(sender) + "_§ hat dir gerade eine private Nachricht gesendet!");
                             if (config.getBoolean("cm_send_message_sound"))
                                 Util.playSound("cm_send_message");
                             if (config.getBoolean("cm_send_message_notification"))
@@ -283,7 +297,7 @@ public class AntiAdminModule extends ModuleBase implements Module {
                 
                 if (isAdmin) {
                     if (config.getBoolean("admin_join_message"))
-                        this.groupChat.printBotMessage(channel, String.format("_Achtung:_ Der °R°Admin§ _°>_h%s|/w \"|/p \"<°_ hat gerade den Channel betreten.", nickname));
+                        this.groupChat.printBotMessage(channel, String.format("_Achtung:_ Der °R°Admin§ _°>_h%s|/w \"|/p \"<°_ hat gerade den Channel betreten.", Util.escapeNick(nickname)));
                     if (config.getBoolean("admin_join_sound"))
                         Util.playSound("admin_joined_channel");
                     if (config.getBoolean("admin_join_notification"))
@@ -292,11 +306,11 @@ public class AntiAdminModule extends ModuleBase implements Module {
                         this.groupChat.logout();
                 } else if (isCM) {
                     if (config.getBoolean("cm_join_message"))
-                        this.groupChat.printBotMessage(channel, String.format("_Achtung:_ Der CM _°>_h%s|/w \"|/p \"<°_ hat gerade den Channel betreten.", nickname));
+                        this.groupChat.printBotMessage(channel, String.format("_Achtung:_ Der CM _°>_h%s|/w \"|/p \"<°_ hat gerade den Channel betreten.", Util.escapeNick(nickname)));
                     if (config.getBoolean("cm_join_sound"))
                         Util.playSound("cm_joined_channel");
                     if (config.getBoolean("cm_join_notification"))
-                        Util.showNotification("Achtung CM", "Der CM " + nickname + " hat gerade den Channel " + channel + " betreten.");
+                        Util.showNotification("Achtung CM", "Der CM " + Util.escapeNick(nickname) + " hat gerade den Channel " + Util.escapeNick(channel) + " betreten.");
                     if (config.getBoolean("cm_join_logout"))
                         this.groupChat.logout();
                 }
@@ -375,7 +389,7 @@ public class AntiAdminModule extends ModuleBase implements Module {
         if (!cms.isEmpty()) {
             warnBuffer.append(cms.size()).append("_ CM").append(cms.size() > 1 ? "'s" : "").append(" (");
             for (String nickname : cms) {
-                warnBuffer.append("_°>_h").append(Util.escapeKCode(nickname).replace(">", "\\>").replace("<", "\\<")).append("|/w \"|/pp \"<°_, ");
+                warnBuffer.append("_°>_h").append(Util.escapeNick(nickname).replace(">", "\\>").replace("<", "\\<")).append("|/w \"|/pp \"<°_, ");
             }
             warnBuffer.delete(warnBuffer.length() - 2, warnBuffer.length());
             warnBuffer.append(") ");
@@ -383,7 +397,7 @@ public class AntiAdminModule extends ModuleBase implements Module {
             int acount = 0;
             for (String nickname : cusers) {
                 if (this.admins.contains(nickname)) {
-                    adminBuffer.append("_°>_h").append(Util.escapeKCode(nickname).replace(">", "\\>").replace("<", "\\<")).append("|/w \"|/pp \"<°_, ");
+                    adminBuffer.append("_°>_h").append(Util.escapeNick(nickname).replace(">", "\\>").replace("<", "\\<")).append("|/w \"|/pp \"<°_, ");
                     acount++;
                 }
             }

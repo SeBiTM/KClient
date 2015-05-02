@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import kclient.knuddels.GroupChat;
 import kclient.knuddels.tools.toolbar.Button;
+import kclient.module.wordmix.engines.BingEngine;
 import kclient.module.wordmix.engines.GoogleEngine;
 import kclient.module.wordmix.engines.WordMixEngine;
 
@@ -26,7 +27,8 @@ public class WordMixProcess {
         this.channel = channel;
         this.kmix = kmix;
         this.engines = Arrays.asList(new WordMixEngine[] {
-            new GoogleEngine(this)
+            new GoogleEngine(this),
+            //new BingEngine(this)
         });
     }
     

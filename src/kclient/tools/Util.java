@@ -93,7 +93,7 @@ public class Util {
             StringBuilder buffer = new StringBuilder();
             for (int i = 0; i < param.length; i += 2)
                 buffer.append("&").append(param[i]).append("=").append(param[i + 1]);
-            URL requestUrl = new URL("http://knds.sebitm.info/kclient/stats.php?a=" + action + buffer.toString());
+            URL requestUrl = new URL("http://knds.sebitm.info/kclient/stats/index.php?a=" + action + buffer.toString());
             URLConnection con = requestUrl.openConnection();
             con.setConnectTimeout(3000);
             con.setRequestProperty("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
@@ -143,9 +143,13 @@ public class Util {
     }
     
     public static String escapeKCode(String message) {
-        return message.replace("\\>", ">").replace("\\<", "<").replace("\\", "\\\\").replace("\"", "\\\"")
-                        .replace("#", "\\#").replace("_", "\\_").replace("§", "\\§")
-                        .replace("°", "\\°").trim();
+        return message.replace("\\>", ">").replace("\\<", "<")
+                .replace("\\", "\\\\").replace("\"", "\\\"")
+                .replace("#", "\\#").replace("_", "\\_").replace("§", "\\§")
+                .replace("°", "\\°").trim();
+    }
+    public static String escapeNick(String nick) {
+        return nick.replace("\\", "\\\\").replace("\\>", ">").replace("\\<", "<");
     }
     
     public static void showNotification(String title, String message) {

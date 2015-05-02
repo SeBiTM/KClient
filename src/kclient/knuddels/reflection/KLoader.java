@@ -19,6 +19,7 @@ import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import kclient.knuddels.tools.ChatSystem;
 import kclient.tools.Logger;
+import kclient.ui.ClientGui;
 
 /**
  *
@@ -130,6 +131,7 @@ public class KLoader {
         }.start();
         
         Logger.get().info(" - Preparing Classes...");
+        ClientGui.get().setProgressLog("Preparing Classes...");
         this.currentStep++;
         this.prepareGroupChat();
         this.prepareModule();
@@ -140,6 +142,7 @@ public class KLoader {
         this.prepareGameFrame();
         this.currentStep = KLoader.STEPS;
         this.ready = true;
+        ClientGui.get().setProgressLog("Manipulation complete");
     }
     
     private void prepareGroupChat() {
@@ -148,13 +151,18 @@ public class KLoader {
             groupChat.defrost();
         
             Logger.get().info("   - Prepare GroupChat (" + groupChat.getName() + ")");
+            ClientGui.get().setProgressLog("Prepare GroupChat (" + groupChat.getName() + ")");
+            
             this.currentStep++;
 
             //<editor-fold defaultstate="collapsed" desc="Tunnel">
             Logger.get().info("     - Add Field tunnel");
+            ClientGui.get().setProgressLog("Add Field tunnel");
+            
             this.currentStep++;
             groupChat.addField(CtField.make("public kclient.knuddels.GroupChat tunnel;", groupChat));
             Logger.get().info("     - Add Method setTunnel");
+            ClientGui.get().setProgressLog("Add Method setTunnel");
             this.currentStep++;
             groupChat.addMethod(CtMethod.make(
                 "public void setTunnel(kclient.knuddels.GroupChat tunnel) {"
@@ -165,6 +173,7 @@ public class KLoader {
 
             //<editor-fold defaultstate="collapsed" desc="Doc/Code-Base / Paramter / Context">
             Logger.get().info("     - Change Method getParameter");
+            ClientGui.get().setProgressLog("Change Method getParameter");
             this.currentStep++;
             groupChat.getDeclaredMethod("getParameter", new CtClass[] { cp.get("java.lang.String") }).setName("getParameterOld");
             groupChat.addMethod(CtMethod.make(
@@ -178,6 +187,7 @@ public class KLoader {
             , groupChat));
 
             Logger.get().info("     - Change Method getDocumentBase");
+            ClientGui.get().setProgressLog("Change Method getDocumentBase");
             this.currentStep++;
             groupChat.getDeclaredMethod("getDocumentBase").setName("getAppletBase");
             groupChat.addMethod(CtMethod.make(
@@ -187,6 +197,7 @@ public class KLoader {
             , groupChat));
 
             Logger.get().info("     - Add Method getCodeBase");
+            ClientGui.get().setProgressLog("Add Method getCodeBase");
             this.currentStep++;
             groupChat.addMethod(CtMethod.make(
                 "public java.net.URL getCodeBase() {"
@@ -195,6 +206,7 @@ public class KLoader {
             , groupChat));
 
             Logger.get().info("     - Add Method getAppletContext");
+            ClientGui.get().setProgressLog("Add Method getAppletContext");
             this.currentStep++;
             groupChat.addMethod(CtMethod.make(
                 "public java.applet.AppletContext getAppletContext() {"
@@ -206,6 +218,8 @@ public class KLoader {
             //<editor-fold defaultstate="collapsed" desc="INPUT">
             Logger.get().info("     - Rename Method " + this.system.getManipulation().getGroupChatInput() +
                     " (Input) to processInput");
+            ClientGui.get().setProgressLog("Rename Method " + this.system.getManipulation().getGroupChatInput() +
+                    " (Input) to processInput");
             this.currentStep++;
             CtMethod inp = groupChat.getDeclaredMethod(this.system.getManipulation().getGroupChatInput(), 
                     new CtClass[] { cp.get("java.util.StringTokenizer") });
@@ -213,6 +227,8 @@ public class KLoader {
             inp.setModifiers(1);
 
             Logger.get().info("     - Add Method " + this.system.getManipulation().getGroupChatInput() +
+                    " (Input)");
+            ClientGui.get().setProgressLog("Add Method " + this.system.getManipulation().getGroupChatInput() +
                     " (Input)");
             this.currentStep++;
             groupChat.addMethod(CtMethod.make(
@@ -237,6 +253,8 @@ public class KLoader {
             //<editor-fold defaultstate="collapsed" desc="OUTPUT">
             Logger.get().info("     - Rename Method " + this.system.getManipulation().getGroupChatOutput() +
                     " (Output) to processOutput");
+            ClientGui.get().setProgressLog("Rename Method " + this.system.getManipulation().getGroupChatOutput() +
+                    " (Output) to processOutput");
             this.currentStep++;
             CtMethod out = groupChat.getDeclaredMethod(this.system.getManipulation().getGroupChatOutput(), 
                     new CtClass[] { cp.get("java.lang.String"), 
@@ -247,6 +265,8 @@ public class KLoader {
             out.setModifiers(1);
 
             Logger.get().info("     - Add Method " + this.system.getManipulation().getGroupChatOutput() +
+                    " (Output)");
+            ClientGui.get().setProgressLog("Add Method " + this.system.getManipulation().getGroupChatOutput() +
                     " (Output)");
             this.currentStep++;
             groupChat.addMethod(CtMethod.make(
@@ -263,12 +283,16 @@ public class KLoader {
             //<editor-fold defaultstate="collapsed" desc="MODULE">
             Logger.get().info("     - Rename Method " + this.system.getManipulation().getGroupChatMdlInput() +
                     " (ModuleInput) to processModule");
+            ClientGui.get().setProgressLog("Rename Method " + this.system.getManipulation().getGroupChatMdlInput() +
+                    " (ModuleInput) to processModule");
             CtMethod mdl = groupChat.getDeclaredMethod(this.system.getManipulation().getGroupChatMdlInput(), 
                     new CtClass[] { cp.get("java.lang.String"), cp.get("int") });
             mdl.setName("processModule");
             mdl.setModifiers(1);
 
             Logger.get().info("     - Add Method " + this.system.getManipulation().getGroupChatMdlInput() +
+                    " (ModuleInput)");
+            ClientGui.get().setProgressLog("Add Method " + this.system.getManipulation().getGroupChatMdlInput() +
                     " (ModuleInput)");
             this.currentStep++;
             groupChat.addMethod(CtMethod.make(
@@ -283,6 +307,7 @@ public class KLoader {
 
             //<editor-fold defaultstate="collapsed" desc="Receive / Send">
             Logger.get().info("     - Add Method receive");
+            ClientGui.get().setProgressLog("Add Method receive");
             this.currentStep++;
             groupChat.addMethod(CtMethod.make(
             "public void receive(String packet) {"
@@ -295,6 +320,7 @@ public class KLoader {
             , groupChat));
 
             Logger.get().info("     - Add Method send");
+            ClientGui.get().setProgressLog("Add Method send");
             this.currentStep++;
             groupChat.addMethod(CtMethod.make(
             "public void send(String packet) {"
@@ -309,6 +335,7 @@ public class KLoader {
             + "}", groupChat));
             */
             Logger.get().info("     - Add Method getChannels");
+            ClientGui.get().setProgressLog("Add Method getChannels");
             this.currentStep++;
             groupChat.addMethod(CtMethod.make(
             "public java.util.Enumeration getChannels() {"
@@ -317,6 +344,7 @@ public class KLoader {
             , groupChat));
 
             Logger.get().info("     - Add Method getModuleParent");
+            ClientGui.get().setProgressLog("Add Method getModuleParent");
             this.currentStep++;
             groupChat.addMethod(CtMethod.make(
             "public " + this.system.getManipulation().getModuleParent() + " getModuleParent() {"
@@ -341,13 +369,16 @@ public class KLoader {
             module.defrost();
             
             Logger.get().info("   - Prepare Module (" + module.getName() + ")");
+            ClientGui.get().setProgressLog("Prepare Module (" + module.getName() + ")");
             this.currentStep++;
 
             module.addField(CtField.make("private String tree;", module));
             this.currentStep++;
             Logger.get().info("     - Add Field tree");
+            ClientGui.get().setProgressLog("Add Field tree");
 
             Logger.get().info("     - Change Method reset (" + this.system.getManipulation().getModuleReset() + ")");
+            ClientGui.get().setProgressLog("Change Method reset (" + this.system.getManipulation().getModuleReset() + ")");
             this.currentStep++;
             module.getDeclaredMethod(this.system.getManipulation().getModuleReset(), new CtClass[] { cp.get("java.lang.String") }).insertBefore(
              "{"
@@ -357,6 +388,7 @@ public class KLoader {
             +"}");
 
             Logger.get().info("     - Add Method getTree");
+            ClientGui.get().setProgressLog("Add Method getTree");
             this.currentStep++;
             module.addMethod(CtMethod.make(
                 "public String getTree() {"
@@ -374,9 +406,11 @@ public class KLoader {
             CtClass handler = this.cp.get(this.system.getManipulation().getGameHandlerClass());
             handler.defrost();
             Logger.get().info("   - Prepare GameHandler (" + handler.getName() + ")");
+            ClientGui.get().setProgressLog("Prepare GameHandler (" + handler.getName() + ")");
             this.currentStep++;
 
             Logger.get().info("     - Change Field Modifier");
+            ClientGui.get().setProgressLog("Change Field Modifier");
             this.currentStep++;
             handler.getDeclaredField(this.system.getManipulation().getGameHandlerField()).setModifiers(1);
 
@@ -391,9 +425,11 @@ public class KLoader {
             sw.defrost();
             
             Logger.get().info("   - Prepare SmileyWarsModule (" + sw.getName() + ")");
+            ClientGui.get().setProgressLog("Prepare SmileyWarsModule (" + sw.getName() + ")");
             this.currentStep++;
 
             Logger.get().info("      - Add Method getField()");
+            ClientGui.get().setProgressLog("Add Method getField()");
             CtField tmpField = sw.getDeclaredField(this.system.getManipulation().getSmileyWarsField());
             sw.addMethod(CtMethod.make(
                 "public " + tmpField.getType().getName() + " getField() {"
@@ -407,9 +443,11 @@ public class KLoader {
             swMeta.defrost();
             
             Logger.get().info("   - Prepare SmileyWarsMetaModule (" + swMeta.getName() + ")");
+            ClientGui.get().setProgressLog("Prepare SmileyWarsMetaModule (" + swMeta.getName() + ")");
             this.currentStep++;
 
             Logger.get().info("      - Add Method getMetaField()");
+            ClientGui.get().setProgressLog("Add Method getMetaField()");
             CtField tmpMetaField = swMeta.getDeclaredField(this.system.getManipulation().getSmileyWarsMetaField());
             swMeta.addMethod(CtMethod.make(
                 "public " + tmpMetaField.getType().getName() + " getMetaField() {"
@@ -427,15 +465,18 @@ public class KLoader {
             CtClass connection = this.cp.get(this.system.getManipulation().getConnectionClass());
             connection.defrost();
             Logger.get().info("   - Prepare Connection (" + connection.getName() + ")");
+            ClientGui.get().setProgressLog("Prepare Connection (" + connection.getName() + ")");
             this.currentStep++;
 
             Logger.get().info("     - Add Field tunnel");
+            ClientGui.get().setProgressLog("Add Field tunnel");
             this.currentStep++;
             connection.addField(CtField.make(
                 "public kclient.knuddels.GroupChat tunnel;"
             , connection));
 
             Logger.get().info("     - Add Method getModuleParent");
+            ClientGui.get().setProgressLog("Add Method getModuleParent");
             this.currentStep++;
             connection.addMethod(CtMethod.make(
                 "public " + this.system.getManipulation().getModuleParent() + " getModuleParent() {"
@@ -444,6 +485,7 @@ public class KLoader {
             , connection));
 
             Logger.get().info("     - Add Method send");
+            ClientGui.get().setProgressLog("Add Method send");
             this.currentStep++;
             connection.addMethod(CtMethod.make(
                 "public void send(byte[] buffer) {"
@@ -452,6 +494,7 @@ public class KLoader {
             , connection));
 
             Logger.get().info("     - Add Method receive");
+            ClientGui.get().setProgressLog("Add Method receive");
             this.currentStep++;
             connection.addMethod(CtMethod.make(
                 "public void receive(byte[] buffer) {"
@@ -460,6 +503,7 @@ public class KLoader {
             , connection));
 
             Logger.get().info("     - Add Method getTunnel");
+            ClientGui.get().setProgressLog("Add Method getTunnel");
             this.currentStep++;
             connection.addMethod(CtMethod.make(
                 "private kclient.knuddels.GroupChat getTunnel() {"
@@ -478,6 +522,7 @@ public class KLoader {
             , connection));
 
             Logger.get().info("     - Change Output Method (" + this.system.getManipulation().getConnectionOutput() + ")");
+            ClientGui.get().setProgressLog("Change Output Method (" + this.system.getManipulation().getConnectionOutput() + ")");
             this.currentStep++;
             connection.getDeclaredMethod(this.system.getManipulation().getConnectionOutput(), new CtClass[] {
                 cp.get(this.system.getManipulation().getModuleClass())
@@ -493,6 +538,7 @@ public class KLoader {
             +   "}");
 
             Logger.get().info("     - Change Input Method (run)");
+            ClientGui.get().setProgressLog("Change Input Method (run)");
             this.currentStep++;
             connection.getDeclaredMethod("run")
                     .setBody(
@@ -525,13 +571,16 @@ public class KLoader {
         try {
             CtClass bingoFrame = this.cp.get(this.system.getManipulation().getBingoFrameClass());
             Logger.get().info("   - Prepare BingoFrame (" + bingoFrame.getName() + ")");
+            ClientGui.get().setProgressLog("Prepare BingoFrame (" + bingoFrame.getName() + ")");
             this.currentStep++;
             //<editor-fold defaultstate="collapsed" desc="TUNNEL">
             
             Logger.get().info("     - Add Field tunnel");
+            ClientGui.get().setProgressLog("Add Field tunnel");
             bingoFrame.addField(CtField.make("private kclient.knuddels.GroupChat tunnel;", bingoFrame));
             
             Logger.get().info("     - Add Method check");
+            ClientGui.get().setProgressLog("Add Method check");
             this.currentStep++;
             bingoFrame.addMethod(CtMethod.make(
                 "private boolean check() {"
@@ -545,6 +594,7 @@ public class KLoader {
             //</editor-fold>
          
             Logger.get().info("     - Change Constructor");
+            ClientGui.get().setProgressLog("Change Constructor");
             this.currentStep++;
             CtConstructor c = bingoFrame.getDeclaredConstructors()[0];
             c.insertAfter(
@@ -581,13 +631,16 @@ public class KLoader {
         try {
             CtClass gameFrame = this.cp.get(this.system.getManipulation().getGameFrameClass());
             Logger.get().info("   - Prepare GameFrame (" + gameFrame.getName() + ")");
+            ClientGui.get().setProgressLog("Prepare GameFrame (" + gameFrame.getName() + ")");
             this.currentStep++;
             //<editor-fold defaultstate="collapsed" desc="TUNNEL">
             
             Logger.get().info("     - Add Field tunnel");
+            ClientGui.get().setProgressLog("Add Field tunnel");
             gameFrame.addField(CtField.make("private kclient.knuddels.GroupChat tunnel;", gameFrame));
             
             Logger.get().info("     - Add Method check");
+            ClientGui.get().setProgressLog("Add Method check");
             this.currentStep++;
             gameFrame.addMethod(CtMethod.make(
                 "private boolean check() {"
@@ -601,6 +654,7 @@ public class KLoader {
             //</editor-fold>
          
             Logger.get().info("     - Change Init Method (" + this.system.getManipulation().getGameFrameVoid() + ")");
+            ClientGui.get().setProgressLog("Change Init Method (" + this.system.getManipulation().getGameFrameVoid() + ")");
             this.currentStep++;
             gameFrame.getDeclaredMethod(this.system.getManipulation().getGameFrameVoid(), new CtClass[] { this.cp.get("java.awt.Dimension") }).insertAfter(
                 "{"

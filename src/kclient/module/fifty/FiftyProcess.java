@@ -56,8 +56,9 @@ public class FiftyProcess {
                     this.tmp_risk = (this.tmp_risk * this.goalNumber);
                     
                     int sleep = Util.rnd(7000, 15000);
-                    this.bot.getGroupChat().refreshToolbar(tokens[2], new Button("Steche in " + (sleep/1000) + " Sekunden..."));
-                    this.bot.getGroupChat().sendPublicDelay(channel, calc(Arrays.asList(4.0,4.0,4.0,6.0,6.0,8.0,8.0,10.0,12.0,20.0), this.goalNumber, tmp_risk), sleep);
+                    String tmpCalc = calc(Arrays.asList(4.0,4.0,4.0,6.0,6.0,8.0,8.0,10.0,12.0,20.0), this.goalNumber, tmp_risk);
+                    this.bot.getGroupChat().refreshToolbar(tokens[2], new Button("Steche " + tmpCalc + " in " + (sleep/1000) + " Sekunden..."));
+                    this.bot.getGroupChat().sendPublicDelay(channel, tmpCalc, sleep);
                 }
             }
         } else if (tokens[0].equals("r")) {
@@ -70,7 +71,7 @@ public class FiftyProcess {
                         List<Double> dices = this.parseDices(w);
                         String dice = this.calc(dices, this.goalNumber, this.tmp_risk);
                         int sleep = Util.rnd(6000, 12000);
-                        this.bot.getGroupChat().refreshToolbar(this.channel, new Button("Sende in " + (sleep/1000) + " Sekunden..."));
+                        this.bot.getGroupChat().refreshToolbar(this.channel, new Button("Sende " + dice + " in " + (sleep/1000) + " Sekunden..."));
                         this.bot.getGroupChat().sendPublicDelay(this.channel, dice, sleep);
                     }
                 } else if (msg.contains("Du bist nun ")) {

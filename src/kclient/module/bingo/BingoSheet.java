@@ -16,7 +16,7 @@ import kclient.tools.Util;
  * @author SeBi
  */
 public class BingoSheet {
-    private final BingoProcess process;
+    private final BingoBot process;
     private final long sheetId;
     private final byte matrixSize;
     private final Map<Integer, BingoField> fields;
@@ -27,9 +27,9 @@ public class BingoSheet {
     private boolean bingoCalled;
     private final GroupChat groupChat;
     
-    public BingoSheet(GroupChat groupChat, BingoProcess process, long sheetId, GenericProtocol sheet) {
+    public BingoSheet(GroupChat groupChat, BingoBot process, long sheetId, GenericProtocol sheet) {
         this.process = process;
-        this.process.getBot().sheets++;
+        this.process.sheets++;
         this.sheetId = sheetId;
         this.fields = new HashMap<>();
         this.groupChat = groupChat;
@@ -79,7 +79,7 @@ public class BingoSheet {
             return;
         
         this.bingoRound = update.get("BINGO_ROUND");
-        this.process.getBot().rounds++;
+        this.process.rounds++;
         if (this.bingoRound >= 100)
             this.callBingo();
         String bingoCalledNumber = update.get("BINGO_CALLED_NUMBER");

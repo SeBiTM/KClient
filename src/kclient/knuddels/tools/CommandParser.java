@@ -45,6 +45,22 @@ public class CommandParser {
         
         if (cmd.equals("toolbar")) {
             groupChat.toggleToolbar();
+            return true;
+        } else if (cmd.equals("effect")) {
+            if (arg.charAt(0) == '+' || arg.charAt(0) == '-') {
+                String action = arg.charAt(0) == '+' ? "a" : "r";
+                String effect = arg.substring(1).split(" ")[0];
+                String nick = groupChat.getNickname();
+                if (arg.length() > effect.length() + 1)
+                    nick = arg.substring(arg.indexOf(' ') + 1);
+                
+                PacketBuilder buffer = new PacketBuilder("4");
+                buffer.writeNull(); buffer.writeString(action);
+                buffer.writeNull(); buffer.writeString(nick);
+                buffer.writeNull(); buffer.writeString(effect);
+                groupChat.receive(buffer.toString());
+            }
+            return true;
         } else 
         //<editor-fold defaultstate="collapsed" desc="kclient">
         if (cmd.equals("kclient")) {
@@ -117,7 +133,7 @@ public class CommandParser {
                     groupChat.printBotMessage(channel, "Das Module _" + mdlName + "_ existiert nicht!");
                 } else {
                     boolean cState = ((ModuleBase)mdl).getState();
-                    mdl.save();
+                    //mdl.save();
                     ((ModuleBase)mdl).setState(false);
                     mdl.load();
                     ((ModuleBase)mdl).setState(cState);

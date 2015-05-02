@@ -1,5 +1,8 @@
 package kclient.tools;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -45,6 +48,14 @@ public class Logger {
             if (message instanceof Exception) {
                 System.out.println("[ERROR] ");
                 ((Exception)message).printStackTrace();
+                Exception e = (Exception)message;
+                try {
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    PrintStream ps = new PrintStream(baos);
+                    e.printStackTrace(ps);
+                    ClientGui.get().addLog(baos.toString("UTF-8"));
+                } catch (IOException ex) {
+                }
             } else {
                 System.err.println("[ERROR] " + message);
             }

@@ -43,10 +43,14 @@
         - None      - Error
 
 - SendRandom (Text in 'data/rndText.txt')
-	/sendrnd [Length]						- Sendet einen [Length] Zeichen langen Text öffentlich
-	/sendrnd [Length] [Wdh]					- Sendet einen [Length] Zeichen langen Text [Wdh] mal
-	/sendrnd [Length] [Wdh] [Sleep]			- Sendet einen [Length] Zeichen langen Text [Wdh] mal im abstand von [Sleep] millisekunden
+	/sendrnd [Length]			- Sendet einen [Length] Zeichen langen Text öffentlich
+	/sendrnd [Length] [Wdh]			- Sendet einen [Length] Zeichen langen Text [Wdh] mal
+	/sendrnd [Length] [Wdh] [Sleep]		- Sendet einen [Length] Zeichen langen Text [Wdh] mal im abstand von [Sleep] millisekunden
 	/sendrnd [Length] [Wdh] [Sleep] [Text]	- Sendet einen [Length] Zeichen langen Text [Wdh] mal im abstand von [Sleep] millisekunden mit vorangehängten [Text]
-											- /sendrnd 100 5 5000 /p James:
-												Sendet einen 100 Zeichen langen Text 5 mal im Abstand von 5 Sekunden private an James
+						  - /sendrnd 100 5 5000 /p James:
+						  Sendet einen 100 Zeichen langen Text 5 mal im Abstand von 5 Sekunden private an James
+
+- Nickeffekte
+        /effect +[Effect] [Nick]
+        /effect -[Effect] [Nick]
 												
