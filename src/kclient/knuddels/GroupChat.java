@@ -56,7 +56,7 @@ public class GroupChat extends KClass {
     private final List<String> channels;
     
     public GroupChat(ChatSystem system) {
-        super(KLoader.getLoader(system), "Start");
+        super(KLoader.getLoader(system, null), "Start");
         this.params = new Parameter(
             "chatsystem" + File.separator + 
             system.name().toLowerCase());

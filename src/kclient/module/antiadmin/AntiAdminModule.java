@@ -344,7 +344,7 @@ public class AntiAdminModule extends ModuleBase implements Module {
     public void save() {
         FileWriter writer = null;
         try {
-            writer = new FileWriter("data" + File.separator + "antiadmin.properties");
+            writer = new FileWriter("data" + File.separator + "module" + File.separator + "antiadmin.properties");
             Properties cfg = new Properties();
             cfg.put("admin_join_message", config.get("admin_join_message"));
             cfg.put("admin_join_sound", config.get("admin_join_sound"));
@@ -379,7 +379,7 @@ public class AntiAdminModule extends ModuleBase implements Module {
     }
     @Override
     public void load() {
-        this.config = new Parameter("antiadmin");
+        this.config = new Parameter("module" + File.separator + "antiadmin");
         this.admins = new ArrayList<>();
         this.cms = new HashMap<>();
     }

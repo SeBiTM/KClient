@@ -15,9 +15,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.net.JarURLConnection;
 import java.net.NetworkInterface;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -27,6 +30,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.WindowConstants;
+import kclient.knuddels.tools.ChatSystem;
 import kclient.ui.ClientGui;
 
 /**
@@ -47,12 +51,12 @@ public class Util {
         return (int) (Math.random() * (max - min + 1)) + min;
     }
     
-    public static void downloadFile(String save, String url) {
+    public static void downloadFile(File save, URL url) {
         try {
             BufferedInputStream in = null;
             FileOutputStream fout = null;
             try {
-                in = new BufferedInputStream(new URL(url).openStream());
+                in = new BufferedInputStream(url.openStream());
                 fout = new FileOutputStream(save);
 
                 final byte data[] = new byte[1024];
@@ -95,7 +99,7 @@ public class Util {
                 buffer.append("&").append(param[i]).append("=").append(param[i + 1]);
             URL requestUrl = new URL("http://knds.sebitm.info/kclient/stats/index.php?a=" + action + buffer.toString());
             URLConnection con = requestUrl.openConnection();
-            con.setConnectTimeout(3000);
+            con.setConnectTimeout(10000);
             con.setRequestProperty("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
             con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 6.0; de; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3");
             con.setRequestProperty("Accept-Charset", "ISO-8859-1,utf-8;q=0.7,*;q=0.7");
@@ -170,5 +174,40 @@ public class Util {
                 }
             }
         }.start();
+    }
+    
+     public static URL[] getApplets(ChatSystem cs) {
+        try {
+            String version = cs.getVersion();
+            URL url = new URL("jar:http://chat.knuddels.de/knuddels" + version + ".jar!/META-INF/MANIFEST.MF");
+            JarURLConnection con = (JarURLConnection)url.openConnection();
+            byte[] buffer = new byte[con.getContentLength()];
+            int pos = 0;
+            while (pos < buffer.length)
+                pos += con.getInputStream().read(buffer, pos, buffer.length - pos);
+
+            String str = new String(buffer);
+            str = str.substring(str.indexOf("Class-Path:") + 12);
+            str = str.replace("\r\n ", "");
+            str = str.substring(0, str.indexOf("App"));
+
+            String[] apps = str.split(" ");
+            List<String> appList = new ArrayList<>();
+            for (String a : apps) {
+                if (!a.isEmpty() && !a.equals("\r\n") && !a.equals("\r"))
+                    appList.add(a);
+            }
+            URL[] urls = new URL[appList.size() + 1];
+            urls[0] = new URL("http://chat.knuddels.de/knuddels" + version + ".jar");
+            int i = 1;
+            for (String app : appList) {
+                urls[i++] = new URL("http://chat.knuddels.de/" + app);
+            }
+            
+            return urls;
+        } catch (IOException e) {
+            Logger.get().error(e);
+        }
+        return null;
     }
 }

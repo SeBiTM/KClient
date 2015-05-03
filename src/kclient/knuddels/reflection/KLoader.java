@@ -17,8 +17,10 @@ import javassist.NotFoundException;
 import javax.lang.model.element.Modifier;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
+import kclient.knuddels.tools.AppletCache;
 import kclient.knuddels.tools.ChatSystem;
 import kclient.tools.Logger;
+import kclient.tools.Util;
 import kclient.ui.ClientGui;
 
 /**
@@ -33,7 +35,7 @@ public class KLoader {
     static {
         loaders = new HashMap<>();
     }
-    public static KLoader getLoader(ChatSystem cs) {
+    public static KLoader getLoader(ChatSystem cs, AppletCache cache) {
         if (!loaders.containsKey(cs)) {
             boolean copy = false;
             for (ChatSystem css : loaders.keySet())
@@ -43,7 +45,7 @@ public class KLoader {
                     break;
                 }
             if (!copy)
-                loaders.put(cs, new KLoader(cs));
+                loaders.put(cs, new KLoader(cs, cache));
         }
         return loaders.get(cs);
     }
@@ -55,10 +57,10 @@ public class KLoader {
     private JLabel progressLbl;
     private boolean ready;
     
-    public KLoader(ChatSystem cs) {
+    public KLoader(ChatSystem cs, AppletCache cache) {
         try {
             this.system = cs;
-            this.loader = new URLClassLoader(this.getApplets(cs), Thread.currentThread().getContextClassLoader());
+            this.loader = new URLClassLoader(cache.getApplets(), Thread.currentThread().getContextClassLoader());
             this.cp = ClassPool.getDefault();
             this.cp.insertClassPath(new LoaderClassPath(this.loader));
         } catch (Exception e) {
@@ -71,35 +73,6 @@ public class KLoader {
             return this.loader.loadClass(name);
         } catch (ClassNotFoundException ex) {
             Logger.get().error(ex);
-        }
-        return null;
-    }
-    
-    private URL[] getApplets(ChatSystem cs) {
-        try {
-            String version = cs.getVersion();
-            URL url = new URL("jar:http://chat.knuddels.de/knuddels" + version + ".jar!/META-INF/MANIFEST.MF");
-            JarURLConnection con = (JarURLConnection)url.openConnection();
-            byte[] buffer = new byte[con.getContentLength()];
-            int pos = 0;
-            while (pos < buffer.length)
-                pos += con.getInputStream().read(buffer, pos, buffer.length - pos);
-
-            String str = new String(buffer);
-            str = str.substring(str.indexOf("Class-Path:") + 12);
-            str = str.replace("\r\n ", "");
-            str = str.substring(0, str.indexOf("App"));
-
-            String[] apps = str.split(" ");
-            URL[] urls = new URL[apps.length + 1];
-            urls[0] = new URL("jar:http://chat.knuddels.de/knuddels" + version + ".jar!/");
-            for (int i = 0; i < apps.length; i++) {
-                urls[i + 1] = new URL("jar:http://chat.knuddels.de/" + apps[i] + "!/");
-            }
-
-            return urls;
-        } catch (IOException e) {
-            Logger.get().error(e);
         }
         return null;
     }

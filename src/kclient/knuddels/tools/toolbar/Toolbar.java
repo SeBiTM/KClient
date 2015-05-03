@@ -1,6 +1,7 @@
 package kclient.knuddels.tools.toolbar;
 
 import java.awt.Color;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +23,7 @@ public class Toolbar {
     public Toolbar(GroupChat groupChat) {
         this.groupChat = groupChat;
         this.buttons = new HashMap<>();
-        this.config = new Parameter("toolbar");
+        this.config = new Parameter("module" + File.separator + "toolbar");
     }
     
     public void addButton(Button button) {

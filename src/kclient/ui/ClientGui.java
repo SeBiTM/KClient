@@ -33,6 +33,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import kclient.knuddels.GroupChat;
 import kclient.knuddels.reflection.KLoader;
+import kclient.knuddels.tools.AppletCache;
 import kclient.knuddels.tools.ChatSystem;
 import kclient.tools.Logger;
 import kclient.tools.Parameter;
@@ -153,13 +154,13 @@ public class ClientGui implements ActionListener {
                 final ChatSystem system = ChatSystem.fromName(systems.getSelectedItem().toString());
                 ClientGui.this.progress.setValue(0);
                 ClientGui.this.progressLbl.setText("0 %");
-                KLoader.getLoader(system).setProgress(ClientGui.this.progress, ClientGui.this.progressLbl);
+                KLoader.getLoader(system, null).setProgress(ClientGui.this.progress, ClientGui.this.progressLbl);
                 new Thread("GroupChatLoad") {
                     @Override
                     public void run() {
                         Logger.get().info(" Initializing Manipulation for " + system.getName());
-                        if (!KLoader.getLoader(system).isReady())
-                            KLoader.getLoader(system).prepare();
+                        if (!KLoader.getLoader(system, null).isReady())
+                            KLoader.getLoader(system, null).prepare();
                         GroupChat groupChat = new GroupChat(system);
                         groupChats.add(groupChat);
                         tabbedPane.addTab(system.getName(), groupChat.getComponent(), true);
@@ -312,10 +313,12 @@ public class ClientGui implements ActionListener {
 
             Logger.get().info("Starting Client...");
             Logger.get().info(" Loading ChatSystems");
-            ChatSystem.values();
-            for (ChatSystem cs : ChatSystem.values())
-                KLoader.getLoader(cs);
-    
+            
+            for (ChatSystem cs : ChatSystem.values()) {
+                AppletCache cache = AppletCache.get().getCache(cs);
+                KLoader.getLoader(cs, cache);
+            }
+            
             instance.start();
         } catch (InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException | ClassNotFoundException ex) {
             Logger.get().error(ex);
