@@ -86,24 +86,9 @@ public class BingoSheet {
         int length = getSize();
         if (bingoCalledNumber.contains("bonus")) {
             for (int i = 0; i < length; i++) {
-                int number = this.getJokerIndex();
-                if (number != -1) {
-                    BingoField[] index = null;
-                    for (int j = 0; j < length; j++) {
-                        index = this.getFieldsByNumber(number);
-                        if ((index[0] != null && index[1] != null) && 
-                                (!this.markFields.contains(index[0].getIndex())) && 
-                                (!this.markFields.contains(index[1].getIndex()))) {
-                            break;
-                        }
-                    }
-                    if (index == null || index[0] == null || index[1] == null)
-                        continue;
-                    int bestIndex = getBestIndex(index);
-                    //System.out.println("[Sheet: " + this.sheetId + "] Joker Fields: Best: " + bestIndex + " | [0]" + index[0] + "; [1]" + index[1]);
-                    if (this.markField(index[bestIndex]))
-                        break;
-                }
+                int ind = this.getJokerIndex();
+                if (this.markField(this.getField(ind)))
+                    break;
             }
         } else {
             int number = Integer.parseInt(bingoCalledNumber);
@@ -148,7 +133,7 @@ public class BingoSheet {
             return;
         }
         this.bingoCalled = true;
-        this.groupChat.sendPublicDelay(this.process.getChannel(), String.format("/bingo bingo %s", this.sheetId), Util.rnd(200, 300));
+        this.groupChat.sendPublicDelay(this.process.getChannel(), String.format("/bingo bingo %s", this.sheetId), Util.rnd(this.process.waitTimeSendBingoMin, this.process.waitTimeSendBingoMax));
     }
     private boolean markField(BingoField field) {
         if (this.state != BingoSheetState.ACTIVE)
@@ -156,7 +141,7 @@ public class BingoSheet {
         if (this.markFields.contains(field.getIndex()))
             return false;
         this.markFields.add(field.getIndex());
-        this.groupChat.sendPublicDelay(this.process.getChannel(), String.format("/bingo mark %s %s", this.sheetId, field.getIndex()), Util.rnd(1000, 3000));
+        this.groupChat.sendPublicDelay(this.process.getChannel(), String.format("/bingo mark %s %s", this.sheetId, field.getIndex()), Util.rnd(this.process.waitTimeSendFieldMin, this.process.waitTimeSendFieldMax));
         return true;
     }
     
@@ -233,17 +218,21 @@ public class BingoSheet {
     
     private int getJokerIndex() {
         int index = getDiagonalJokerIndex();
+            System.out.println("Diagonal Joker: "+ index +  " - "  + (index == -1));
         
         if (index == -1) {
             index = getHorizontalJokerIndex();
+            System.out.println("Horizintal Joker: "+ index +  " - "  + (index == -1));
         }
         
         if (index == -1) {
             index = getVerticalJokerIndex();
+            System.out.println("Vertical Joker: "+ index +  " - " + (index == -1));
         }
         
         if (index == -1) {
             index = getRandomJokerIndex();
+            System.out.println("Random Joker: "+ index +  " - " + (index == -1));
         }
         
         return getField(index).getNumber();

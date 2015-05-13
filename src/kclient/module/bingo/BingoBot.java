@@ -27,9 +27,12 @@ import kclient.tools.Util;
  */
 public class BingoBot extends ModuleBase implements Module {
     private final Map<Long, BingoSheet> bingoSheets;
-    private boolean autoJoin;
+    private boolean autoJoin, doJoin;
     private String channel;
-    public int knuddels, points, rounds, sheets;
+    private Parameter config;
+    public int knuddels, points, rounds, sheets,
+            waitTimeSendFieldMin, waitTimeSendFieldMax,
+            waitTimeSendBingoMin, waitTimeSendBingoMax;
     
     public BingoBot(GroupChat groupChat) {
         super(groupChat);
@@ -46,21 +49,6 @@ public class BingoBot extends ModuleBase implements Module {
         } else if (tokens[0].equals("r") && tokens[1].equals(this.groupChat.getButlerName())) {
             String channel = tokens[3].equals("-") ? this.groupChat.getCurrentChannel() : tokens[3];
             if (tokens[4].contains("Runden erreicht und insgesamt ") && tokens[4].contains("Bingo-Punkte")) {
-                if (this.autoJoin) {
-                    new Thread() {
-                        @Override
-                        public void run() {
-                            try {
-                                Thread.sleep(8000);
-                                int sheetsCount = 3;
-                                for (int i = 0; i < sheetsCount; i++)
-                                    BingoBot.this.groupChat.sendPublicDelay(channel, "/bingo buy", Util.rnd(3000, 6000));
-                            } catch (InterruptedException ex) {
-                            }
-                        }
-                    }.start();
-                }
-                
                 if (tokens[4].contains("1 Knuddel"))
                     this.knuddels++;
                 if (tokens[4].contains("25 Bingo-Punkte"))
@@ -101,6 +89,30 @@ public class BingoBot extends ModuleBase implements Module {
                                 if (state != BingoSheetState.ACTIVE) {
                                     this.bingoSheets.remove(sheetId);
                                     this.groupChat.removeFrame(0, sheetId);
+                                }
+                            }
+                            if (this.bingoSheets.isEmpty()) {
+                                if (this.autoJoin) {
+                                    this.doJoin = true;
+                                    new Thread() {
+                                        @Override
+                                        public void run() {
+                                            try {
+                                                Thread.sleep(8500);
+                                                int sheetsCount = 3;
+                                                for (int i = 0; i < sheetsCount; i++) {
+                                                    if (BingoBot.this.doJoin) {
+                                                        if (BingoBot.this.bingoSheets.size() >= 3)
+                                                            break;
+                                                        BingoBot.this.groupChat.sendPublic(channel, "/bingo buy");
+                                                        Thread.sleep(3000);
+                                                    }
+                                                }
+                                                BingoBot.this.doJoin = false;
+                                            } catch (InterruptedException ex) {
+                                            }
+                                        }
+                                    }.start();
                                 }
                             }
                         } else if (module.getName().equals("BINGO_UPDATE")) {
@@ -234,6 +246,13 @@ public class BingoBot extends ModuleBase implements Module {
         props.put("points", String.valueOf(this.points));
         props.put("sheets", String.valueOf(this.sheets));
         props.put("rounds", String.valueOf(this.rounds));
+        
+        props.put("waitTimeSendFieldMin", "100");
+        props.put("waitTimeSendFieldMax", "300");
+        
+        props.put("waitTimeSendBingoMin", "500");
+        props.put("waitTimeSendBingoMax", "1500");
+        
         try {
             writer = new FileOutputStream("data" + File.separator + "module" + File.separator + "bingo.properties");
             props.store(writer, "KClient - Bingo Stats");
@@ -253,11 +272,17 @@ public class BingoBot extends ModuleBase implements Module {
     public void load() {
         if (!new File("data" + File.separator + "module" + File.separator + "bingo.properties").exists())
             save();
-        Parameter stats = new Parameter("module" + File.separator + "bingo");
-        this.knuddels = Integer.parseInt(stats.get("knuddels"));
-        this.points = Integer.parseInt(stats.get("points"));
-        this.rounds = Integer.parseInt(stats.get("rounds"));
-        this.sheets = Integer.parseInt(stats.get("sheets"));
         
+        this.config = new Parameter("module" + File.separator + "bingo");
+        this.knuddels = Integer.parseInt(this.config.get("knuddels"));
+        this.points = Integer.parseInt(this.config.get("points"));
+        this.rounds = Integer.parseInt(this.config.get("rounds"));
+        this.sheets = Integer.parseInt(this.config.get("sheets"));
+        
+        this.waitTimeSendFieldMin = Integer.parseInt(this.config.get("waitTimeSendFieldMin"));
+        this.waitTimeSendFieldMax = Integer.parseInt(this.config.get("waitTimeSendFieldMax"));
+        
+        this.waitTimeSendBingoMin = Integer.parseInt(this.config.get("waitTimeSendBingoMin"));
+        this.waitTimeSendBingoMax = Integer.parseInt(this.config.get("waitTimeSendBingoMax"));
     }
 }
